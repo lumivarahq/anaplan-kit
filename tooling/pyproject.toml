@@ -28,8 +28,11 @@ dev = [
     "responses>=0.23",
 ]
 
+[project.scripts]
+anaplan-model = "anaplan_kit.modeling.cli:main"
+
 [tool.setuptools]
-packages = ["anaplan_kit"]
+packages = ["anaplan_kit", "anaplan_kit.modeling"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
