@@ -9,7 +9,7 @@ matters.
 
 ## A. Lists & hierarchies
 
-**A1.** Build a composite hierarchy (parents first):
+**A1.** Build a composite hierarchy (parents first) — this is the kit's canonical org hierarchy:
 
 | List | Type | Parent | Members (sample) |
 | --- | --- | --- | --- |
@@ -23,8 +23,8 @@ are then **automatic** — you never sum them with formulas (*Necessary, Perform
 **A2.** Wrong because: (a) the hierarchy isn't real, so totals don't roll up automatically — they'd
 have to sum Region manually; (b) the typed "Region" can get out of sync with reality (a Country
 re-parented won't update). **Fix:** make them a proper **composite hierarchy** (Country's parent =
-Region, etc.) and derive any "Region" attribute with `PARENT(ITEM(...))` in a System module
-(*Sustainable, Auditable*).
+Region, Cost Centre's parent = Country) and derive any "Region" attribute with `PARENT(...)` in a
+System module — e.g. `SYS02 Organization Details.Region = PARENT(Country)` (*Sustainable, Auditable*).
 
 **A3.** A **numbered list**. Reasons: (1) transactional rows have no natural unique name — numbered
 lists key by an internal ID, so duplicates/blank names aren't a problem; (2) they're built for large
@@ -39,11 +39,11 @@ giving you a "grand total" line without creating another list level. On `Product
 
 ## B. Modules & dimensions
 
-**B1.** **Applies To:** `Entity × Product × Time × Versions`. (List dims first, then Time, then
-Versions — see [naming conventions](../../templates/naming-conventions.md).)
+**B1.** **Applies To:** `L3 Cost Centre × L2 Product × Time × Versions`. (List dims first, then Time,
+then Versions — see [naming conventions](../../templates/naming-conventions.md).)
 
-**B2.** Adding `Product` multiplies the cell count by the number of products **for no business
-reason** — Fixed OpEx doesn't vary by product, so you'd store identical/empty values across a whole
+**B2.** Adding `L2 Product` multiplies the cell count by the number of products **for no business
+reason** — Opex doesn't vary by product, so you'd store identical/empty values across a whole
 dimension. Dimension a module only by lists it **needs**. Principle: **Performance** (the single
 biggest lever — cell count = product of all dimension sizes × line items).
 
@@ -56,12 +56,12 @@ Multiply that mistake across many modules and a model becomes slow or won't open
 ## C. Formats
 
 **C1.**
-1. `Gross Revenue` → **Number**
+1. `Gross Revenue (local)` → **Number**
 2. `COGS %` → **Number** formatted as a **percentage** (`Number (%)`)
 3. `Is Active?` → **Boolean**
 4. `Cost Centre Manager` → **Text**
 5. `Period Start Date` → **Date**
-6. `Region` (mapping) → **List: Region** (a list-formatted line item is how you map one list to
+6. `Region` (mapping) → **List: L1 Region** (a list-formatted line item is how you map one list to
    another)
 
 **C2.** **Performance:** a Boolean is the cheapest format and lets you use it directly in formulas
@@ -74,15 +74,15 @@ clean and filters/aggregations behave.
 ## D. Summary methods
 
 **D1.**
-1. `Gross Revenue` → **Sum** (money adds up across products/entities/months).
-2. `Price` → **Average** (a price shouldn't add up; the average across the grain is meaningful-ish).
+1. `Gross Revenue (local)` → **Sum** (money adds up across products/cost centres/months).
+2. `Price (local)` → **Average** (a price shouldn't add up; the average across the grain is
+   meaningful-ish).
 3. `COGS %` → **Average** (a ratio shouldn't sum).
-4. `Is Actual Month?` → **None** (a flag has no meaningful aggregate; or Formula if you want a
-   rule).
+4. `Is Actual?` → **None** (a flag has no meaningful aggregate; or Formula if you want a rule).
 5. `EBITDA Margin %` → **Average** (a ratio; ideally recomputed at the total — see D2).
 
 **D2.** **No** — Anaplan applies each line item's *own* summary up the dimension, so the Year
-`Gross Revenue` is the **Sum of the 12 monthly** `Gross Revenue` values (each = that month's
+`Gross Revenue (local)` is the **Sum of the 12 monthly** values (each = that month's
 Volume × Price), which is the correct annual revenue. The trap is `Margin %`/ratio lines: a summed
 or averaged ratio is usually wrong at the total. **Fix for ratios:** set Summary = **Formula** so
 `Margin % = EBITDA / Revenue` is recomputed at every level (using the already-correct summed EBITDA
@@ -100,14 +100,16 @@ and Revenue), rather than averaging the monthly percentages.
 5. Dashboard-shaped P&L card → **Outputs** → `OUT0x`
 
 **E2.**
-1. `Entity → Region` mapping → **System**
-2. Default `COGS %` (a structural attribute) → **System**
+1. `Cost Centre → Region` mapping → **System** (`SYS02 Organization Details`)
+2. A product's `COGS %` cost driver → **Inputs** (`INP03 Cost Drivers`) — planners *do* tune it each
+   cycle, so it's a typed assumption, not a structural attribute. (Contrast a truly fixed attribute
+   like a product's family, which would be System.)
 3. Monthly `Volume` assumption → **Inputs**
-4. `Gross Revenue = Volume × Price` → **Calculations**
+4. `Gross Revenue (local) = Volume × Price (local)` → **Calculations**
 
-> The recurring lesson: **attributes/mappings/flags = System; typed plan numbers = Inputs; math =
-> Calculations.** Keeping them separate is exactly what [DISCO](../../docs/03-methodology/disco.md)
-> enforces.
+> The recurring lesson: **mappings/flags/fixed attributes = System; tunable plan numbers and drivers
+> = Inputs; math = Calculations.** Keeping them separate is exactly what
+> [DISCO](../../docs/03-methodology/disco.md) enforces.
 
 ---
 

@@ -70,11 +70,11 @@ Anaplan so a change in volume ripples to EBITDA instantly.
 | Module | DISCO type | Why |
 | --- | --- | --- |
 | INP01 Revenue Assumptions | Inputs | analyst types Volume & Price |
-| CAL01 Revenue | Calculations | Gross Revenue = Volume × Price |
-| OUT01 P&L Report | Outputs | report card on the UX page |
+| CAL01 Revenue | Calculations | Gross Revenue (local) = Volume × Price |
+| OUT01 P&L Statement | Outputs | report card on the UX page |
 
 **PLANS considerations**
-- Performance: INP01 dimensioned only by Entity × Product × Time × Versions; apply an FY26 Time Range.
+- Performance: INP01 dimensioned only by L3 Cost Centre × L2 Product × Time × Versions; apply an FY26 Time Range.
 - Sustainable: no period named in any formula; new products inherit structure automatically.
 
 **Out of scope**

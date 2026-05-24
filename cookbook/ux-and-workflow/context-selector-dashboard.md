@@ -34,7 +34,16 @@ Why idiomatic:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Selected CC Name | Text | None | *(none)* | *(driven by selection / `NAME(...)`)* |
+| Selected Cost Centre | List: L3 Cost Centre | None | *(none)* | *(set by the page selector)* |
+| Selected CC Name | Text | None | *(none)* | `NAME(Selected Cost Centre)` |
+
+**`SYS01 Time Filters`** (reused from [dynamic-time-filter](dynamic-time-filter.md)) — a Boolean to drive the page's Time selector so the grid only shows the relevant periods:
+
+| Line Item | Format | Summary | Applies To | Formula |
+| --- | --- | --- | --- | --- |
+| Show Forecast Months? | Boolean | None | Time | `NOT SYS01 Time Settings.Is Actual?` |
+
+Apply `Show Forecast Months?` as the Time filter on the input grid card so planners only see open periods, while the chart card uses no Time filter to show full history.
 
 ## Formula(s)
 Most of this is **configuration, not formulas** — publish cards dimensioned by the shared lists and the synced selectors filter them.

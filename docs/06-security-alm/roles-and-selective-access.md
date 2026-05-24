@@ -17,6 +17,26 @@ covered most access needs before reaching [DCA](dynamic-cell-access.md).
 > Treat workspace admin like `root`. Day-to-day planners and even most builders should *not*
 > be workspace admins.
 
+## Before any of this: how users get *in* (SSO/SAML & provisioning)
+
+Roles and selective access decide what a user can do **once they have an account** — but real
+tenants hit **authentication and provisioning** first:
+
+- **SSO via SAML.** Most enterprises front Anaplan with **single sign-on** using **SAML 2.0**,
+  managed by a **tenant security administrator** against the company identity provider (IdP).
+  When a workspace is assigned to an SSO connection, its users authenticate through the IdP
+  rather than an Anaplan password — so the IdP also enforces password policy, MFA and access
+  windows.
+- **Exception users.** Keep at least one **exception user** who can still use the standard
+  Anaplan login, so an IdP outage or misconfiguration can't lock everyone out.
+- **Provisioning.** A person needs an Anaplan account (tenant level) **and** to be added to a
+  workspace before any model role applies. Account creation/SSO is **tenant administration**;
+  roles and selective access are **model** concerns. They are different layers — don't conflate
+  "they can log in" with "they have the right model access".
+
+This kit treats SSO/provisioning conceptually; the model-level controls below are where you
+spend most of your day.
+
 ## Roles — what a user can do
 
 A **role** is defined per model and bundles permissions for the model's components —

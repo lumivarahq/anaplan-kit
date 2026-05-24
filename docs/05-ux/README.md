@@ -15,7 +15,7 @@ Anaplan has two ways to build user interfaces, and as a new builder you should k
 | Container | **Apps** holding **Pages** | Modules' **Dashboards** tab |
 | Page types | **Boards** and **Worksheets** | A single dashboard layout |
 | Built from | **Cards** placed on a page | Published grids, charts, text |
-| Status | What you build new today | Maintained, not the default; being phased down |
+| Status | What you build new today | Legacy — not for new build, but still widely live in existing tenants |
 | Where you build | Anaplan **UX** (App designer) | Inside the **classic** model interface |
 
 > **Build new interfaces in the New UX.** Reserve classic-dashboard knowledge for reading,

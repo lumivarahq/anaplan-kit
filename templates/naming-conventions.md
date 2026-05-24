@@ -20,7 +20,7 @@ number**, then a clear name. The prefix tells you the module's role at a glance.
 | `INP` | **Inputs** | Numbers humans type (assumptions, drivers, rates). | `INP01 Revenue Assumptions` |
 | `SYS` | **System** | Time attributes, mappings, flags, hierarchy properties. | `SYS01 Time Settings` |
 | `CAL` | **Calculations** | Formulas combining Inputs + Data + System. | `CAL01 Revenue` |
-| `OUT` | **Outputs** | Reporting/export views — no new logic. | `OUT01 P&L Report` |
+| `OUT` | **Outputs** | Reporting/export views — no new logic. | `OUT01 P&L Statement` |
 
 **Numbering (`SYS01`, `SYS02`, …):**
 - Two digits, zero-padded, **per prefix** (`SYS01`, `SYS02`, `CAL01`, `CAL02`).
@@ -30,7 +30,7 @@ number**, then a clear name. The prefix tells you the module's role at a glance.
 
 **Module name after the prefix:**
 - Title Case, a short noun phrase: `INP01 Revenue Assumptions`, not `INP01 rev_ass`.
-- Describe *what it holds*, not how: `CAL02 Costs`, not `CAL02 Multiply Stuff`.
+- Describe *what it holds*, not how: `CAL02 Cost`, not `CAL02 Multiply Stuff`.
 
 ---
 
@@ -39,15 +39,16 @@ number**, then a clear name. The prefix tells you the module's role at a glance.
 | List kind | Convention | Example |
 | --- | --- | --- |
 | **Flat / standard** | Singular noun, Title Case. | `Product`, `Currency`, `Entity Type` |
-| **Hierarchy levels** | Prefix each level `L1`, `L2`, `L3` (top → leaf) so the level is obvious. | `L1 Region`, `L2 Country`, `L3 Cost Centre/Entity` |
+| **Hierarchy levels** | Prefix each level `L1`, `L2`, `L3` (top → leaf) so the level is obvious. | `L1 Region`, `L2 Country`, `L3 Cost Centre` |
 | **Numbered list** | Suffix to signal it's transactional/numbered. | `Transactions #`, `GL Lines #` |
 | **Subset** | Reference the parent list + the slice. | `Active Products` (subset of `Product`) |
 
 Notes:
 - The **leaf** level of a hierarchy is what modules are usually dimensioned by; the `L1/L2/L3`
   prefixes make "which level?" unambiguous.
-- A simpler tutorial/small model may use bare names (`Region`, `Entity`) — fine when the hierarchy
-  is tiny and obvious. Use `L1/L2/L3` once a hierarchy has 3+ levels or is shared across models.
+- Use the `L1/L2/L3` prefixes consistently — the kit's one org hierarchy is
+  `L1 Region › L2 Country › L3 Cost Centre`. Don't introduce a parallel bare-named variant
+  (`Region`/`Entity`); a single, predictable scheme is the whole point.
 - **Top Level Item:** name it for the total it represents (`Total Org`, `All Products`).
 
 ---
@@ -55,10 +56,10 @@ Notes:
 ## Line-item naming
 
 - **Title Case noun phrases** that describe meaning: `Gross Revenue`, `EBITDA Margin %`,
-  `Is Actual Month?`.
+  `Is Actual?`.
 - **Booleans** read as a yes/no question and end with `?`: `Is Active?`, `Include in Plan?`,
   `Is Revenue?`.
-- **Percentages / rates** carry a unit cue: `COGS %`, `Price Growth %`, `Rate to Group`.
+- **Percentages / rates** carry a unit cue: `COGS %`, `Price Growth %`, `Rate to USD`.
 - **Stepped calcs:** name each step for the value it produces (`Volume`, `Price`, `Gross Revenue`),
   not for the operation. A reader should trace the steps by name alone (*Auditable*).
 - **Avoid** cryptic codes (`R1`, `X2`), abbreviations only you understand, and trailing
@@ -99,13 +100,13 @@ Notes:
 ## Quick reference card
 
 ```
-Modules:    PREFIX## Name        DAT01 Actuals · SYS01 Time Settings · CAL01 Revenue · OUT01 P&L Report
+Modules:    PREFIX## Name        DAT01 Actuals · SYS01 Time Settings · CAL01 Revenue · OUT01 P&L Statement
 Lists:      Singular Title Case  Product · Currency
-Hierarchy:  L1/L2/L3 levels      L1 Region › L2 Country › L3 Cost Centre/Entity
+Hierarchy:  L1/L2/L3 levels      L1 Region › L2 Country › L3 Cost Centre
 Numbered:   trailing #           Transactions #
 Line items: Title Case phrase    Gross Revenue · EBITDA Margin %
-Booleans:   question + ?         Is Actual Month? · Is Active?
-Rates/%:    unit cue             COGS % · Rate to Group
+Booleans:   question + ?         Is Actual? · Is Active?
+Rates/%:    unit cue             COGS % · Rate to USD
 Versions:   the trio             Actual · Budget · Forecast
 Actions:    Import — X to Y       Import — Actuals to DAT01
 ```

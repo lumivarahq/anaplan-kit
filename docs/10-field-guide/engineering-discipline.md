@@ -1,6 +1,6 @@
 # Engineering Discipline Without the Tooling
 
-> **Level:** L3 · **Area:** Field Guide · The **team (influence)** playbook.
+> **Level:** L3 · **Area:** Field Guide · **PLANS:** Auditable, Sustainable
 
 Anaplan ships almost none of the engineering primitives a software team takes for granted: no
 branching, no pull requests, no unit-test framework, no CI/CD, no APM. That is a platform fact you
@@ -99,11 +99,11 @@ CloudWorks is a *scheduler*, not CI — it runs what you point it at.
 **Run instead:**
 - **Architecture Decision Records.** Keep a short decisions log (in this repo, or a model notes
   module): *versions vs scenario list, single model vs hub-and-spoke, why this hierarchy.* The "why"
-  is what the next builder — or future-you after a reorg — desperately needs.
+  is what the next builder — or future-you after a reorg — needs.
 - **Document logic where it lives.** Line-item descriptions and a `SYS Notes` module beat a Word doc
   nobody opens. Compliance/SOX binders serve the auditor, not the next engineer — write engineer-facing notes too.
-- **Don't be the single point of failure.** Tribal knowledge is a career trap dressed as job
-  security; it makes you un-promotable and the model un-maintainable. Share it.
+- **Don't be the single point of failure.** Tribal knowledge makes the model un-maintainable when
+  you're away. Share it.
 
 ## Security hygiene a team controls
 

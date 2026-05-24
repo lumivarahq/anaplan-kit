@@ -4,7 +4,7 @@
 
 Every function in this reference, one line each — terse "what it does" + minimal syntax. For full
 examples, watch-outs and sources, follow the category links. Square brackets `[ ]` mark **optional**
-arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see the category page).
+arguments.
 
 > Validation: signatures cross-checked against Anapedia. See [`../../SOURCES.md`](../../SOURCES.md).
 
@@ -21,6 +21,8 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 | `COUNT` | Count non-blank mapped items | `Source.LI[COUNT: Mapping]` |
 | `ANY` | TRUE if any mapped Boolean is TRUE | `Source.LI[ANY: Mapping]` |
 | `ALL` | TRUE only if all mapped Booleans are TRUE | `Source.LI[ALL: Mapping]` |
+| `ROUND` | Round a number to N decimals | `ROUND(Number [, Decimals] [, Direction] [, Method])` |
+| `ABS` | Absolute value (drop the sign) | `ABS(Number)` |
 
 ## Lookup & Mapping — [lookup-and-mapping.md](lookup-and-mapping.md)
 
@@ -40,12 +42,13 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 | `LAG` | Value N periods earlier | `LAG(Value, Offset, Substitute [, …])` |
 | `LEAD` | Value N periods later | `LEAD(Value, Offset, Substitute [, …])` |
 | `OFFSET` | Value ±N periods (sign = direction) | `OFFSET(Value, Offset, Substitute [, List])` |
-| `POST` | Push a value forward N periods | `POST(Value, Periods [, List])` ? |
+| `POST` | Push a value forward N periods | `POST(Value, Periods [, List])` |
 | `PREVIOUS` | Value of the prior period | `PREVIOUS(Value)` |
 | `NEXT` | Value of the next period | `NEXT(Value)` |
 | `MOVINGSUM` | Rolling-window aggregate (moves with time) | `MOVINGSUM(LI [, Start] [, End] [, Method] [, List])` |
 | `TIMESUM` | Aggregate between two fixed periods (single value) | `TIMESUM(LI [, Start] [, End] [, Method])` |
-| `PROFILE` | Spread a value over time by a weight profile | `PROFILE(Value, Profile)` ? |
+| `START` / `END` | First / last date of a period (or timeline) | `START([Period])` / `END([Period])` |
+| `PROFILE` | Spread a value over time by a weight profile | `PROFILE(Numbers, Profile)` |
 | `YEARVALUE` | The year's summary value, on each period | `YEARVALUE(LI)` |
 | `HALFYEARVALUE` | The half-year's summary value | `HALFYEARVALUE(LI)` |
 | `QUARTERVALUE` | The quarter's summary value | `QUARTERVALUE(LI)` |
@@ -55,18 +58,19 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 
 | Function | What it does | Minimal syntax |
 | --- | --- | --- |
-| `TEXT` | Number → text | `TEXT(Value)` |
+| `TEXT` | Number → text | `TEXT(Number)` |
 | `NAME` | List item → its name (text) | `NAME(Item)` |
 | `LEFT` | Leftmost N characters | `LEFT(Text, N)` |
 | `RIGHT` | Rightmost N characters | `RIGHT(Text, N)` |
 | `MID` | Characters from the middle (1-based start) | `MID(Text, Start [, N])` |
 | `LENGTH` | Number of characters | `LENGTH(Text)` |
-| `FIND` | Position of a substring | `FIND(Find, Within [, Start])` |
-| `SUBSTITUTE` | Replace all occurrences | `SUBSTITUTE(Text, Find, Replace)` |
+| `FIND` | Position of a substring (0 if not found) | `FIND(Find, Within [, Start])` |
+| `SUBSTITUTE` | Replace all occurrences (no Nth-occurrence arg) | `SUBSTITUTE(Text, Find, Replace)` |
+| `TRIM` | Strip leading/trailing/extra spaces (Classic only) | `TRIM(Text)` |
 | `LOWER` | To lower case | `LOWER(Text)` |
 | `UPPER` | To upper case | `UPPER(Text)` |
 | `CODE` | List item → its code (text) | `CODE(Item)` |
-| `MAKELINK` | Make a clickable URL cell | `MAKELINK(URL [, Display])` ? |
+| `MAKELINK` | Make a clickable URL cell (display text first) | `MAKELINK(Display, URL)` |
 | `MAILTO` | Make a click-to-email cell | `MAILTO(Display, To [, CC] [, BCC] [, Subject] [, Body])` |
 | `&` | Concatenate text (operator) | `TextA & TextB` |
 
@@ -78,6 +82,9 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 | `AND` | TRUE if both | `A AND B` |
 | `OR` | TRUE if either | `A OR B` |
 | `NOT` | Invert a Boolean | `NOT A` |
+| `ISBLANK` | TRUE if the value is blank | `ISBLANK(Value)` |
+| `ISNOTBLANK` | TRUE if the value is populated | `ISNOTBLANK(Value)` |
+| `BLANK` | Return an empty value (keyword) | `IF Cond THEN X ELSE BLANK` |
 | (comparison) | Returns a Boolean directly | `Value > 0` |
 
 ## Date — [date-functions.md](date-functions.md)
@@ -97,8 +104,8 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 
 | Function | What it does | Minimal syntax |
 | --- | --- | --- |
-| `NPV` | Net present value of cash flows | `NPV(Rate, Cash Flow)` ? |
-| `IRR` | Internal rate of return | `IRR(Cash Flow)` ? |
+| `NPV` | Net present value of cash flows | `NPV(Rate, Cash Flow)` *(also a date/value-pairs form)* |
+| `IRR` | Internal rate of return | `IRR(Cash Flow)` *(also a date/value-pairs form = XIRR)* |
 | `PMT` | Periodic loan/annuity payment | `PMT(Rate, Periods, PV [, FV] [, Timing])` |
 | `CUMIPMT` | Cumulative interest between periods | `CUMIPMT(Rate, Periods, Principal, Start, End [, Timing])` |
 
@@ -106,7 +113,7 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 
 | Function | What it does | Minimal syntax |
 | --- | --- | --- |
-| `RANK` | Rank position of each value | `RANK(Values [, Direction, Ties, Tie-break, Groups])` |
+| `RANK` | Rank position of each value | `RANK(Values [, Direction] [, Equal behavior] [, Include] [, Groups])` |
 | `RANKCUMULATE` | Running total walked in rank order | `RANKCUMULATE(Cumul vals, Rank vals [, Direction] [, Include] [, Groups])` |
 
 ## Hierarchy — [hierarchy-functions.md](hierarchy-functions.md)
@@ -115,11 +122,13 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 | --- | --- | --- |
 | `ITEM` | The current list item of the cell | `ITEM(List)` |
 | `PARENT` | Immediate parent item (one level up) | `PARENT(Child)` |
-| `ANCESTOR` | Ancestor at a chosen level | `ANCESTOR(Item, Level)` ? |
 | `ISANCESTOR` | Boolean: is Item1 above Item2? | `ISANCESTOR(Item1, Item2)` |
-| `ITEMLEVEL` | Item's level / leaf test | `ITEMLEVEL(Item [, LEAF])` |
-| `CHILDREN` | Direct children (in an aggregation) | `Source.LI[SUM: CHILDREN(Parent)]` ? |
+| `ITEMLEVEL` | Count up to root / down to leaf (Number, Polaris only) | `ITEMLEVEL(Item, ROOT \| LEAF)` |
 | `FIRSTNONBLANK` | First non-blank mapped value | `Source.LI[FIRSTNONBLANK: Mapping]` |
+
+> No `ANCESTOR()` or `CHILDREN()` formula function exists. For a higher ancestor, chain
+> `PARENT(PARENT(...))` or use a SYS mapping; to aggregate children, use Summary = Sum or
+> `SUM` with a mapping. See [hierarchy-functions.md](hierarchy-functions.md).
 
 ---
 
@@ -135,7 +144,7 @@ arguments. `?` after a syntax means **confirm exact arguments in Anapedia** (see
 | % of full-year | `LI / YEARVALUE(LI)` |
 | Avoid a wall of `IF`s | a Boolean line item, `MIN`/`MAX`, or a `LOOKUP` mapping |
 | "Am I this item?" | `ITEM(List) = …` (compare), or a System flag |
-| Build a mapping from the hierarchy | `PARENT(ITEM(...))` / `ANCESTOR(...)` |
+| Build a mapping from the hierarchy | `PARENT(ITEM(...))` (chain for higher levels) or a SYS module |
 | Turn text into a list item | `FINDITEM(List, Text)` |
 | Top-N flag | `RANK(...) <= N` |
 

@@ -19,13 +19,20 @@ module holding **Boolean** line items:
 
 You then point the target module (or specific line items) at these drivers via its
 **Read Access Driver** and **Write Access Driver** settings in Blueprint. The driver
-controls whether each cell is **editable, read-only, or hidden**.
+controls whether each cell is **editable** or **read-only**, and whether its value is
+**readable** at all.
 
 | Driver value | Read driver | Write driver | Result for the cell |
 | --- | --- | --- | --- |
 | Editable | TRUE | TRUE | User can see **and** edit |
 | Read-only | TRUE | FALSE | User can see, cannot edit |
-| Hidden | FALSE | (n/a) | Cell not shown |
+| Not readable | FALSE | (n/a) | Cell is **blanked / not readable** for the user |
+
+> **A Read driver of `FALSE` doesn't remove the cell from the page.** It makes the cell's
+> value **not readable** (it shows blank, and isn't editable), but the row/column still exists
+> in the layout. To *hide* something structurally — drop a module, line item or dimension from
+> what a user sees — use **roles** (No Access) or the **page/view design**, not DCA. DCA
+> governs *readability and editability of cells*, not page layout.
 
 > The driver module must share the **dimensionality** you want to control by. To lock cells
 > *by cost centre and time*, the driver is dimensioned by Cost Centre × Time. You can apply a

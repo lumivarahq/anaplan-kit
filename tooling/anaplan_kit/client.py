@@ -4,7 +4,7 @@ The client owns an :class:`~anaplan_kit.auth.Authenticator` and a
 :class:`requests.Session`, and exposes a single :meth:`AnaplanClient._request`
 method that every higher-level call goes through. That method:
 
-* attaches a fresh bearer token,
+* attaches a fresh auth token (``Authorization: AnaplanAuthToken <token>``),
 * retries a small number of times on *transient network* errors,
 * raises :class:`~anaplan_kit.errors.AnaplanAPIError` on HTTP error statuses,
 * parses JSON responses.

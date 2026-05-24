@@ -97,16 +97,30 @@ SYS04 Exchange Rates.Rate (filled)[
       LOOKUP: SYS30 Position Details.Cost Centre ] ]
 ```
 
-Then `Fully-Loaded Cost (USD) = Fully-Loaded Cost (local) * FX Rate`, and aggregate to the finance
-grain (`CAL04.Cost by CC (USD)`):
+Then `Fully-Loaded Cost (USD) = Fully-Loaded Cost (local) * FX Rate`. For the FP&A hand-off, aggregate the
+**local** cost to the finance grain (`CAL04.Cost by CC (local)`):
 
 ```
-Fully-Loaded Cost (USD)[SUM: SYS30 Position Details.Cost Centre]
+CAL03 Fully-Loaded Cost.Fully-Loaded Cost (local)[SUM: SYS30 Position Details.Cost Centre]
 ```
 
-This Cost Centre × Time number is the **FP&A `Salaries` feed** — Workforce replaces FP&A's typed
-opex with a driver-based labour cost. Same shared FX as Sales and FP&A, so rates match.
-See [fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
+This collapses the numbered Position list down to **L3 Cost Centre × Time × Versions**. `Cost by CC (USD)`
+is the same roll-up of the USD line for this model's own reporting; the FP&A feed itself is sent in **local**
+so FP&A converts once.
+
+### The FP&A `Salaries` hand-off (model-to-model import)
+
+Workforce and FP&A are **separate models**, so the feed is a scheduled **model-to-model import**. Workforce's
+`Cost by CC (local)` lands in FP&A's `INP02 Opex Plan.Opex (local)` against the **fixed `Opex Category` member
+`"Salaries"`** — Workforce replaces FP&A's typed Salaries opex with a driver-based labour cost.
+
+| Workforce source line item | FP&A target line item | Mapping |
+| --- | --- | --- |
+| `CAL04 Cost in USD.Cost by CC (local)` (L3 Cost Centre × Time × Versions) | `INP02 Opex Plan.Opex (local)` | `L3 Cost Centre/Entity` → `L3 Cost Centre/Entity` (shared); `Time` → `Time`; `Versions` → `Versions`; **`Opex Category` ← fixed value `"Salaries"`** (constant in the import definition — Workforce has no Opex Category axis, so the import pins every row to the Salaries member) |
+
+Same shared FX (`SYS04`) as Sales and FP&A, so rates match across domains.
+See [fpa-pl-planning/modules.md](../fpa-pl-planning/modules.md) (INP02) and
+[fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
 
 ---
 
@@ -127,8 +141,9 @@ mid-month 0.5-FTE hire adds ~0.27 FTE that month. *(Logical)*
 ```
 DAT01 Roster / INP01 Hires ─► SYS30 Position Details (resolve)
 SYS30 + SYS01 dates ───────► CAL01 Proration Factor
-CAL01 × SYS30 salary ──────► CAL02 Monthly Salary ─► CAL03 Fully-Loaded ─► CAL04 (USD)
-CAL04 Cost by CC ──────────► OUT01 Labour Cost + FP&A Salaries (opex)
+CAL01 × SYS30 salary ──────► CAL02 Monthly Salary ─► CAL03 Fully-Loaded ─► CAL04 (USD + local)
+CAL04 Cost by CC (USD) ────► OUT01 Labour Cost
+CAL04 Cost by CC (local) ──► import ─► FP&A INP02 Opex Plan (Opex Category = "Salaries")
 ```
 
 Every cost traces back to a loaded employee or a typed req plus the shared calendar and FX.

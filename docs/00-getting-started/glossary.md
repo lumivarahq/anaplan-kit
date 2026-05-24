@@ -12,6 +12,7 @@ links to the page that explains the term in depth.
 | **ALM** | *Application Lifecycle Management* — Anaplan's process for promoting structural changes safely from a development model to test and production. | [ALM](../06-security-alm/alm.md) |
 | **Applies To** | The set of dimensions a line item (or whole module) is built across; it defines the grid each cell sits in. | [Dimensions](../01-fundamentals/dimensions.md) |
 | **Blueprint** | The design/edit view of a module showing each line item's Format, Summary, Applies To and Formula — the grid this kit uses to describe modules. | [Modules](../01-fundamentals/modules.md) |
+| **Cell count** | The number of cells a module holds — the product of its dimension sizes × its line items — and the master number that drives model size and performance. | [Sparsity & cell count](../07-performance/sparsity-and-engine.md) |
 | **Composite list** | A multi-level list whose members have parent/child relationships, forming a hierarchy (e.g. Region › Country › Cost Centre). | [Lists & hierarchies](../01-fundamentals/lists-and-hierarchies.md) |
 | **Current period** | The single time period Anaplan treats as "now", used by time functions and often driven from a system module. | [Time](../01-fundamentals/time.md) |
 | **Dashboard / Page** | The user-facing screen built from grids, charts and inputs; "dashboards" are the classic UX, "pages"/"boards"/"worksheets" the New UX. | [UX](../05-ux/) |
@@ -35,6 +36,7 @@ links to the page that explains the term in depth.
 | **Subset** | A flagged portion of a list (a sub-selection of its members) you can use as a smaller dimension. | [Numbered lists & subsets](../01-fundamentals/numbered-lists-and-subsets.md) |
 | **Subsidiary view** | A line item dimensioned differently from its parent module, so it isn't sized by every module dimension. | [Modules](../01-fundamentals/modules.md), [Dimensions](../01-fundamentals/dimensions.md) |
 | **Summary method** | The rule for how a line item rolls up across hierarchy/time (Sum, Average, Min, Max, Formula, Ratio, None, or a Boolean option). | [Line items & formats](../01-fundamentals/line-items-and-formats.md) |
+| **Switchover** | A version setting that marks the period where a version stops using Actuals and starts using planned (Forecast) values — the boundary between actual and forecast data. | [Versions](../01-fundamentals/versions.md) |
 | **Time** | Anaplan's built-in calendar dimension (years down to days), configured once per model in Time Settings. | [Time](../01-fundamentals/time.md) |
 | **Time range** | A named, custom span of periods you apply to a module so it stores only the periods it needs (a key performance lever). | [Time ranges](../07-performance/time-ranges.md) |
 | **Top-level item** | The single roll-up member of a list that totals every member, used for grand totals and as a default LHS in formulas. | [Lists & hierarchies](../01-fundamentals/lists-and-hierarchies.md) |

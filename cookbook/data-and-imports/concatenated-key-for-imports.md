@@ -44,20 +44,27 @@ Concatenate with `&` and a separator. Pad/normalise parts so they're stable:
 Entity Code & "#" & Account Code & "#" & Period (YYYYMM)
 ```
 
-If a part is a number you must `TEXTORNULL`-style convert it — Anaplan won't join a number to text directly:
+Anaplan has **no generic `TEXT(number)`** function, so you can't naively cast `YEAR()`/`MONTH()` (which return numbers) to text. Two correct ways to get a `YYYYMM` text part:
 
 ```
-// build a YYYYMM text from a date line item
-TEXT(YEAR(Posting Date)) & TEXT(MONTH(Posting Date))   // pad MONTH to 2 digits upstream
+// 1) The period part is a Time line item -> use NAME() to get its label text
+NAME(Posting Period)     // e.g. "Mar 24" or "Mar 2024" depending on the calendar's display
 ```
 
-For a date-driven period, prefer producing the key in the **source extract** where padding (`01`..`12`) is easy, or derive month text from a `SYS00 Time Settings` module mapped per period.
+`NAME(item)` returns the text name of a **list item** (including a Time period), so a Time-formatted line item gives clean period text without numeric casting. The catch: `NAME` returns the period's *display label*, not a guaranteed `YYYYMM`. To get a strict, zero-padded `YYYYMM` (`2024-01`, not `2024-1`):
+
+```
+// 2) Map a SYS01 Time Settings text attribute per period (built once, correctly padded)
+SYS01 Time Settings.Period YYYYMM[LOOKUP: <period mapping>]
+```
+
+where `SYS01 Time Settings.Period YYYYMM` is a **Text** line item holding the pre-padded `YYYYMM` for each period (maintained once, by import or a manual one-off). For a date-driven period, the cleanest option is still to produce the padded key in the **source extract**, where `01`..`12` padding is trivial — Anaplan can't zero-pad a number into text on its own.
 
 ## Pitfalls / gotchas
 - **Always use a separator.** `Entity & Account` makes `1`+`23` indistinguishable from `12`+`3`. `1#23` vs `12#3` is safe.
 - **Codes, not names.** Concatenate stable codes; names change and aren't unique.
 - **Normalise case and padding.** `ABC` ≠ `abc` and `2024-1` ≠ `2024-01`. Decide a canonical form and produce it consistently on both the file and the model side.
-- A number can't be `&`-joined to text without conversion — wrap with `TEXT(...)`.
+- A number can't be `&`-joined to text directly, and Anaplan has **no generic `TEXT(number)`**. Use `NAME(item)` for a list/Time item, build the text part from a SYS text attribute, or pad it in the source extract.
 - If the key isn't truly unique, the upsert overwrites silently — you lose rows and won't see an error. Confirm uniqueness in the source.
 
 ## Performance & PLANS notes

@@ -15,9 +15,9 @@ Practice the building blocks. Attempt each on paper using the
 name each list, its type, its parent, and a sample of members. Which list will modules normally be
 *dimensioned by*, and why?
 
-**A2 (L1).** A colleague built `Region`, `Country` and `Cost Centre` as **three separate flat
-lists** and a `Cost Centre` line item "Region" that they type in by hand. What's wrong with this,
-and what should they do instead?
+**A2 (L1).** A colleague built `L1 Region`, `L2 Country` and `L3 Cost Centre` as **three separate
+flat lists** and a `Cost Centre` line item "Region" that they type in by hand. What's wrong with
+this, and what should they do instead?
 
 **A3 (L2).** Your model must hold **2 million GL transaction rows**. Should `Transactions` be a
 standard list or a **numbered list**? Give two reasons.
@@ -29,15 +29,16 @@ name you'd use.
 
 ## B. Modules & dimensions
 
-**B1 (L1).** You're building `INP01 Revenue Assumptions` to plan **Volume** and **Price** by
-product, by entity, by month, by version. State the module's **Applies To** (its dimensionality).
+**B1 (L1).** You're building `INP01 Revenue Assumptions` to plan **Volume** and **Price (local)** by
+product, by cost centre, by month, by version. State the module's **Applies To** (its
+dimensionality).
 
-**B2 (L1).** `INP02 Cost Drivers` plans **Fixed OpEx** by entity and month — costs do **not** vary
-by product here. A teammate says "add `Product` to its Applies To, just in case." Why is that a bad
-idea? Name the PLANS principle.
+**B2 (L1).** `INP02 Opex Plan` plans **Opex (local)** by cost centre and month — costs do **not**
+vary by product here. A teammate says "add `L2 Product` to its Applies To, just in case." Why is that
+a bad idea? Name the PLANS principle.
 
-**B3 (L2).** A module is dimensioned `Entity (5) × Product (3) × Time (36 months) × Versions (3)`
-and has **4 line items**. Roughly how many cells is that? Why does this number matter?
+**B3 (L2).** A module is dimensioned `L3 Cost Centre (5) × L2 Product (3) × Time (36 months) ×
+Versions (3)` and has **4 line items**. Roughly how many cells is that? Why does this number matter?
 
 ---
 
@@ -49,7 +50,7 @@ and has **4 line items**. Roughly how many cells is that? Why does this number m
 3. `Is Active?`
 4. `Cost Centre Manager`
 5. `Period Start Date`
-6. `Region` (a mapping that points each Entity to its parent region)
+6. `Region` (a mapping that points each Cost Centre to its parent region)
 
 **C2 (L1).** Why should a flag be a **Boolean** line item rather than a Text line item holding
 `"Yes"`/`"No"`? Give a performance reason and a usability reason.
@@ -60,10 +61,10 @@ and has **4 line items**. Roughly how many cells is that? Why does this number m
 
 **D1 (L1).** For each line item, choose the right **Summary** method (Sum / Average / None /
 Formula) and say why:
-1. `Gross Revenue`
-2. `Price`
+1. `Gross Revenue (local)`
+2. `Price (local)`
 3. `COGS %`
-4. `Is Actual Month?`
+4. `Is Actual?`
 5. `EBITDA Margin %`
 
 **D2 (L2).** You have `Price` (Average summary) and `Volume` (Sum summary) and a line
@@ -83,10 +84,10 @@ correct.
 5. A module shaped exactly for a dashboard P&L card.
 
 **E2 (L2).** In which DISCO module type does each of these belong?
-1. The mapping `Entity → Region`.
-2. A product's default `COGS %`.
+1. The mapping `Cost Centre → Region`.
+2. A product's `COGS %` cost driver.
 3. A planner's monthly `Volume` assumption.
-4. `Gross Revenue = Volume × Price`.
+4. `Gross Revenue (local) = Volume × Price (local)`.
 
 ---
 

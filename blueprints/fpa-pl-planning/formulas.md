@@ -20,19 +20,25 @@ no `LOOKUP` needed. This is the textbook *volume × price* driver.
 
 ---
 
-## 2. COGS and Gross Profit
+## 2. COGS and Gross Profit (imported value with COGS % fallback)
 
-`CAL02 Cost Calculation.COGS (local)`:
+`CAL02 Cost Calculation.COGS (local)` prefers the **bottom-up** figure imported from Supply Chain and
+falls back to the ratio driver where no import exists:
 
 ```
-CAL01 Revenue Calculation.Gross Revenue (local) * INP03 Cost Drivers.COGS %
+IF ISNOTBLANK(INP04 Direct Materials (imported).Direct Materials (local))
+   THEN INP04 Direct Materials (imported).Direct Materials (local)
+   ELSE CAL01 Revenue Calculation.Gross Revenue (local) * INP03 Cost Drivers.COGS %
 ```
 
-`COGS %` is dimensioned by Product only, so it **broadcasts** across Cost Centre, Time and Versions
-automatically. `Gross Profit (local) = Gross Revenue (local) - COGS (local)`.
+`COGS %` is dimensioned by Product only, so the fallback **broadcasts** across Cost Centre, Time and
+Versions automatically. `Gross Profit (local) = Gross Revenue (local) - COGS (local)`.
 
-> Hand-off: Supply Chain produces a unit `CAL Supply Cost`; you can replace the `COGS %` driver with
-> that fed value to make COGS *bottom-up*. See [supply-chain/formulas.md](../supply-chain/formulas.md).
+> **Hand-off (Supply Chain → here):** `INP04 Direct Materials (local)` is **import-fed** from Supply Chain
+> `CAL04 Supply Cost.Supply Cost by CC (local)` via a model-to-model import. Both sit at grain
+> **L3 Cost Centre × L2 Product × Time × Versions**, matched on the shared `_common` lists, so the import is
+> 1:1 with no remapping. This is what makes COGS *bottom-up* instead of a flat ratio. See
+> [supply-chain/formulas.md](../supply-chain/formulas.md) §4 and [`modules.md`](modules.md) (INP04, CAL02).
 
 ---
 
@@ -107,13 +113,16 @@ Guard the divide-by-zero so empty accounts don't show errors. *(Auditable)*
 ```
 INP01 Volume × Price ─► CAL01 Gross Revenue (local)
                          └─► CAL02 COGS (local) ─► Gross Profit (local)
-CAL01/CAL02 × FX ──────► CAL03 *(USD)
+INP04 Direct Materials (imported) ─► CAL02 COGS (local)  [used when present, else COGS %]
+CAL01/CAL02 × FX ──────► CAL03 *(USD)  (Revenue (USD), COGS (USD), Opex (USD))
 CAL03 + INP02 Opex ────► CAL04 P&L Amount (USD)
 CAL04 ─────────────────► OUT01 P&L Statement ─► OUT02 Variance
 ```
 
-Cross-domain: **Workforce** `Fully-Loaded Cost` → `INP02` Salaries; **Sales** `Target $` sense-checks
-`CAL01` revenue; **Supply Chain** `Supply Cost` can drive `CAL02` COGS.
+Cross-domain (model-to-model imports, matched on shared `_common` dimensions):
+- **Workforce** `Cost by CC (local)` → `INP02 Opex Plan.Opex (local)` at `Opex Category = "Salaries"`.
+- **Supply Chain** `Supply Cost by CC (local)` → `INP04 Direct Materials (local)` → `CAL02` COGS.
+- **Sales** `Target (USD)` reconciles against `CAL03 Currency Conversion.Revenue (USD)` (same grain).
 
 ---
 

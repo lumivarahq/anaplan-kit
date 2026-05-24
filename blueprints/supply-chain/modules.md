@@ -138,8 +138,11 @@ Cost of the planned supply, and the FP&A COGS feed.
 | Supply Cost (local) | Number | Sum | SKU × Location × Time × Versions | `CAL02 Inventory Projection.Required Supply (units) * INP03 Standard Unit Cost.Unit Cost (local)` |
 | Supply Cost by CC (local) | Number | Sum | L3 Cost Centre/Entity × L2 Product × Time × Versions | `Supply Cost (local)[SUM: SYS21 Location Details.Cost Centre, SUM: SYS20 SKU Details.Product]` |
 
-> `Supply Cost by CC (local)` is exactly the grain FP&A's `Direct Materials` COGS expects — the
-> hand-off line. FX is applied once, on the FP&A side. *(Necessary — no double conversion.)*
+> `Supply Cost by CC (local)` (grain **L3 Cost Centre × L2 Product × Time × Versions**) is the hand-off
+> line. It is **imported** (model-to-model) into FP&A's `INP04 Direct Materials (imported).Direct Materials
+> (local)` at the **same grain** — matched 1:1 on the shared `_common` lists — where FP&A's `CAL02` uses it
+> as bottom-up COGS (with a `COGS %` fallback). FX is applied once, on the FP&A side. *(Necessary — no
+> double conversion.)* See [`formulas.md`](formulas.md) §4 and [`fpa-pl-planning/modules.md`](../fpa-pl-planning/modules.md).
 
 ---
 

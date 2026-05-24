@@ -69,9 +69,24 @@ once per model — it defines them **once** and every model reuses them. These b
    revenue +       quota / pipeline        demand →          headcount /
    cost → P&L      by rep & product        inventory/supply  FTE / salary
         ▲              │                         │                │
-        └──────────────┴── feed Revenue / COGS / labour cost ─────┘
+        │   Target(USD)│  Supply Cost by CC      │  Cost by CC    │
+        │   reconcile  │  (local) → INP04        │  (local) →     │
+        │   vs CAL03   │  Direct Materials       │  INP02 Salaries│
+        │   Revenue    │  → CAL02 COGS           │                │
+        │   (USD)      ▼                         ▼                ▼
+        └──────────── model-to-model imports (matched on shared dimensions) ──┘
                        into the FP&A P&L (the master plan)
 ```
+
+The cross-domain feeds are **real model-to-model imports**, each with a named source line item, a named
+target line item, and a mapping that joins on the **shared `_common` dimensions** (so members line up with
+no remapping). They are not live cross-model formulas — see the table below and each domain's `formulas.md`.
+
+| Source (model.line item) | Target (FP&A.line item) | Matched dimensions |
+| --- | --- | --- |
+| Workforce `CAL04.Cost by CC (local)` | `INP02 Opex Plan.Opex (local)` | L3 Cost Centre · Time · Versions; `Opex Category` fixed to `"Salaries"` |
+| Supply Chain `CAL04.Supply Cost by CC (local)` | `INP04 Direct Materials (imported).Direct Materials (local)` → `CAL02 COGS` | L3 Cost Centre · L2 Product · Time · Versions (1:1) |
+| Sales `CAL04.Target (USD)` | reconciled vs `CAL03 Currency Conversion.Revenue (USD)` | L3 Cost Centre · L2 Product · Time · Versions (1:1) |
 
 | Domain | What it plans | Folder |
 | --- | --- | --- |
@@ -80,10 +95,12 @@ once per model — it defines them **once** and every model reuses them. These b
 | **Supply Chain** | Demand forecast → inventory / supply; product × location. | [`supply-chain/`](supply-chain/) |
 | **Workforce Planning** | Headcount plan, FTE, salary / cost with hire-date proration. | [`workforce-planning/`](workforce-planning/) |
 
-The domains are **internally consistent**: Sales' product revenue and Workforce's labour cost are the
-kind of numbers that flow into the FP&A P&L; Supply Chain consumes the same Product and Organization
-lists. A number produced in one module is consumed in another (each domain's `formulas.md` shows the
-hand-offs).
+The domains are **internally consistent**: because all four dimension on the shared `_common` lists, a
+number produced in one model imports into another with its dimensions already aligned. Workforce's
+`Cost by CC (local)` becomes FP&A's `Salaries` opex; Supply Chain's `Supply Cost by CC (local)` becomes
+FP&A's `Direct Materials` COGS via `INP04`; Sales' `Target (USD)` reconciles against FP&A
+`CAL03 Revenue (USD)`. Each is a concrete model-to-model import with a named mapping (see the table above
+and each domain's `formulas.md`), not an unbacked arrow.
 
 ---
 

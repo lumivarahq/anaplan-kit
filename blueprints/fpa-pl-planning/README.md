@@ -12,8 +12,10 @@ Workforce and Supply Chain feed numbers **into** it.
 ## What this model does
 
 1. Planners enter **volume** and **price** assumptions by Cost Centre × Product × Time (Inputs).
-2. A calc engine derives **gross revenue**, applies **COGS %**, and computes **gross profit**.
-3. **Opex** (salaries, travel, marketing, IT) is planned per Cost Centre.
+2. A calc engine derives **gross revenue**, then **COGS** — using a **bottom-up figure imported from
+   Supply Chain** where available, else a **COGS %** driver — and computes **gross profit**.
+3. **Opex** (salaries, travel, marketing, IT) is planned per Cost Centre; the **Salaries** category is
+   **imported from Workforce** rather than typed.
 4. Local amounts convert to **group currency (USD)** via the shared FX rates.
 5. Every line maps to a **P&L Account**, so the result is a real Profit & Loss with subtotals
    (Revenue → Gross Profit → EBITDA → Net Profit).
@@ -45,26 +47,32 @@ Domain-specific lists added on top live in [`lists.md`](lists.md).
   Price            │    SYS02 Org        │
   INP02 Opex Plan  ├──► SYS03 Account    ├──►  CAL01 Revenue      ┐
   INP03 COGS %     │    SYS04 FX Rates   │     CAL02 Cost / COGS   ├──► OUT01 P&L
-                   ┘                     ┘     CAL03 FX Convert    │    Statement
-                                               CAL04 P&L Build     ┘    OUT02 Variance
-        ▲                                            ▲
-        │                                            │
-   feeds from ───────── Sales (revenue), Workforce (salaries), Supply Chain (COGS)
+  INP04 Direct     ┘                     ┘     CAL03 FX Convert    │    Statement
+  Materials (imp)                              CAL04 P&L Build     ┘    OUT02 Variance
+        ▲
+        │ model-to-model imports (matched on shared _common dimensions)
+        ├── Workforce  Cost by CC (local) ───────► INP02 Opex Plan, Opex Category = "Salaries"
+        ├── Supply Chain Supply Cost by CC (local) ► INP04 Direct Materials (local) ─► CAL02 COGS
+        └── Sales      Target (USD) ──────────────► reconciled vs CAL03 Revenue (USD)
 ```
 
 - **One direction**: Inputs + System → Calculations → Outputs. No circular references. *(Logical)*
 - Each calc step is its **own line item** so a number can be traced from the P&L back to an
   assumption. *(Auditable)*
 
-### How the other domains hand off into this model
+### How the other domains hand off into this model (model-to-model imports)
 
-| Number | Produced in | Lands in (here) | P&L Account |
+These are **separate models**. Each feed is a scheduled **model-to-model import** whose mapping joins on
+the **shared `_common` dimensions** (so members line up with no remapping), not a live cross-model formula.
+
+| Source line item (other model) | Target line item (here) | Mapping (matched dimensions) | P&L Account |
 | --- | --- | --- | --- |
-| Product revenue target | Sales `CAL Target $` | a Revenue feed (sense-check vs `CAL01`) | `Product Revenue` |
-| Labour cost | Workforce `CAL Fully-Loaded Cost` | `INP02 Opex Plan` (Salaries) | `Salaries` |
-| Direct materials | Supply Chain `CAL Supply Cost` | `CAL02 Cost` (COGS) | `Direct Materials` |
+| Workforce `CAL04 Cost in USD.Cost by CC (local)` | `INP02 Opex Plan.Opex (local)` | `L3 Cost Centre/Entity`, `Time`, `Versions`; **`Opex Category` ← fixed `"Salaries"`** | `Salaries` |
+| Supply Chain `CAL04 Supply Cost.Supply Cost by CC (local)` | `INP04 Direct Materials (imported).Direct Materials (local)` | `L3 Cost Centre/Entity`, `L2 Product`, `Time`, `Versions` (1:1) | `Direct Materials` |
+| Sales `CAL04 Target in USD.Target (USD)` (`[SUM: Cost Centre]`) | reconciliation check vs `CAL03 Currency Conversion.Revenue (USD)` | `L3 Cost Centre/Entity`, `L2 Product`, `Time`, `Versions` (1:1) | `Product Revenue` |
 
-See each domain's `formulas.md` for the exact hand-off line items.
+`INP04` feeds `CAL02` COGS (imported value where present, `COGS %` fallback otherwise); the Salaries import
+overwrites only the `Salaries` opex slice. See each domain's `formulas.md` for the exact hand-off line items.
 
 ---
 

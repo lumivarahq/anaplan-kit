@@ -23,7 +23,9 @@ TEXT(Value)
 ```
 
 **What it does**
-Converts a **number** (or other value) into text, so it can be concatenated with `&`.
+Converts a **number** into a text value, so it can be concatenated with `&` or used by other
+functions that expect text. (For turning a *list item* into text, use `NAME` or `CODE` instead —
+`TEXT` is the number→text converter.)
 
 **Example**
 ```
@@ -32,7 +34,7 @@ Label = "Year " & TEXT(Year Num)        -- "Year 2026"
 
 **Watch out for**
 - You **must** convert numbers before joining: `"Q" & 1` errors; `"Q" & TEXT(1)` works.
-- `TEXT` of a number may include decimals/formatting you don't want — combine with rounding first.
+- `TEXT` of a number may include decimals/formatting you don't want — combine with `ROUND` first.
 
 **Source:** https://help.anaplan.com/text-7c779d7b-c753-43f0-bc10-43e78b9b8572
 
@@ -170,8 +172,8 @@ Prefix   = LEFT(Product Code, FIND("-", Product Code) - 1)   -- everything befor
 ```
 
 **Watch out for**
-- Returns blank/0 when not found (confirm exact "not found" behaviour in Anapedia) — guard before
-  using the result in `LEFT`/`MID`.
+- Returns `0` when the substring is not found — guard with an `IF FIND(...) > 0` test before
+  feeding the result into `LEFT`/`MID`.
 - Position is 1-based and case-sensitive.
 
 **Source:** https://help.anaplan.com/find-b4571668-130a-4de8-a7b2-57439714f344
@@ -194,11 +196,38 @@ Clean = SUBSTITUTE(Raw Name, "_", " ")      -- "Cost_Centre_01" -> "Cost Centre 
 ```
 
 **Watch out for**
-- Replaces **every** match, not just the first.
+- Replaces **every** match, not just the first. Unlike Excel, Anaplan's `SUBSTITUTE` has **no
+  optional fourth (occurrence) argument** — you cannot target only the Nth instance; it always
+  replaces all of them, left to right.
 - Chain `SUBSTITUTE`s to remove several characters — but if you find yourself chaining many, reconsider
   the upstream data quality.
 
-**Source:** https://help.anaplan.com/841babeb-4694-4761-91c1-18d920edb879
+**Source:** https://help.anaplan.com/substitute-841babeb-4694-4761-91c1-18d920edb879
+
+---
+
+### TRIM
+
+**Syntax**
+```
+TRIM(Text)
+```
+
+**What it does**
+Removes **leading and trailing spaces**, and collapses runs of spaces *between* words down to a
+single space. The go-to cleaner for text imported from external systems with irregular spacing.
+
+**Example**
+```
+Code Norm = UPPER(TRIM(Raw Code))           -- "  ab   cd " -> "AB CD"
+```
+
+**Watch out for**
+- `TRIM` is **not available in Polaris** (Classic Engine only).
+- Trim **before** matching (e.g. before `FINDITEM`), since stray spaces silently break exact-text
+  lookups.
+
+**Source:** https://help.anaplan.com/trim-351955a5-838c-4f3b-9073-96732fc259a9
 
 ---
 
@@ -220,8 +249,10 @@ Key = LOWER(Email)
 **Watch out for**
 - Use `LOWER`/`UPPER` to **normalise before matching** (e.g. before `FINDITEM`) since text
   comparison is case-sensitive.
+- An optional `Locale` argument exists in the **Classic Engine** (not Polaris) for language-aware
+  casing.
 
-**Source:** https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 *(All-functions index — confirm the LOWER page for your platform version.)*
+**Source:** https://help.anaplan.com/lower-610b25eb-611f-412e-ab2d-dc8083dc22d4
 
 ---
 
@@ -243,7 +274,7 @@ Code Norm = UPPER(TRIM(Raw Code))
 **Watch out for**
 - Same matching/normalisation use as `LOWER`. Pick one convention and apply it consistently.
 
-**Source:** https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 *(All-functions index — confirm the UPPER page for your platform version.)*
+**Source:** https://help.anaplan.com/upper-6b58ff23-ffc1-475e-b96a-421f127f87b4
 
 ---
 
@@ -274,20 +305,24 @@ CC Code = CODE(ITEM(Cost Centre))
 
 **Syntax**
 ```
-MAKELINK(URL [, Display text])
+MAKELINK(Text to display, URL)
 ```
 
 **What it does**
-Produces a **clickable hyperlink** cell from a URL (and optional display text).
+Produces a **clickable hyperlink** cell: the first argument is the **display text** shown in the
+cell, the second is the **URL** it points to.
 
 **Example**
 ```
-Doc Link = MAKELINK("https://intranet/cc/" & CODE(ITEM(Cost Centre)), "Open")
+Doc Link = MAKELINK("Open", "https://intranet/cc/" & CODE(ITEM(Cost Centre)))
 ```
 
 **Watch out for**
-- Only valid `http://` / `https://` URLs work.
-- Confirm exact argument order/names in Anapedia — and that it is supported on your engine.
+- **Display text comes first, URL second** — easy to transpose if you think of it as "make a link
+  from a URL".
+- Only valid `http://` / `https://` URLs work, and the line item needs the **Text** format
+  (link-type).
+- Not available in **Polaris** (Classic Engine only).
 
 **Source:** https://help.anaplan.com/makelink-0dbc28e2-da61-4b82-95c7-11fe707a06ab
 
@@ -309,7 +344,7 @@ Notify = MAILTO("Email approver", Approver Email, "", "", "Budget ready", "Pleas
 ```
 
 **Watch out for**
-- Not available in the Polaris engine (Classic only) — confirm for your tenant.
+- Not available in the **Polaris** engine (Classic Engine only).
 - The first argument is the **display text**, then recipients — easy to transpose.
 
 **Source:** https://help.anaplan.com/mailto-880af3a5-45c5-4f80-ba27-a55fc8b411d0

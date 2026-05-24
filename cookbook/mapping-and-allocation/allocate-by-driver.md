@@ -38,15 +38,21 @@ Why idiomatic:
 | Floor Space (sqft) | Number | Sum | Business Unit, Time | *(input)* |
 | Revenue | Number | Sum | Business Unit, Time | `OUT.Revenue` |
 
+**`CAL40 Pool Totals`** — `Applies To` **Cost Pool** × Time (the denominator grain, one row per pool):
+
+| Line Item | Format | Summary | Applies To | Formula |
+| --- | --- | --- | --- | --- |
+| Total Driver (pool) | Number | Sum | Cost Pool, Time | `CAL40 Cost Allocation.Selected Driver` *(BU dimension drops, so it sums across BUs per pool)* |
+
 **`CAL40 Cost Allocation`** — `Applies To` Cost Pool × Business Unit × Time:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Selected Driver | Number | Sum | Cost Pool, Business Unit, Time | see formula |
-| Total Driver | Number | Sum | Cost Pool, Business Unit, Time | `Selected Driver[SUM: ...]` to Cost Pool level |
-| Share | Number | None | Cost Pool, Business Unit, Time | `IF Total Driver = 0 THEN 0 ELSE Selected Driver / Total Driver` |
-| Allocated Cost | Number | Sum | Cost Pool, Business Unit, Time | `Pool Cost × Share` |
+| Total Driver (at BU) | Number | None | Cost Pool, Business Unit, Time | `CAL40 Pool Totals.Total Driver (pool)` *(broadcast back to each BU)* |
+| Share | Number | None | Cost Pool, Business Unit, Time | `IF Total Driver (at BU) = 0 THEN 0 ELSE Selected Driver / Total Driver (at BU)` |
 | Pool Cost | Number | Sum | Cost Pool, Business Unit, Time | `INP_Pool.Cost` (broadcast to each BU) |
+| Allocated Cost | Number | Sum | Cost Pool, Business Unit, Time | `Pool Cost × Share` |
 
 ## Formula(s)
 Pick the driver per pool (small, readable `IF`/`LOOKUP` on the **driver type**, not on item names):
@@ -58,11 +64,21 @@ ELSE IF SYS20 Driver by Pool.Driver Type = Driver Types.Sqft THEN INP20 Drivers.
 ELSE INP20 Drivers.Revenue
 ```
 
-Share and allocation (guarded):
+Sum the driver to the pool grain, then broadcast it back so each BU divides by the **same** pool total. Because `CAL40 Pool Totals` has no BU dimension, referencing `Selected Driver` into it sums across BUs (the dimension simply drops); referencing the pool total back into the BU-level module repeats it across every BU:
+
+```
+// CAL40 Pool Totals -> Total Driver (pool)   (Applies To Cost Pool × Time)
+CAL40 Cost Allocation.Selected Driver
+
+// CAL40 Cost Allocation -> Total Driver (at BU)   (pool total, repeated across BUs)
+CAL40 Pool Totals.Total Driver (pool)
+```
+
+That gives each BU the denominator it needs, at the BU grain. Share and allocation (guarded):
 
 ```
 // CAL40 Cost Allocation -> Share
-IF Total Driver = 0 THEN 0 ELSE Selected Driver / Total Driver
+IF Total Driver (at BU) = 0 THEN 0 ELSE Selected Driver / Total Driver (at BU)
 
 // CAL40 Cost Allocation -> Allocated Cost
 Pool Cost * Share

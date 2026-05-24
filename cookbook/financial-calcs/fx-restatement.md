@@ -31,26 +31,26 @@ Why idiomatic:
 | Actual Rate | Number | None | Currency, Time | *(import)* |
 | Plan Rate | Number | None | Currency, Time | *(input — locked budget rate)* |
 
-**`CAL110 Constant Currency`** — `Applies To` Entity × Time:
+**`CAL110 Constant Currency`** — `Applies To` L3 Cost Centre × Time:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Local Amount | Number | Sum | Entity, Time | *(from source)* |
-| Reported (USD) | Number | Sum | Entity, Time | `Local Amount × Actual Rate` |
-| Constant Ccy (USD) | Number | Sum | Entity, Time | `Local Amount × Plan Rate` |
-| FX Effect | Number | Sum | Entity, Time | `Reported (USD) - Constant Ccy (USD)` |
+| Local Amount | Number | Sum | L3 Cost Centre, Time | *(from source)* |
+| Reported (USD) | Number | Sum | L3 Cost Centre, Time | `Local Amount × Actual Rate` |
+| Constant Ccy (USD) | Number | Sum | L3 Cost Centre, Time | `Local Amount × Plan Rate` |
+| FX Effect | Number | Sum | L3 Cost Centre, Time | `Reported (USD) - Constant Ccy (USD)` |
 
-(Rates pulled via the entity's currency — see [currency-conversion](currency-conversion.md).)
+(Rates pulled via the cost centre's local currency — see [currency-conversion](currency-conversion.md).)
 
 ## Formula(s)
 Convert the same local amount twice:
 
 ```
 // CAL110 -> Reported (USD)
-Local Amount * INP40 FX Rates.Actual Rate[LOOKUP: SYS30 Entity Details.Local Currency]
+Local Amount * INP40 FX Rates.Actual Rate[LOOKUP: SYS02 Organization Details.Local Currency]
 
 // CAL110 -> Constant Ccy (USD)
-Local Amount * INP40 FX Rates.Plan Rate[LOOKUP: SYS30 Entity Details.Local Currency]
+Local Amount * INP40 FX Rates.Plan Rate[LOOKUP: SYS02 Organization Details.Local Currency]
 ```
 
 Isolate the FX movement:

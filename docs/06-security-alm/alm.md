@@ -72,6 +72,12 @@ point: ship a new calculation to PROD without wiping this quarter's forecast.
 > (owned by the target), even though the list's *existence* is structure. This lets you add a
 > list in DEV and let PROD keep its own members.
 
+> ⚠️ **ALM moves *structure*, not *people*.** A **role's definition** (what the role can do) is
+> structure and syncs — but the **users themselves and their role assignments do *not* sync**.
+> Add a planner to PROD, or change who is in which role, **in the production model directly**;
+> don't expect a sync to carry it across. This catches almost every beginner. See
+> [Roles & Selective Access](roles-and-selective-access.md).
+
 ## Why use ALM from the start
 
 - **You can't bolt it on cleanly later.** Set up the DEV/PROD split and deploy PROD *before*

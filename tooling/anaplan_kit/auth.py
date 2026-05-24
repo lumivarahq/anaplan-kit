@@ -1,8 +1,9 @@
 """Authentication against the Anaplan Auth service.
 
-Anaplan's REST API v2 is protected by a short-lived bearer token. You obtain
-the token by POSTing your credentials (HTTP Basic auth) to the auth service,
-then send it on every subsequent API call as::
+Anaplan's REST API v2 is protected by a short-lived auth token (the
+``AnaplanAuthToken`` scheme — *not* ``Bearer``). You obtain the token by
+POSTing your credentials (HTTP Basic auth) to the auth service, then send it
+on every subsequent API call as::
 
     Authorization: AnaplanAuthToken <token>
 
@@ -34,7 +35,10 @@ _EXPIRY_SKEW_SECONDS = 60
 
 @dataclass
 class AuthToken:
-    """A bearer token returned by the Anaplan auth service.
+    """An auth token returned by the Anaplan auth service.
+
+    Sent as ``Authorization: AnaplanAuthToken <token>`` (the Anaplan scheme,
+    not ``Bearer``).
 
     Attributes:
         value: The opaque token string.

@@ -52,11 +52,16 @@ Domain-specific lists (Employee/Position, Job Grade) live in [`lists.md`](lists.
 - Positions live on a list dimensioned by `L3 Cost Centre/Entity` via `SYS30`, so cost rolls to the
   same Country/Region totals as every other domain. *(Logical)*
 
-### Hand-off to FP&A
+### Hand-off to FP&A (model-to-model import)
 
-`CAL04 Fully-Loaded Cost (USD)` summed by Cost Centre × Time onto the `Salaries` account **is** the
-FP&A `INP02 Opex Plan` Salaries feed — Workforce replaces a typed number with a driver-based one.
-See [fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
+Workforce and FP&A are **separate models**, so the feed is a scheduled **model-to-model import**, not a
+live formula. `CAL04 Cost in USD.Cost by CC (local)` (grain **L3 Cost Centre × Time × Versions**) imports
+into FP&A's `INP02 Opex Plan.Opex (local)`, with the import pinning the **`Opex Category` dimension to the
+fixed member `"Salaries"`** (Workforce carries no Opex Category, so every row maps to that one member).
+This reconciles the grains: Workforce L3 Cost Centre × Time × Versions → INP02 L3 Cost Centre × **Salaries**
+× Time × Versions. The feed is sent in **local** currency so FP&A applies FX once. Workforce replaces a typed
+Salaries number with a driver-based one. See [`formulas.md`](formulas.md) §5 and
+[fpa-pl-planning/modules.md](../fpa-pl-planning/modules.md).
 
 ---
 

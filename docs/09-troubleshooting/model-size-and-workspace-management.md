@@ -32,22 +32,13 @@ allocation changed only by Anaplan Support. **Confirm current limits in Anapedia
 
 ## What actually drives size: cell count
 
-Model size is overwhelmingly **cell count**, not formulas or formatting. For each module:
-
-```
-cells in a module = (size of dimension 1)
-                  × (size of dimension 2)
-                  × … × (each further dimension)
-                  × (number of line items)
-```
-
-Every **dimension multiplies**; every **line item adds**. A module dimensioned by
-Product (500) × Cost Centre (200) × Month (36) × 20 line items is **72 million cells** — one
-module. Add a Version or Region it doesn't truly need and it doubles or quintuples.
+Model size is overwhelmingly **cell count**, not formulas or formatting. Cell count is the product
+of a module's dimension sizes × its line items — every dimension *multiplies*, every line item
+*adds*, so a few dimensions reach tens of millions of cells fast (see the formula and the worked
+72M-cell example in [sparsity & cell count](../07-performance/sparsity-and-engine.md)).
 
 > The biggest size win is almost always **removing a dimension or a line item you didn't need** —
-> not optimising a formula. Necessity *is* performance. See
-> [Performance — cell count](../07-performance/README.md).
+> not optimising a formula. Necessity *is* performance.
 
 ---
 

@@ -43,11 +43,11 @@ Why idiomatic:
 | Net Book Value | Number | Sum | Asset, Time | `INP50.Cost - Accumulated Depreciation` |
 
 ## Formula(s)
-Months elapsed since the in-service month (0 in the start month). Use a period index from `SYS00`:
+Months elapsed since the in-service month (0 in the start month). Use a period index from `SYS01`:
 
 ```
 // CAL120 -> Months Since Start
-SYS00 Time Settings.Period Index
+SYS01 Time Settings.Period Index
   - LOOKUP index of the period containing INP50 Asset Register.In-Service Date
 ```
 

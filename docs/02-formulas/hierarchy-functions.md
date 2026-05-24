@@ -59,38 +59,10 @@ encodes the relationship.
 
 **Watch out for**
 - Result is **formatted as the parent list** — your line item must match that format.
-- `PARENT` goes **exactly one** level up. For "two levels up" / a specific level, use `ANCESTOR`.
+- `PARENT` goes **exactly one** level up. For "two levels up", chain it (`PARENT(PARENT(item))`) or
+  build a SYS mapping line item — see *Reaching ancestors and children* below.
 
 **Source:** https://help.anaplan.com/parent-1cdc486d-c4d7-42db-8b1a-d9e12c060999
-
----
-
-### ANCESTOR
-
-**Syntax**
-```
-ANCESTOR(Item, Level/Target)
-```
-*(Confirm exact arguments in Anapedia — see note below.)*
-
-**What it does**
-Returns an **ancestor** of an item at a chosen level of a composite hierarchy — like `PARENT`, but
-able to jump **multiple** levels up to a named list level rather than just one.
-
-**Example**
-```
-CC Division = ANCESTOR(ITEM(Cost Centre), Division)   -- jump from cost centre up to its division
-```
-
-**Watch out for**
-- Use this when the level you want is **more than one step** above; `PARENT` handles a single step.
-- ⚠️ **Validation note:** a dedicated Anapedia page URL for `ANCESTOR` could not be confirmed via
-  search for this kit (related pages: `PARENT`, `ISANCESTOR`, `ITEMLEVEL`). **Confirm the exact
-  argument list and a current source URL in Anapedia before relying on this signature.**
-
-**Source:** Not separately confirmed — see the all-functions index
-https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 and confirm the
-ANCESTOR page for your platform version.
 
 ---
 
@@ -123,56 +95,34 @@ TRUE for every cost centre that sits beneath the chosen region.
 
 **Syntax**
 ```
-ITEMLEVEL(Item [, LEAF])
+ITEMLEVEL(Item, ROOT)     -- count of items from the item up to its root, inclusive
+ITEMLEVEL(Item, LEAF)     -- count of items from the item down to its furthest descendant, inclusive
 ```
 
 **What it does**
-Returns the **level** of an item within its hierarchy as text/number, letting you treat leaf items
-differently from parents. The optional `LEAF` keyword tests for bottom-level items.
+Returns a **number**: a count of items along a hierarchy from the given item, either up toward the
+root (`ROOT`) or down toward its deepest leaf (`LEAF`), counting the item itself. It does **not**
+return a Boolean and does not, on its own, give a single "level index" of the classic kind.
 
 **Example**
 ```
-Is Leaf? = ITEMLEVEL(ITEM(Cost Centre), LEAF)
+Depth To Root  = ITEMLEVEL(ITEM(Cost Centre), ROOT)   -- 1 at the top, larger further down
+Depth To Leaf  = ITEMLEVEL(ITEM(Cost Centre), LEAF)   -- 1 at a leaf, larger higher up
 ```
-Flags the lowest-level cost centres (those with no children) — useful so input only happens at
-leaf level.
+A clean leaf test follows from the `LEAF` direction — a leaf has no descendants below it:
+```
+Is Leaf? = ITEMLEVEL(ITEM(Cost Centre), LEAF) = 1     -- Boolean: true only for bottom-level items
+```
+Note `Is Leaf?` is the **comparison** `= 1`; `ITEMLEVEL(...)` by itself is a number, so a Boolean
+line item cannot take the bare function.
 
 **Watch out for**
-- Handy to **prevent double counting**: calculate only at leaves and let Summary roll the rest up.
-- Confirm the exact return type/keywords for your platform.
+- `ITEMLEVEL` is **only available in the Polaris calculation engine** — it is not in Classic. If you
+  are on Classic, derive leaf status another way (e.g. flag items that have no children via a SYS
+  module).
+- The result is a **count (Number)**, not a Boolean or a fixed level label. A blank item returns 0.
 
 **Source:** https://help.anaplan.com/itemlevel-756d1428-5f1d-4d79-8274-d075a1bd312f
-
----
-
-### CHILDREN
-
-**Syntax**
-```
-Source.Line Item[SUM: CHILDREN(Parent)]    -- used inside an aggregation as a mapping
-```
-*(Confirm exact usage/arguments in Anapedia — see note below.)*
-
-**What it does**
-References the **direct children** of a parent item, typically inside an aggregation to total just
-one level down (rather than rolling the whole subtree).
-
-**Example**
-```
-Sum of Children = Amount[SUM: CHILDREN(ITEM(Region))]
-```
-Totals only the immediate children of each region.
-
-**Watch out for**
-- Often you **don't need** `CHILDREN` at all — a line item's **Summary = Sum** already rolls
-  children up its own hierarchy automatically. Reach for it only when you need explicit one-level
-  control.
-- ⚠️ **Validation note:** a dedicated Anapedia page URL for `CHILDREN` could not be confirmed via
-  search for this kit. **Confirm the exact syntax and a current source URL in Anapedia before use.**
-
-**Source:** Not separately confirmed — see the all-functions index
-https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 and confirm the
-CHILDREN page for your platform version.
 
 ---
 
@@ -204,6 +154,23 @@ For each division, the first non-blank region among its cost centres.
 
 ---
 
+## Reaching ancestors and children
+
+There is **no `ANCESTOR()` and no `CHILDREN()` formula function** in the Anaplan model formula
+language. (Those names exist only in Anaplan XL's MDX, not in module formulas.) To do what they
+suggest, use the built-in patterns instead:
+
+- **A higher ancestor (more than one level up).** Chain `PARENT`: `PARENT(PARENT(ITEM(List)))` for
+  the grandparent, and so on — or, more sustainably for a fixed target level, build a **SYS mapping
+  module** line item (formatted as the target list) that records each item's ancestor once, and
+  reference that.
+- **Aggregating children.** You rarely need an explicit "children" function: a line item's
+  **Summary method = Sum** already rolls children up their own hierarchy **automatically**. When you
+  must aggregate across a *different* list, use `SUM` with a **mapping line item**
+  (`Source.LI[SUM: Mapping]`) — see [aggregation-functions.md](aggregation-functions.md).
+
+---
+
 ## The "am I this item?" pattern (and why ITEM beats SELECT)
 
 A recurring need: do something only for a particular item, or build a mapping from the hierarchy.
@@ -216,9 +183,9 @@ CC Region        = PARENT(ITEM(Cost Centre))
 Apply HQ Overhead? = ITEM(Cost Centre) = Cost Centre.'HQ'
 ```
 
-Using `ITEM`/`PARENT`/`ANCESTOR` keeps the logic **driven by structure**, so adding members or
-re-parenting the hierarchy needs no formula change — far more sustainable than `SELECT`ing a
-specific item (see [lookup-and-mapping.md](lookup-and-mapping.md)).
+Using `ITEM`/`PARENT` (chained where you need a higher level) keeps the logic **driven by
+structure**, so adding members or re-parenting the hierarchy needs no formula change — far more
+sustainable than `SELECT`ing a specific item (see [lookup-and-mapping.md](lookup-and-mapping.md)).
 
 **Related:** [lookup-and-mapping.md](lookup-and-mapping.md) (hierarchy-built mappings feed
 LOOKUP/SUM) · [aggregation-functions.md](aggregation-functions.md) (ANY/ALL/FIRSTNONBLANK) ·

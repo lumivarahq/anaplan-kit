@@ -104,9 +104,22 @@ Supply Cost (local)[
    SUM: SYS20 SKU Details.Product ]
 ```
 
-This collapses SKU × Location down to Cost Centre × Product — exactly what FP&A's `Direct Materials`
-COGS line expects. FP&A applies FX once on its side (avoiding double conversion), so Supply Chain
-stays in units + local cost. See [fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
+This collapses SKU × Location down to **L3 Cost Centre × L2 Product × Time × Versions** — exactly the grain
+of FP&A's COGS receiving line. FP&A applies FX once on its side (avoiding double conversion), so Supply
+Chain stays in units + local cost.
+
+### The FP&A COGS hand-off (model-to-model import)
+
+Supply Chain and FP&A are **separate models**, so the feed is a scheduled **model-to-model import**.
+`Supply Cost by CC (local)` lands in FP&A's `INP04 Direct Materials (imported).Direct Materials (local)`;
+FP&A's `CAL02 COGS (local)` then uses it where present and falls back to `Revenue × COGS %` otherwise.
+
+| Supply Chain source line item | FP&A target line item | Mapping (matched on shared `_common` lists) |
+| --- | --- | --- |
+| `CAL04 Supply Cost.Supply Cost by CC (local)` (L3 Cost Centre × L2 Product × Time × Versions) | `INP04 Direct Materials (imported).Direct Materials (local)` (same grain) | `L3 Cost Centre/Entity` → `L3 Cost Centre/Entity`; `L2 Product` → `L2 Product`; `Time` → `Time`; `Versions` → `Versions` — all 1:1, no remapping |
+
+See [fpa-pl-planning/modules.md](../fpa-pl-planning/modules.md) (INP04, CAL02) and
+[fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md) §2.
 
 ---
 
@@ -119,7 +132,7 @@ DAT02 ─────────► CAL02 Opening ─────┴► CAL02 R
                                                 ▼                      ▼
                             CAL04 Supply Cost (local)         CAL03 Days of Supply
                                                 │
-                            CAL04 Supply Cost by CC ─► FP&A Direct Materials (COGS)
+            CAL04 Supply Cost by CC (local) ─► import ─► FP&A INP04 Direct Materials ─► CAL02 COGS
 ```
 
 Every output traces back to loaded demand/on-hand or a typed policy/cost.

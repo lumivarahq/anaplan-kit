@@ -29,7 +29,7 @@ Why idiomatic:
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Weight | Number | Sum | Product, Month | *(input, e.g. 1.0 flat, 2.5 for Dec)* |
-| Year Weight | Number | Sum | Product, Month | `Weight[SUM: SYS00 Time Settings.Year]` |
+| Year Weight | Number | Sum | Product, Month | `YEARVALUE(Weight)` |
 | Month Ratio | Number | None | Product, Month | `IF Year Weight = 0 THEN 0 ELSE Weight / Year Weight` |
 
 **`INP31 Annual Plan`** — `Applies To` Product × Year:
@@ -45,11 +45,11 @@ Why idiomatic:
 | Monthly Plan | Number | Sum | Product, Month | `Annual (this year) × INP30 Seasonality Profile.Month Ratio` |
 
 ## Formula(s)
-Normalise the weights to a ratio that sums to 1 within each year:
+Normalise the weights to a ratio that sums to 1 within each year. `YEARVALUE(Weight)` gives every month the **total weight of its own year** — the denominator each month needs, at the month grain — so the ratio is correct cell-by-cell:
 
 ```
 // INP30 Seasonality Profile -> Year Weight
-Weight[SUM: SYS00 Time Settings.Year]
+YEARVALUE(Weight)
 
 // INP30 Seasonality Profile -> Month Ratio
 IF Year Weight = 0 THEN 0 ELSE Weight / Year Weight

@@ -42,7 +42,7 @@ Compute the condition once:
 
 ```
 // CAL -> Eligible?
-Active? AND NOT Discontinued? AND Price > 0 AND SYS00 Time Settings.In Window?
+Active? AND NOT Discontinued? AND Price > 0 AND SYS01 Time Settings.In Window?
 ```
 
 Reference it (one cheap test instead of re-deriving the whole condition):

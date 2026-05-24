@@ -141,9 +141,10 @@ Number of (non-blank/active) reps in each region.
 **Watch out for**
 - `COUNT` counts **non-blank** cells, not "rows that are TRUE". To count Booleans that are TRUE,
   filter first (e.g. a line item that is blank when FALSE) or use `SUM` over a 1/0 indicator.
-- Confirm exact arguments in Anapedia for your engine.
+- `COUNT` is an aggregation **method** (used as `[COUNT: Mapping]`), not a standalone `COUNT(...)`
+  function — Anaplan has no Excel-style `COUNTIF`; build the 1/0 indicator and `SUM` it instead.
 
-**Source:** https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 *(All-functions index — confirm the COUNT page for your platform version.)*
+**Source:** https://community.anaplan.com/kb/articles/153745-aggregate
 
 ---
 
@@ -191,9 +192,63 @@ TRUE for a region only when all its cost centres are approved.
 
 **Watch out for**
 - An empty group (no source items mapped) can return TRUE — "all of nothing is true". Guard with a
-  `COUNT > 0` check if that matters.
+  `COUNT > 0` check if that matters. (Note the *unmapped-cell* default itself differs by engine:
+  TRUE in Classic, FALSE in Polaris.)
 
-**Source:** https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 *(All-functions index — confirm the ALL page for your platform version.)*
+**Source:** https://help.anaplan.com/all-c9035c86-1e45-4774-9463-cc5aca76fc7e
+
+---
+
+## Numeric helpers: ROUND and ABS
+
+Not aggregations, but the two number functions every beginner reaches for early — kept here so the
+reference has a home for them.
+
+### ROUND
+
+**Syntax**
+```
+ROUND(Number to round [, Number of decimal places] [, Rounding direction] [, Rounding method])
+```
+
+**What it does**
+Rounds a number to a given number of decimal places (default 0). Optional arguments control the
+rounding **direction** and **method**; if you supply a later optional argument you must supply the
+earlier ones too.
+
+**Example**
+```
+Rounded Rate = ROUND(Raw Rate, 2)        -- 0.12345 -> 0.12
+Whole Units  = ROUND(Forecast Units)     -- to the nearest integer
+```
+
+**Watch out for**
+- Round **for display/output**, not mid-calculation, unless the business rule genuinely rounds at
+  that step — repeated intermediate rounding accumulates error.
+
+**Source:** https://help.anaplan.com/round-0d779b88-d366-4849-af05-f57367772598
+
+---
+
+### ABS
+
+**Syntax**
+```
+ABS(Number)
+```
+
+**What it does**
+Returns the **absolute value** of a number — drops the sign, so negatives become positive.
+
+**Example**
+```
+Variance Magnitude = ABS(Actual - Plan)
+```
+
+**Watch out for**
+- Useful for "how far off, regardless of direction" tests, e.g. `ABS(Variance) > Tolerance`.
+
+**Source:** https://help.anaplan.com/abs-76d009f0-95e2-4233-9b72-026e49264cfd
 
 ---
 

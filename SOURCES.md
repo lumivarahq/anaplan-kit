@@ -35,6 +35,12 @@ the Anapedia page for that function, and the per-function source URL is listed t
 - ISANCESTOR — https://help.anaplan.com/isancestor-2c35cf1b-9392-4726-8ebb-4291d1b24225
 - ITEMLEVEL — https://help.anaplan.com/itemlevel-756d1428-5f1d-4d79-8274-d075a1bd312f
 - FIND — https://help.anaplan.com/find-b4571668-130a-4de8-a7b2-57439714f344
+- CURRENTPERIODSTART — https://help.anaplan.com/currentperiodstart-a7af7113-e1dc-478d-bbbe-ecb597092991
+- START — https://help.anaplan.com/start-bc44fa0b-7af8-4a8f-ad8f-cbeaccf22003
+
+> Note: `ANCESTOR` and `CHILDREN` are **not** Anaplan model formula functions (they exist only in
+> Anaplan XL's MDX). For a higher ancestor level, chain `PARENT(PARENT(...))` or use a System
+> mapping module; to aggregate children, use the Sum summary method or `SUM` with a mapping.
 
 ### Methodology & best practices
 - Anapedia home — https://help.anaplan.com/

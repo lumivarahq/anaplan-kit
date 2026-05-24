@@ -3,24 +3,27 @@
 > **Level:** L1 · **Area:** Tutorial
 
 This is a **build-along**: you'll construct one complete model from an empty workspace to a
-working dashboard, step by step. It is the same canonical model documented in
-[`blueprints/fpa-pl-planning/`](../blueprints/fpa-pl-planning/) — the tutorial *builds* it; the
-blueprint is the *finished reference*.
+working dashboard, step by step. It builds the canonical model documented in
+[`blueprints/fpa-pl-planning/`](../blueprints/fpa-pl-planning/), using the **same list and module
+names** — the tutorial *builds* it; the blueprint is the *finished reference*. Where the blueprint
+goes further (the full `L3 P&L Account` roll-up), the tutorial says so and builds the core.
 
 By the end you'll have a small but real **FP&A planning model**: plan revenue from volume × price,
-plan costs, roll them into a P&L, load actuals, and report Plan vs Actual on a UX page.
+plan cost, convert local amounts to USD, roll them into a P&L, load actuals, and report Plan vs
+Actual on a UX page.
 
 ---
 
 ## What you'll build
 
 ```
-Lists:        Organization (hierarchy)  ·  Product  ·  Version  ·  Time
-SYS modules:  SYS01 Time Settings  ·  SYS02 Product Details  ·  SYS03 Org Details
-INP modules:  INP01 Revenue Assumptions  ·  INP02 Cost Drivers
-CAL modules:  CAL01 Revenue  ·  CAL02 Costs  ·  CAL03 P&L
+Lists:        L1 Region › L2 Country › L3 Cost Centre  ·  L1 Product Family › L2 Product
+              L1/L2/L3 P&L Account  ·  Currency  ·  Versions  ·  Time
+SYS modules:  SYS01 Time Settings · SYS02 Organization Details · SYS03 Account Details · SYS04 Exchange Rates
+INP modules:  INP01 Revenue Assumptions  ·  INP02 Opex Plan  ·  INP03 Cost Drivers
+CAL modules:  CAL01 Revenue · CAL02 Cost · CAL03 Currency Conversion · CAL04 P&L Build
 DAT module:   DAT01 Actuals (import landing zone)
-OUT module:   OUT01 P&L Report  →  UX page "P&L — Plan vs Actual"
+OUT module:   OUT01 P&L Statement  →  UX page "P&L — Plan vs Actual"
 ```
 
 This is the **DISCO** pattern end-to-end (Data → Inputs → System → Calculations → Outputs).
@@ -50,9 +53,9 @@ See [`docs/03-methodology/disco.md`](../docs/03-methodology/disco.md).
 | --- | --- | --- | --- |
 | 1 | [Set up the model & lists](01-set-up-model-and-lists.md) | — | Workspace, model, Organization hierarchy, Product list |
 | 2 | [Time & Versions](02-time-and-versions.md) | — | Model calendar, the native Versions list |
-| 3 | [System modules](03-system-modules.md) | **S** | SYS Time Settings + mapping/attribute modules |
-| 4 | [Input modules](04-input-modules.md) | **I** | Volume, price, cost-driver assumptions |
-| 5 | [Calculation modules](05-calculation-modules.md) | **C** | Revenue = volume × price, costs, the P&L roll-up |
+| 3 | [System modules](03-system-modules.md) | **S** | Time settings, org/account mappings, FX rates |
+| 4 | [Input modules](04-input-modules.md) | **I** | Volume, price, opex, cost-driver assumptions |
+| 5 | [Calculation modules](05-calculation-modules.md) | **C** | Revenue = volume × price, cost, local→USD, P&L build |
 | 6 | [Outputs & dashboard](06-outputs-and-dashboard.md) | **O** | An Outputs module + a UX page |
 | 7 | [Import actuals](07-import-actuals.md) | **D** | A saved view, an import action, mapping |
 | 8 | [Review against PLANS](08-review-against-plans.md) | all | Walk the model-build checklist; refactor |

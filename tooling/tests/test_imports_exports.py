@@ -12,6 +12,7 @@ from .conftest import API_BASE, MODEL_ID, WORKSPACE_ID
 
 FILE_BASE = f"{API_BASE}/workspaces/{WORKSPACE_ID}/models/{MODEL_ID}/files"
 IMPORT_BASE = f"{API_BASE}/workspaces/{WORKSPACE_ID}/models/{MODEL_ID}/imports"
+ACTION_BASE = f"{API_BASE}/workspaces/{WORKSPACE_ID}/models/{MODEL_ID}/actions"
 
 
 @responses.activate
@@ -59,6 +60,28 @@ def test_run_action_and_wait_polls_to_complete(client: AnaplanClient) -> None:
     assert status["result"]["successful"] is True
     # POST start + 2 GET polls.
     assert len(responses.calls) == 3
+
+
+@responses.activate
+def test_run_generic_action_uses_actions_resource(client: AnaplanClient) -> None:
+    # A generic action (e.g. delete-from-list) runs against the /actions path
+    # and reuses the same start-then-poll lifecycle.
+    action_id = "act1"
+    tasks_url = f"{ACTION_BASE}/{action_id}/tasks"
+    responses.add(responses.POST, tasks_url, json={"task": {"taskId": "ta1"}})
+    responses.add(
+        responses.GET,
+        f"{tasks_url}/ta1",
+        json={"task": {"taskState": "COMPLETE", "result": {"successful": True}}},
+    )
+
+    status = client.run_generic_action(
+        WORKSPACE_ID, MODEL_ID, action_id, poll_interval=0
+    )
+    assert status["taskState"] == "COMPLETE"
+    assert status["result"]["successful"] is True
+    # The task was started against the /actions resource, not /imports.
+    assert responses.calls[0].request.url == tasks_url
 
 
 @responses.activate

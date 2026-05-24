@@ -52,7 +52,7 @@ Combine status with an "open period" rule so closed months also lock (reuse `Is 
 ```
 // SYS80 DCA Drivers -> Writable?  (status AND period open)
 (Status = Status.Draft OR Status = Status.Rejected)
-AND NOT SYS00 Time Settings.Is Actual?
+AND NOT SYS01 Time Settings.Is Actual?
 ```
 
 Then in the **target module's** Blueprint, assign the driver line items to Read Access / Write Access. DCA is configured in the UI — the *logic* is the Boolean, the *wiring* is the access assignment.

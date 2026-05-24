@@ -32,10 +32,9 @@ Project NPV = NPV(Discount Rate, Net Cash Flow)
 Discounts the `Net Cash Flow` series back to a present value at `Discount Rate`.
 
 **Watch out for**
-- There are **two syntaxes** (time-series vs. date/value pairs); the one that applies depends on
-  the arguments you supply — confirm which you want in Anapedia.
+- There are **two syntaxes** (time-series vs. date/value pairs); which one applies is determined by
+  whether you pass more or fewer than two arguments.
 - The rate must match the cash-flow **period** (a monthly series needs a monthly rate).
-- Confirm exact arguments in Anapedia for your engine.
 
 **Source:** https://help.anaplan.com/npv-d2331d84-a431-4179-8c82-9846f0c453d0
 
@@ -59,11 +58,11 @@ Project IRR = IRR(Net Cash Flow)
 ```
 
 **Watch out for**
-- Like `NPV`, `IRR` has two forms distinguished by **how many arguments** you pass — using more or
-  fewer than two arguments selects the form. Confirm which you intend.
+- Like `NPV`, `IRR` has two forms distinguished by **how many arguments** you pass — more or fewer
+  than two arguments selects the form. The date/value-pairs form is the equivalent of Excel's
+  `XIRR`.
 - IRR needs at least one sign change in the cash flows (an outflow then inflows) to have a solution;
   unusual flows can yield no/odd results.
-- Confirm exact arguments in Anapedia for your engine.
 
 **Source:** https://help.anaplan.com/irr-3e65abd3-a8d8-4cb7-af34-937232ae79c5
 
@@ -115,7 +114,6 @@ Total interest paid across months 1–12.
 **Watch out for**
 - Same rate/period unit-matching rule as `PMT`.
 - `Start period` / `End period` are **period numbers** within the loan, not dates.
-- Confirm exact arguments in Anapedia for your engine.
 
 **Source:** https://help.anaplan.com/2f6eca23-c0b6-4b4b-a68c-1def28d2dab6
 

@@ -30,32 +30,51 @@ Why idiomatic:
 | --- | --- | --- | --- | --- |
 | Annual Target | Number | Sum | Region | *(input)* |
 
+**`CAL30 Region Totals`** — `Applies To` **Region** (the denominator grain, one row per region):
+
+| Line Item | Format | Summary | Applies To | Formula |
+| --- | --- | --- | --- | --- |
+| Total Mix (region) | Number | Sum | Region | `CAL30 Breakback.Seed Mix` *(Product & Month dimensions drop, so it sums to the region total)* |
+
 **`CAL30 Breakback`** — `Applies To` Region × Product × Month:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Seed Mix | Number | Sum | Region, Product, Month | `OUT_PY.Revenue` *(or a typed mix)* |
-| Total Mix | Number | Sum | Region, Product, Month | `Seed Mix[SUM: ...]` rolled to Region |
-| Ratio | Number | None | Region, Product, Month | `IF Total Mix = 0 THEN 0 ELSE Seed Mix / Total Mix` |
+| Total Mix (at detail) | Number | None | Region, Product, Month | `CAL30 Region Totals.Total Mix (region)` *(broadcast back to each Product × Month)* |
+| Ratio | Number | None | Region, Product, Month | `IF Total Mix (at detail) = 0 THEN 0 ELSE Seed Mix / Total Mix (at detail)` |
+| Target | Number | None | Region, Product, Month | `INP10 Region Target.Annual Target` *(broadcast from the region grain)* |
 | Spread Detail | Number | Sum | Region, Product, Month | `Target × Ratio` |
-| Target | Number | Sum | Region, Product, Month | `INP10 Region Target.Annual Target` |
 
 ## Formula(s)
-Build the ratio from a seed mix (prior year, or a manually maintained percentage):
+Sum the seed mix to the region grain, then broadcast it back so every detail cell divides by the **same** region denominator. `CAL30 Region Totals` has neither Product nor Month, so referencing `Seed Mix` into it sums those dimensions away; referencing the region total back into the detail module repeats it across every Product × Month:
+
+```
+// CAL30 Region Totals -> Total Mix (region)   (Applies To Region)
+CAL30 Breakback.Seed Mix
+
+// CAL30 Breakback -> Total Mix (at detail)   (region total, repeated across detail)
+CAL30 Region Totals.Total Mix (region)
+```
+
+Build the ratio (numerator and denominator now both at the detail grain), guarding the divide:
 
 ```
 // CAL30 Breakback -> Ratio
-IF Total Mix = 0 THEN 0 ELSE Seed Mix / Total Mix
+IF Total Mix (at detail) = 0 THEN 0 ELSE Seed Mix / Total Mix (at detail)
 ```
 
-Bring the typed total down to every detail cell, then spread:
+Bring the typed total down to every detail cell (it broadcasts from the region grain), then spread:
 
 ```
+// CAL30 Breakback -> Target
+INP10 Region Target.Annual Target
+
 // CAL30 Breakback -> Spread Detail
-INP10 Region Target.Annual Target * Ratio
+Target * Ratio
 ```
 
-`Total Mix` is the region-level sum of `Seed Mix`, available at each detail cell so every detail divides by the same denominator.
+Because every detail divides its own seed mix by the same region total, the ratios sum to 1 within a region and `Spread Detail` re-sums to the typed `Annual Target`.
 
 ## Pitfalls / gotchas
 - **Don't make a summary cell editable in a calc module and expect spread** — that's the native grid Breakback toggle, only available on input modules/grids and easily confused. For repeatable logic, use this explicit total × ratio model.

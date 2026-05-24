@@ -4,8 +4,9 @@ Run::
 
     python examples/run_export.py <exportId> <fileId> <output/path.csv>
 
-Needs a real Anaplan tenant + credentials. The export's ``fileId`` is usually
-the same as the export action's ID; confirm via client.list_files / list_exports.
+Needs a real Anaplan tenant + credentials. The ``fileId`` is the file the
+export *produces* — it is not reliably the same as the export action's ID, so
+look it up (e.g. via client.list_files / list_exports) rather than assuming.
 """
 
 from __future__ import annotations
