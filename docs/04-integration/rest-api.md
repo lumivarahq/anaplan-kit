@@ -2,12 +2,20 @@
 
 > **Level:** L3 · **Area:** Integration · **PLANS:** Sustainable
 
-The **Anaplan REST API v2** (the *Integration API v2.0*) is the programmatic way to do
-everything the runners do — upload files, run [actions and processes](actions-and-processes.md),
-download exports — from **your own code**. [Anaplan Connect](anaplan-connect.md) and
-[CloudWorks](cloudworks.md) both call this API under the hood. This kit's
-[`tooling/`](../../tooling/) package is a Python client for exactly this API, so read this
-page conceptually and see the tooling for runnable code.
+This page documents the **REST API v2 (Bulk API)** — the *Integration API v2.0*. It is the
+programmatic way to do everything the runners do — upload files, run
+[actions and processes](actions-and-processes.md), download exports — from **your own code**.
+[Anaplan Connect](anaplan-connect.md) and [CloudWorks](cloudworks.md) both call this API under
+the hood. This kit's [`tooling/`](../../tooling/) package is a Python client for exactly this
+API, so read this page conceptually and see the tooling for runnable code.
+
+> **Bulk vs Transactional.** This is the **Bulk API**: batch file loads and exports, run as
+> asynchronous tasks — the right tool for moving *volumes* of data. Anaplan also exposes a
+> separate **Transactional API** for **cell-level, real-time reads and writes** (read/update
+> a handful of cells in a view, list members, model metadata) without the file-and-task
+> machinery. Pick **per use case**: bulk loads → this API; small real-time reads/writes →
+> Transactional. See [platform strategy → which API?](../10-field-guide/platform-strategy.md)
+> for the decision framing.
 
 > The base URLs you'll see are `https://auth.anaplan.com` (login) and
 > `https://api.anaplan.com/2/0/...` (everything else). Confirm current endpoints in the
@@ -15,7 +23,8 @@ page conceptually and see the tooling for runnable code.
 
 ## Authentication
 
-Every call needs a short-lived **bearer token**. You obtain it one of two ways:
+Every call needs a short-lived **auth token** (sent as `AnaplanAuthToken`, **not** `Bearer`).
+You obtain it one of two ways:
 
 | Method | How | Use when |
 | --- | --- | --- |
@@ -24,9 +33,28 @@ Every call needs a short-lived **bearer token**. You obtain it one of two ways:
 
 The flow is the same afterwards:
 
-1. Authenticate → receive an **access token** (valid ~30 minutes).
-2. Send the token as `Authorization: Bearer <token>` on every API call.
+1. Authenticate → receive an **auth token** (valid ~30 minutes).
+2. Send the token as `Authorization: AnaplanAuthToken <token>` on every API call.
 3. **Refresh** the token before it expires for long-running jobs.
+
+A concrete example (basic auth):
+
+```
+POST https://auth.anaplan.com/token/authenticate
+Authorization: Basic base64(email:password)
+→ 200 { "tokenInfo": { "tokenValue": "<token>", "expiresAt": 1700000000000 } }
+```
+
+Then on every Bulk API call to `https://api.anaplan.com/2/0/...`:
+
+```
+GET https://api.anaplan.com/2/0/workspaces
+Authorization: AnaplanAuthToken <token>
+```
+
+> **The header scheme is `AnaplanAuthToken`, not `Bearer`** — a common copy-paste mistake.
+> This kit's [`tooling/anaplan_kit/auth.py`](../../tooling/anaplan_kit/auth.py) sends exactly
+> this header.
 
 > **Prefer certificate auth in production.** *(Sustainable + security.)* See
 > [security & ALM](../06-security-alm/README.md) for the wider access model.
@@ -75,9 +103,15 @@ Running an action is **asynchronous**: you start a *task*, then poll it until it
 
 ```
 POST   /imports/{importId}/tasks                 → { taskId }
-GET    /imports/{importId}/tasks/{taskId}         → { state: "IN_PROGRESS" | "COMPLETE", result }
-(poll until COMPLETE; then fetch the failure dump if any rows failed)
+GET    /imports/{importId}/tasks/{taskId}         → { taskState, progress, currentStep, result }
+(poll until taskState == COMPLETE; then check result.successful and fetch the failure dump)
 ```
+
+The task state isn't just `IN_PROGRESS` / `COMPLETE`: while running, the task reports
+**`progress`** (often a fraction 0–1) and a **`currentStep`** label you can show or log. When
+`taskState` reaches `COMPLETE`, that only means the task *finished* — you must still check the
+**`result.successful`** flag, because a task can complete *unsuccessfully* (e.g. all rows
+rejected). Treat `successful == false` as a failure and read the dump.
 
 A **process** works the same way via `/processes/{processId}/tasks`, and its result rolls up
 each contained action's outcome.
