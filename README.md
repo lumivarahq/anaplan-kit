@@ -59,7 +59,8 @@ anaplan-kit/
 │   ├── 06-security-alm/    roles, selective access, DCA, ALM (dev/test/prod)
 │   ├── 07-performance/     sparsity, time ranges, subsets, optimization checklist
 │   ├── 08-advanced-features/ data hub architecture, Optimizer, PlanIQ, Workflow, Excel/PPT add-ins
-│   └── 09-troubleshooting/ common errors & fixes, reconciliation/control totals, testing & UAT, model size
+│   ├── 09-troubleshooting/ common errors & fixes, reconciliation/control totals, testing & UAT, model size
+│   └── 10-field-guide/     real-world anti-patterns → fixes, engineering discipline, platform-aware decisions
 ├── blueprints/             worked models — shared _common backbone + FP&A / Sales / Supply Chain / Workforce
 ├── tutorials/              build the FP&A model end-to-end, step by step
 ├── exercises/              practice problems + solutions (incl. an L3 capstone)

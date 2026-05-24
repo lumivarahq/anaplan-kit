@@ -42,6 +42,16 @@ the Anapedia page for that function, and the per-function source URL is listed t
 - Anaplan Community / Academy best practices — https://community.anaplan.com/
 - PLANS modeling standard & DISCO — Anaplan best-practice materials (Academy / Community).
 
+### Calculation engines, performance diagnostics & ALM (field guide)
+- Anaplan calculation engines (Classic vs Polaris) — https://help.anaplan.com/anaplan-calculation-engines-06c06ade-2807-4f3d-9a6e-d69ae0e257e5
+- Polaris calculation engine — https://help.anaplan.com/polaris-calculation-engine-8b466778-42b2-4e35-b318-e5e4128b63b7
+- Understand sparsity and density — https://help.anaplan.com/understand-sparsity-and-density-616ee341-8a5f-4718-8c90-c82e34eca86c
+- How ALM supports the development lifecycle — https://help.anaplan.com/how-application-lifecycle-management-supports-the-development-lifecycle-aa369576-4135-4a3e-8636-1a942c28feaa
+- Work with revision tags — https://help.anaplan.com/work-with-revision-tags-d9c92d0c-9b5b-4428-8c81-d023a0fe2d1c
+- Considerations when you enable Deployed mode — https://help.anaplan.com/considerations-when-you-enable-deployed-mode-5dea12f4-57c4-4b57-a2cb-97bdfe5d007e
+- Optimize time calculation performance — https://help.anaplan.com/5ebdaed1-bc59-45a8-a1f4-33f0c97518d7
+- OEG Best Practice: Anaplan Performance Triangle (Community) — https://community.anaplan.com/discussion/140709/oeg-best-practice-anaplan-performance-triangle
+
 ### REST API & integration
 - Anaplan REST API & integration docs — https://help.anaplan.com/ (Data Integrations section)
 - Anaplan Connect — https://help.anaplan.com/ (Anaplan Connect section)
