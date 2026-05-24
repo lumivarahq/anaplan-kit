@@ -38,7 +38,7 @@ Revenue = IF Time = Apr 2026 THEN Volume * Price * 1.05 ELSE Volume * Price
 ```
 
 **V2 (L2).** A single module `Everything` holds: imported actuals, planners' typed volume, the
-Entity→Region mapping, `Revenue = Volume × Price`, **and** the dashboard view — all in one grid.
+Cost Centre→Region mapping, `Revenue = Volume × Price`, **and** the dashboard view — all in one grid.
 
 **V3 (L2).** `CAL` module:
 ```
@@ -47,10 +47,10 @@ Net Margin %  = ((Volume * Price) - (Volume * Price * COGS %)) / (Volume * Price
 ```
 (`Volume * Price` and the gross-profit expression are each written out multiple times.)
 
-**V4 (L2).** A reporting module is dimensioned `Entity × Product × Customer × SKU × Day × Versions`
-with 40 line items, even though the report only ever shows monthly revenue by Region.
+**V4 (L2).** A reporting module is dimensioned `L3 Cost Centre × L2 Product × Customer × SKU × Day ×
+Versions` with 40 line items, even though the report only ever shows monthly revenue by Region.
 
-**V5 (L2).** To pull UK numbers, a formula uses `SELECT: Entity.UK` in several places; to add
+**V5 (L2).** To pull UK numbers, a formula uses `SELECT: L2 Country.UK` in several places; to add
 Germany next quarter someone will copy-paste and edit each one.
 
 **V6 (L2).** There are three line items — `Rev`, `Revenue v2`, `Revenue_OLD` — two left over from

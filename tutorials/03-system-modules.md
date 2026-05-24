@@ -4,10 +4,10 @@
 
 **System modules** are the quiet backbone. They hold time attributes, mappings between lists, and
 Boolean flags — built **once**, referenced **everywhere**. Putting this logic here (not inside
-calculations) is what makes a model *sustainable*: change a flag in one place and the whole model
-follows. See [DISCO](../docs/03-methodology/disco.md).
+calculations) is what makes a model *sustainable*. See [DISCO](../docs/03-methodology/disco.md).
 
-We'll build three: a time-settings module and two attribute/mapping modules.
+We'll build four, matching the blueprint's `SYS01`–`SYS04`: a time-settings module, the organization
+and account attribute modules, and an exchange-rates module for currency conversion.
 
 ---
 
@@ -23,76 +23,99 @@ Versions).
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| `Month Start Date` | Date | None | Time | `START()` |
-| `Is Actual Month?` | Boolean | None | Time | `Month Start Date < START()` evaluated vs current period — see note |
-| `Period Name` | Text | None | Time | `NAME(ITEM(Time))` |
+| `Period Index` | Number | None | Time | `CUMULATE(1)` *(a 1, 2, 3… counter for ordering / offsets)* |
+| `Period Start Date` | Date | None | Time | `START()` |
+| `Is Actual?` | Boolean | None | Time | `START() <= CURRENTPERIODSTART()` — see note |
 
-> **`Is Actual Month?` the sustainable way.** Don't hard-code `IF Time = Apr 26`. Compare the
-> period to the **current period** so it self-updates every month:
+> **`Is Actual?` the sustainable way.** Don't hard-code `IF Time = Mar 25`. Compare each period's
+> **start date** to the current period so the flag self-updates every month:
 >
 > ```
-> Is Actual Month?  =  START() < START(CURRENTPERIODSTART())
+> Is Actual?  =  START() <= CURRENTPERIODSTART()
 > ```
 >
-> If your platform exposes the current period differently, the robust idiom is to compare
-> `START()` against a single-celled "Cut-off Date" input. Either way the date lives in **one place**
-> (Sustainable, Planual). We'll reuse `Is Actual Month?` to blend actuals and forecast in Step 5.
+> `CURRENTPERIODSTART()` returns the **date** the current period begins, and `START()` returns each
+> period's start **date** — so both sides are dates and the comparison is valid. (Don't wrap it as
+> `START(CURRENTPERIODSTART())` — `START()` takes a period, not a date.) The cut-over lives in
+> **one place** (the model's Current Period), so a roll to a new year needs no edit. We'll reuse
+> `Is Actual?` to blend actuals and forecast in Step 5.
 
 ---
 
-## 3.2 SYS02 Product Details
+## 3.2 SYS02 Organization Details (org attributes + mapping)
 
-Attributes of each product live here, not on the calc modules. **Applies To:** *Product*.
+Each cost centre's attributes and mappings live here — its country, region and **local currency** —
+so other modules read them instead of hard-coding. **Applies To:** *L3 Cost Centre*.
 
 **Blueprint:**
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| `Product Type` | List: `Product Type` (or Text) | None | Product | *(input)* |
-| `Is Active?` | Boolean | None | Product | *(input)* |
-| `COGS %` | Number (%) | None | Product | *(input — default cost ratio)* |
+| `Country` | List: `L2 Country` | None | L3 Cost Centre | `PARENT(ITEM(L3 Cost Centre))` |
+| `Region` | List: `L1 Region` | None | L3 Cost Centre | `PARENT(Country)` |
+| `Local Currency` | List: `Currency` | None | L3 Cost Centre | *(input — e.g. UK cost centres → GBP, US → USD, India → INR)* |
+| `Is Active?` | Boolean | None | L3 Cost Centre | *(input, default TRUE)* |
 
-Set `Is Active?` = TRUE for all three products and a sensible `COGS %` (e.g. Widget A/B 60%,
-Service Plan 20%). These become drivers our cost calc reads.
+`Country`/`Region` are computed with `PARENT()` so they always match the hierarchy — no manual
+upkeep. `Local Currency` is the key the FX conversion looks up in Step 5. These are **mappings** you
+`LOOKUP`/`SUM` against later instead of `SELECT`.
 
-> **Why a System module and not Inputs?** These are **structural attributes** of the product
-> (rarely changed, set by the builder/admin), not planning assumptions planners tweak each cycle.
-> The volume/price *assumptions* go in an **Inputs** module in [Step 4](04-input-modules.md).
+> We climb the hierarchy with `PARENT()` (the leaf's parent, then its parent) — never `ANCESTOR()` or
+> `CHILDREN()`. A `PARENT` chain is explicit and auditable.
 
 ---
 
-## 3.3 SYS03 Org Details (a mapping module)
+## 3.3 SYS03 Account Details (account classification)
 
-A **mapping module** translates one list to another or stores hierarchy attributes. Here we store
-a reporting attribute and (illustratively) a currency per entity for later FX work.
-
-**Applies To:** *Entity*.
+The chart of accounts needs a little classification so the P&L build (Step 5) can post and total
+correctly. **Applies To:** *L3 P&L Account*.
 
 **Blueprint:**
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| `Region` | List: `Region` | None | Entity | `PARENT(ITEM(Entity))` |
-| `Local Currency` | List: `Currency` *(optional)* | None | Entity | *(input)* |
-| `Is Reporting Entity?` | Boolean | None | Entity | *(input, default TRUE)* |
-
-The `Region` line item is computed with `PARENT()` so it always matches the hierarchy — no manual
-upkeep. This is a **mapping** you can `LOOKUP`/`SUM` against later instead of `SELECT`.
-
-> If you skip Currency for now, that's fine — it's shown to illustrate where FX rates would map.
-> Keep the module focused: don't add line items "just in case" (**Necessary**, PLANS).
+| `Account Group` | List: `L2 P&L Group` | None | L3 P&L Account | `PARENT(ITEM(L3 P&L Account))` |
+| `Sign` | Number | None | L3 P&L Account | *(input — `+1` revenue, `-1` cost)* |
+| `Is Revenue?` | Boolean | None | L3 P&L Account | `Account Group = L2 P&L Group.Revenue` |
 
 ---
 
-## 3.4 Sanity check
+## 3.4 SYS04 Exchange Rates (FX)
 
-- [ ] `SYS01 Time Settings` applies to **Time only** and has `Is Actual Month?` driven from the
-      current period (no hard-coded date).
-- [ ] `SYS02 Product Details` holds product attributes (`Is Active?`, `COGS %`).
-- [ ] `SYS03 Org Details` derives `Region` via `PARENT()`.
+A System module holding the rate from each currency **to the group currency (USD)**, by month and
+version (rates differ Actual vs Budget vs Forecast). Conversions read this — never a hard-coded rate.
+
+**Applies To:** *Currency × Time × Versions*.
+
+**Blueprint:**
+
+| Line Item | Format | Summary | Applies To | Formula |
+| --- | --- | --- | --- | --- |
+| `Rate to USD` | Number (4 dp) | None | Currency × Time × Versions | *(input — units of USD per 1 unit local)* |
+| `Is Group Currency?` | Boolean | None | Currency | `ITEM(Currency) = Currency.USD` |
+| `Rate (filled)` | Number (4 dp) | None | Currency × Time × Versions | `IF Is Group Currency? THEN 1 ELSE Rate to USD` |
+
+Enter a couple of rates (e.g. `GBP → 1.27`, `INR → 0.012`). `Rate (filled)` returns `1` for USD so
+USD cost centres pass through unchanged. Step 5's CAL03 looks this up by each cost centre's
+`Local Currency`.
+
+> **Where's COGS %?** It is **not** here. A product's cost ratio is a driver planners tune each cycle,
+> so it lives in an **Inputs** module (`INP03 Cost Drivers`) in [Step 4](04-input-modules.md), not
+> in System. System is for stable mappings/flags only.
+
+---
+
+## 3.5 Sanity check
+
+- [ ] `SYS01 Time Settings` applies to **Time only** and has `Is Actual?` driven from the current
+      period (no hard-coded date; both sides of the comparison are dates).
+- [ ] `SYS02 Organization Details` derives `Country`/`Region` via `PARENT()` and holds
+      `Local Currency`.
+- [ ] `SYS03 Account Details` derives `Account Group` via `PARENT()` and holds `Sign`.
+- [ ] `SYS04 Exchange Rates` holds `Rate to USD` with a `Rate (filled)` that returns 1 for USD.
 - [ ] None of these modules contain business *calculations* — only attributes, flags, mappings.
 
-> **DISCO check:** all three are pure **System**. If you ever feel tempted to put
+> **DISCO check:** all four are pure **System**. If you ever feel tempted to put
 > `Revenue = …` here, stop — that belongs in a **Calculations** module (Step 5).
 
 ---

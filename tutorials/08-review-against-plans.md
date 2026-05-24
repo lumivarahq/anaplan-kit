@@ -14,44 +14,47 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
 ## 8.1 Walk the checklist
 
 ### Structure (DISCO)
-- [x] Every module is **one** DISCO type — `DAT01` (Data), `INP01/02` (Inputs),
-      `SYS01/02/03` (System), `CAL01/02/03` (Calculations), `OUT01` (Outputs).
-- [x] Mappings/attributes live in System (`SYS02 COGS %`, `SYS03 Region`), not in calcs.
+- [x] Every module is **one** DISCO type — `DAT01` (Data), `INP01/02/03` (Inputs),
+      `SYS01/02/03/04` (System), `CAL01/02/03/04` (Calculations), `OUT01` (Outputs).
+- [x] Mappings/attributes live in System (`SYS02 Region/Local Currency`, `SYS03 Sign`), not in calcs;
+      tunable drivers (`COGS %`) live in Inputs (`INP03`).
 - [x] Data flows one way: `DAT/INP → SYS → CAL → OUT`. No circular references.
 - [x] Naming follows `DAT/INP/SYS/CAL/OUT` + numbering (see
       [naming conventions](../templates/naming-conventions.md)).
 
 ### Performance (P)
 - [ ] **Apply Time Ranges.** `INP01/INP02` only need the plan years — give them a Time Range of
-      `FY26` (or `FY26–FY27`) instead of the full `FY25–FY27` calendar. `DAT01` only needs actual
+      `FY25` (or `FY25–FY26`) instead of the full `FY24–FY26` calendar. `DAT01` only needs actual
       months. This is the single biggest size lever. See
       [time ranges](../docs/07-performance/time-ranges.md).
-- [x] No module is dimensioned by a list it doesn't need (`INP02` deliberately has no Product).
+- [x] No module is dimensioned by a list it doesn't need (`INP02` deliberately has no Product;
+      `INP03 COGS %` is Product-only).
 - [ ] **Subsets:** if only some products are ever planned, give `INP01` a Product *subset* rather
       than the whole list.
 - [x] No heavy `IF` over huge cell counts — the actual/forecast switch keys off a **Boolean**
-      (`SYS01.Is Actual Month?`), not a text/date comparison repeated everywhere.
-- [x] Sub-expressions computed once (`Gross Revenue` is referenced, not re-derived in COGS).
+      (`SYS01.Is Actual?`), not a text/date comparison repeated everywhere.
+- [x] Sub-expressions computed once (`Gross Revenue (local)` is referenced, not re-derived in COGS).
 
 ### Logical & Auditable (L, A)
-- [x] Logic is **stepped**: `Volume → Price → Gross Revenue`; `Revenue → COGS → Gross Profit →
-      EBITDA`. Each line readable.
-- [x] Names describe meaning (`Gross Revenue`, `EBITDA Margin %` — not `R1`, `X2`).
-- [x] Summaries set deliberately — `Price`/`COGS %`/`Margin %` = **Average**, amounts = **Sum**.
-- [x] A reviewer can trace `EBITDA` back to `Volume × Price`.
+- [x] Logic is **stepped**: `Volume → Price (local) → Gross Revenue (local)`; `Revenue → COGS →
+      Gross Profit → EBITDA`. Each line readable.
+- [x] Names describe meaning (`Gross Revenue (local)`, `EBITDA Margin %` — not `R1`, `X2`).
+- [x] Summaries set deliberately — `Price (local)`/`COGS %` = **Average**, `Margin %` = **Formula**,
+      amounts = **Sum**.
+- [x] A reviewer can trace `EBITDA` back to `Volume × Price`, including the FX conversion in `CAL03`.
 
 ### Necessary (N)
-- [ ] **Prune optional drivers.** Did you keep `Price Growth %`, `Headcount`, `Cost per Head` from
-      Steps 3–4 without using them? If nothing references them, **delete them** — unused line items
-      still cost memory and confuse readers.
-- [x] No duplicate calculations (COGS % defined once in SYS02).
-- [x] `OUT01` adds no new logic beyond display ratios.
+- [x] No optional "just in case" line items left behind — `INP01`/`INP02`/`INP03` hold only the
+      drivers the model uses.
+- [x] No duplicate calculations (`COGS %` defined once in `INP03`; FX rate looked up once in `CAL03`).
+- [x] `OUT01` adds no new logic beyond a display ratio.
 
 ### Sustainable (S)
-- [x] **No hard-coded** dates/periods — the switchover reads `SYS01.Is Actual Month?` and the
-      current period, so a roll to FY27 needs no formula edits.
-- [x] No `SELECT` on specific list items — `PARENT()`/mappings used instead (`SYS03.Region`).
-- [x] Adding a new product/entity/month needs **no formula changes** (they inherit structure).
+- [x] **No hard-coded** dates/periods — the switchover reads `SYS01.Is Actual?` and the current
+      period, so a roll to FY27 needs no formula edits.
+- [x] **No hard-coded FX rate** — `CAL03` looks the rate up from `SYS04` by `Local Currency`.
+- [x] No `SELECT` on specific list items — `PARENT()`/mappings used instead (`SYS02.Region`).
+- [x] Adding a new product/cost centre/month needs **no formula changes** (they inherit structure).
 - [ ] **Data Hub (L2/L3):** in a real landscape, actuals would come from a shared **data hub**, not
       a per-model CSV. Note this as the next architectural step. See
       [integration docs](../docs/04-integration/).
@@ -73,8 +76,8 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
 | # | Refactor | PLANS | Effort |
 | --- | --- | --- | --- |
 | 1 | Apply **Time Ranges** to `INP01`, `INP02`, `DAT01`. | Performance | Low |
-| 2 | **Delete unused** optional line items (`Price Growth %`, `Headcount`…) if not wired in. | Necessary | Low |
-| 3 | Add **line-item descriptions** for COGS %, switchover, margin. | Auditable | Low |
+| 2 | Add **line-item descriptions** for COGS %, FX lookup, switchover, margin. | Auditable | Low |
+| 3 | Build the **full account-hierarchy P&L** (map USD amounts onto `L3 P&L Account` via `SYS03`, as the [blueprint](../blueprints/fpa-pl-planning/) does) so subtotals roll up for free. | Logical | Med |
 | 4 | Add a **Product subset** to `INP01` if only some products are planned. | Performance | Med |
 | 5 | Move actuals to a **data hub** feed (saved view import) for a real landscape. | Sustainable | High |
 | 6 | Put the model under **ALM** (DEV → TEST → PROD via revisions). | Sustainable | High |
@@ -87,14 +90,17 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
 
 ## 8.3 You're done — what you built
 
-A complete FP&A model: an Organization hierarchy and Product list, a model calendar with three
-versions, the System backbone, planning inputs, a stepped calculation engine producing a P&L,
-loaded actuals blended with forecast, and a UX page reporting Plan vs Actual — all following
+A complete FP&A model: the Organization, Product and P&L Account hierarchies plus a Currency list, a
+model calendar with three versions, the `SYS01–04` System backbone, planning inputs, a stepped
+calculation engine that derives revenue and cost, **converts local amounts to USD**, and builds a
+P&L, loaded actuals blended with forecast, and a UX page reporting Plan vs Actual — all following
 **DISCO** and reviewable against **PLANS**.
 
 Compare your build to the finished reference:
-[`blueprints/fpa-pl-planning/`](../blueprints/fpa-pl-planning/). Then test yourself with the
-[exercises](../exercises/) and the [L3 capstone](../exercises/capstone-l3.md).
+[`blueprints/fpa-pl-planning/`](../blueprints/fpa-pl-planning/). It uses the **same list and module
+names** you built here; where it goes further (the full `L3 P&L Account` roll-up in `CAL04`), that's
+the next refactor above. Then test yourself with the [exercises](../exercises/) and the
+[L3 capstone](../exercises/capstone-l3.md).
 
 ---
 

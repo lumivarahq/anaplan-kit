@@ -7,7 +7,8 @@ matching **worked solution** in [`solutions/`](solutions/) — try the exercise 
 
 Everything here uses the same canonical **FP&A revenue → P&L** model as the
 [tutorials](../tutorials/) and [blueprints](../blueprints/fpa-pl-planning/), so the lists
-(`Region`/`Entity`, `Product`), modules (`SYS/INP/CAL/OUT`) and conventions will already be familiar.
+(`L1 Region › L2 Country › L3 Cost Centre`, `L1 Product Family › L2 Product`), modules
+(`SYS/INP/CAL/OUT`) and conventions will already be familiar.
 
 ---
 

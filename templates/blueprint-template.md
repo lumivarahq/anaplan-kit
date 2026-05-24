@@ -26,8 +26,9 @@ One row per list. For a hierarchy, list the levels top → leaf (`L1`, `L2`, `L3
 | List | Type | Parent | Top Level | Members (sample) | Notes |
 | --- | --- | --- | --- | --- | --- |
 | `L1 Region` | Standard | — | Total Org | EMEA, Americas, APAC | Top roll-up |
-| `L2 Entity` | Standard | `L1 Region` | — | UK, Germany, USA | Planning grain |
-| `Product` | Standard | — | All Products | Widget A, Widget B, Service Plan | Revenue grain |
+| `L2 Country` | Standard | `L1 Region` | — | UK, Germany, USA | Holds local currency |
+| `L3 Cost Centre` | Standard | `L2 Country` | — | CC-1100 UK Sales, CC-3100 US Sales | Planning grain (leaf) |
+| `L2 Product` | Standard | `L1 Product Family` | — | Sensor A, Sensor B, Support Plan | Revenue grain |
 
 ---
 
@@ -46,13 +47,13 @@ One **blueprint table per module**. Head it with the module's name, its **DISCO 
 
 **Example (filled):**
 
-**Module:** `CAL01 Revenue` · **DISCO:** Calculations · **Applies To:** Entity × Product × Time × Versions
+**Module:** `CAL01 Revenue` · **DISCO:** Calculations · **Applies To:** L3 Cost Centre × L2 Product × Time × Versions
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| `Volume` | Number | Sum | Entity, Product, Time, Versions | `'INP01 Revenue Assumptions'.Volume` |
-| `Price` | Number | Average | Entity, Product, Time, Versions | `'INP01 Revenue Assumptions'.Price` |
-| `Gross Revenue` | Number | Sum | Entity, Product, Time, Versions | `Volume * Price` |
+| `Volume` | Number | Sum | L3 Cost Centre, L2 Product, Time, Versions | `'INP01 Revenue Assumptions'.Volume` |
+| `Price (local)` | Number | Average | L3 Cost Centre, L2 Product, Time, Versions | `'INP01 Revenue Assumptions'.Price (local)` |
+| `Gross Revenue (local)` | Number | Sum | L3 Cost Centre, L2 Product, Time, Versions | `Volume * Price (local)` |
 
 **Field cheat sheet:**
 
@@ -80,8 +81,8 @@ When you list several modules together, one line each:
 | Module | DISCO | Applies To | Purpose |
 | --- | --- | --- | --- |
 | `SYS01 Time Settings` | System | Time | Per-period flags & dates |
-| `INP01 Revenue Assumptions` | Inputs | Entity × Product × Time × Versions | Volume & price planning |
-| `CAL03 P&L` | Calculations | Entity × Time × Versions | Revenue → EBITDA roll-up |
+| `INP01 Revenue Assumptions` | Inputs | L3 Cost Centre × L2 Product × Time × Versions | Volume & price planning |
+| `CAL04 P&L Build` | Calculations | L3 Cost Centre × L3 P&L Account × Time × Versions | Map USD amounts onto accounts |
 
 ---
 
@@ -92,9 +93,9 @@ A quick text diagram of how modules feed each other — paste at the top of a mo
 ```
 INP01 Revenue Assumptions ─┐
                            ├─> CAL01 Revenue ─┐
-SYS02 Product Details ─────┘                  ├─> CAL03 P&L ─> OUT01 P&L Report ─> UX page
-INP02 Cost Drivers ───────────> CAL02 Costs ──┘        ▲
-DAT01 Actuals ────────────────────────────────────────┘ (blended via SYS01.Is Actual Month?)
+INP03 Cost Drivers ────────┘                  ├─> CAL03 Currency Conversion ─> CAL04 P&L Build ─> OUT01 P&L Statement ─> UX page
+INP02 Opex Plan ──────────────> CAL02 Cost ───┘        ▲
+DAT01 Actuals ─────────────────────────────────────────┘ (blended via SYS01.Is Actual?)
 ```
 
 ---

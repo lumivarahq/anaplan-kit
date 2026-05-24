@@ -44,11 +44,13 @@ product) and an **annual price-increase %** (per product, per year); the model d
 price. Planners can still override a specific month.
 
 **RQ3 — Cost plan.** Two cost streams:
-- **Variable COGS** = revenue × a per-product `COGS %` (a structural attribute, not a planner input).
-- **Fixed OpEx** typed per cost centre per month.
+- **Variable COGS** = revenue × a per-product `COGS %`. The `COGS %` is a **cost driver** that lives
+  in its own Inputs module (`INP03 Cost Drivers`) at product grain — set by finance, not editable on
+  the revenue-input page.
+- **Fixed Opex** typed per cost centre per month.
 
 **RQ4 — P&L.** Roll up to a P&L per cost centre (and therefore per country/region):
-`Revenue → COGS → Gross Profit → Fixed OpEx → EBITDA`, with `EBITDA Margin %`.
+`Revenue → COGS → Gross Profit → Fixed Opex → EBITDA`, with `EBITDA Margin %`.
 
 **RQ5 — Currency.** Plans are entered in **local currency** but the consolidated P&L must report in
 **USD**, using a **monthly rate** per currency per version. No rate may be hard-coded.
@@ -79,7 +81,8 @@ products by revenue.
 - [ ] **AC2** Every module is exactly one DISCO type and named with the right prefix.
 - [ ] **AC3** Monthly price is derived from base price + annual uplift, with a per-month override
       path; no period is named in the formula.
-- [ ] **AC4** COGS % lives in a **System** module; planners cannot edit it on the input page.
+- [ ] **AC4** COGS % lives in its own **Inputs** cost-driver module (`INP03`), separate from the
+      revenue-input page; planners cannot edit it where they enter Volume/Price.
 - [ ] **AC5** Local→USD conversion reads a System FX module by the cost centre's local currency and
       the month/version; no rate is hard-coded.
 - [ ] **AC6** The Forecast P&L blends actuals/forecast via a **System Boolean** keyed to the current
@@ -93,15 +96,15 @@ products by revenue.
 ## Hints
 
 - **Lists:** reuse the `_common` backbone pattern — `L1 Product Family › L2 Product`,
-  `L1 Region › L2 Country › L3 Cost Centre/Entity`, `Currency`, and the `L1/L2/L3 P&L Account`
+  `L1 Region › L2 Country › L3 Cost Centre`, `Currency`, and the `L1/L2/L3 P&L Account`
   hierarchy (see [`blueprints/_common/`](../blueprints/_common/)).
 - **RQ2 price uplift:** think *base price (Product)* × *cumulative uplift factor (Product × Year)*,
   then `IF override exists THEN override ELSE derived`. Where do base/uplift/override each live
   (System vs Inputs)? How do you compound the uplift year over year without naming a year?
 - **RQ5 currency:** one System FX module `SYS04 Exchange Rates` (Currency × Time × Versions) +
-  `Local Currency` per cost centre in `SYS Org Details`. Convert *on the way up*. A `Currency view`
-  selector can switch the page between Local and USD line items.
-- **RQ6 blend:** `SYS01 Time Settings.Is Actual Month?` keyed to the current period; the same idiom
+  `Local Currency` per cost centre in `SYS02 Organization Details`. Convert *on the way up*. A
+  `Currency view` selector can switch the page between Local and USD line items.
+- **RQ6 blend:** `SYS01 Time Settings.Is Actual?` keyed to the current period; the same idiom
   as [Tutorial Step 7](../tutorials/07-import-actuals.md).
 - **RQ7 ranking:** `RANK( … , DESCENDING)` within month — see the
   [formula exercises](formula-exercises.md) section 6.
