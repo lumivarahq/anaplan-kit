@@ -11,7 +11,7 @@
 - "Number of working days so far this month" style counters.
 
 ## Approach
-Use **`CUMULATE`** with a **reset Boolean**. `CUMULATE(value, reset)` adds the value across Time from the start, but starts over wherever the reset Boolean is `TRUE`. Build the reset flags **once** in a `SYS00 Time Settings` module (one Boolean per period type) and reference them everywhere — that's the Sustainable, calculate-once pattern.
+Use **`CUMULATE`** with a **reset Boolean**. `CUMULATE(value, reset)` adds the value across Time from the start, but starts over wherever the reset Boolean is `TRUE`. Build the reset flags **once** in a `SYS01 Time Settings` module (one Boolean per period type) and reference them everywhere — that's the Sustainable, calculate-once pattern.
 
 ```
 YTD = CUMULATE(period value, Is First Month of Year?)
@@ -24,40 +24,40 @@ Why idiomatic:
 - The reset flags live in System and feed every cumulative line item — no repeated date logic.
 
 ## Blueprint
-**`SYS00 Time Settings`** — period attributes, `Applies To` Time:
+**`SYS01 Time Settings`** — period attributes, `Applies To` Time:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Is First Month of Year? | Boolean | None | Time | `MONTH(START()) = 1` |
 | Is First Month of Quarter? | Boolean | None | Time | `MONTH(START()) IN {1, 4, 7, 10}` |
 
-**`CAL50 Revenue with Cumulatives`** — `Applies To` Entity × Time:
+**`CAL50 Revenue with Cumulatives`** — `Applies To` L3 Cost Centre × Time:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Revenue | Number | Sum | Entity, Time | *(from source)* |
-| Revenue YTD | Number | Sum | Entity, Time | `CUMULATE(Revenue, SYS00 Time Settings.Is First Month of Year?)` |
-| Revenue QTD | Number | Sum | Entity, Time | `CUMULATE(Revenue, SYS00 Time Settings.Is First Month of Quarter?)` |
+| Revenue | Number | Sum | L3 Cost Centre, Time | *(from source)* |
+| Revenue YTD | Number | Sum | L3 Cost Centre, Time | `CUMULATE(Revenue, SYS01 Time Settings.Is First Month of Year?)` |
+| Revenue QTD | Number | Sum | L3 Cost Centre, Time | `CUMULATE(Revenue, SYS01 Time Settings.Is First Month of Quarter?)` |
 
 ## Formula(s)
 Year-to-date that resets every January:
 
 ```
 // CAL50 -> Revenue YTD
-CUMULATE(Revenue, SYS00 Time Settings.Is First Month of Year?)
+CUMULATE(Revenue, SYS01 Time Settings.Is First Month of Year?)
 ```
 
 Quarter-to-date:
 
 ```
 // CAL50 -> Revenue QTD
-CUMULATE(Revenue, SYS00 Time Settings.Is First Month of Quarter?)
+CUMULATE(Revenue, SYS01 Time Settings.Is First Month of Quarter?)
 ```
 
-Define the reset flags in `SYS00` (the `START()` of each period gives its first day, so `MONTH(START()) = 1` is January):
+Define the reset flags in `SYS01` (the `START()` of each period gives its first day, so `MONTH(START()) = 1` is January):
 
 ```
-// SYS00 -> Is First Month of Year?
+// SYS01 -> Is First Month of Year?
 MONTH(START()) = 1
 ```
 
@@ -67,12 +67,12 @@ Plain `CUMULATE(Revenue)` with no Boolean cumulates across the **whole** timesca
 - **Reset Boolean is "reset *to* this period"**: the period where the flag is `TRUE` becomes the new starting point of the running total. Confirm Jan shows just-January, not Dec+Jan.
 - Don't fake YTD with the **Time Summary** (the row total) — that's the full-year total, not "to date". `CUMULATE` is the right tool.
 - Set the cumulative line item's **summary to `Sum`** so it rolls correctly across the hierarchy; the time behaviour comes from `CUMULATE`, not the summary.
-- A fiscal year not starting in January? Drive the reset flag off your **fiscal** calendar in `SYS00`, not the literal calendar month.
+- A fiscal year not starting in January? Drive the reset flag off your **fiscal** calendar in `SYS01`, not the literal calendar month.
 - `CUMULATE` works along the model's Time dimension; it won't cumulate across a list unless you give it the list argument deliberately.
 
 ## Performance & PLANS notes
 - `CUMULATE` is one engine pass — cheaper than `LAG`-based running sums and far cheaper than nested `IF` on dates.
-- Build reset Booleans **once** in `SYS00` and reuse — satisfies **Necessary** and keeps fiscal logic in one place.
+- Build reset Booleans **once** in `SYS01` and reuse — satisfies **Necessary** and keeps fiscal logic in one place.
 - Keep cumulatives in a **Calculations/Outputs** module, not the input module, so typing actuals doesn't drag a wide cumulative grid.
 
 ## Related

@@ -25,7 +25,7 @@ Why idiomatic:
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Delete? (all) | Boolean | None | G3 Transactions | `TRUE` *(full truncate)* |
-| Delete? (stale) | Boolean | None | G3 Transactions | `DAT01.Order Date < SYS90 Settings.Retain From` *(partial)* |
+| Delete? (stale) | Boolean | None | G3 Transactions | `DAT01.Order Date < SYS90 Model Settings.Retain From` *(partial)* |
 
 **Process `Reload Transactions`:**
 1. **DELETE action** — "Delete from List using Selection", selection = `SYS60.Delete? (all)`.
@@ -45,7 +45,7 @@ Partial clear (only items older than a retention cutoff):
 
 ```
 // SYS60 Transaction Housekeeping -> Delete? (stale)
-DAT01 Transactions.Order Date < SYS90 Settings.Retain From
+DAT01 Transactions.Order Date < SYS90 Model Settings.Retain From
 ```
 
 Then in the **action setup**: choose "Delete from List using Selection", point it at the numbered list, and set the criteria to the Boolean line item above. Add it as **step 1** of the reload process, with the import as step 2.

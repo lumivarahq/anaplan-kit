@@ -57,7 +57,7 @@ Combine role with status and period for a complete rule:
 // SYS80 DCA Drivers -> Writable?  (planner AND draft AND open period)
 SYS Users.Is Planner?
 AND (INP80 Approval.Status = Status.Draft OR INP80 Approval.Status = Status.Rejected)
-AND NOT SYS00 Time Settings.Is Actual?
+AND NOT SYS01 Time Settings.Is Actual?
 ```
 
 Hiding whole tabs from non-admins is **role configuration** (don't grant the page), not a formula — DCA can't hide a module, only restrict its cells.

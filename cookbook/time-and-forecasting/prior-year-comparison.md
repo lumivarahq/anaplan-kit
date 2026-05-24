@@ -25,14 +25,14 @@ Why idiomatic:
 - No hard-coded periods — it shifts relative to "now", so it keeps working next year (*Sustainable*).
 
 ## Blueprint
-**`CAL90 YoY`** — `Applies To` Entity × Time (monthly):
+**`CAL90 YoY`** — `Applies To` L3 Cost Centre × Time (monthly):
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Revenue | Number | Sum | Entity, Time | *(from source)* |
-| Revenue PY | Number | Sum | Entity, Time | `LAG(Revenue, 12, 0)` |
-| YoY Variance | Number | Sum | Entity, Time | `Revenue - Revenue PY` |
-| YoY % | Number (%) | None | Entity, Time | `IF Revenue PY = 0 THEN 0 ELSE YoY Variance / Revenue PY` |
+| Revenue | Number | Sum | L3 Cost Centre, Time | *(from source)* |
+| Revenue PY | Number | Sum | L3 Cost Centre, Time | `LAG(Revenue, 12, 0)` |
+| YoY Variance | Number | Sum | L3 Cost Centre, Time | `Revenue - Revenue PY` |
+| YoY % | Number (%) | None | L3 Cost Centre, Time | `IF Revenue PY = 0 THEN 0 ELSE YoY Variance / Revenue PY` |
 
 ## Formula(s)
 Same month, prior year (12 periods back on a monthly scale):
@@ -62,7 +62,7 @@ OFFSET(Revenue, -12, 0)
 - **The lag count must match your time grain.** Monthly = 12 for a year; quarterly = 4; weekly ≈ 52 (and 53-week years bite). Don't assume 12.
 - **First year has no PY** — `LAG` returns the default (use `0`, or `BLANK` if you want the cell empty). Decide which, and make the % handle it.
 - **Divide-by-zero** in growth % when PY is 0 — always guard.
-- `LAG`/`OFFSET` shift along the **model's Time dimension**; they don't understand "fiscal year" on their own. For SPLY across an irregular calendar, drive the offset from a `SYS00` mapping instead.
+- `LAG`/`OFFSET` shift along the **model's Time dimension**; they don't understand "fiscal year" on their own. For SPLY across an irregular calendar, drive the offset from a `SYS01` mapping instead.
 - Don't build PY by hard-coding `IF Time = ...` — that breaks every January (*Sustainable* violation).
 
 ## Performance & PLANS notes

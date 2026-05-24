@@ -39,14 +39,14 @@ Why idiomatic:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Revenue | Number | Sum | Customer, Time | `DAT01 Transactions.Amount[SUM: DAT01 Transactions.Customer, DAT01 Transactions.Order Month]` |
+| Revenue | Number | Sum | Customer, Time | `DAT01 Transactions.Amount[SUM: DAT01 Transactions.Customer, SUM: DAT01 Transactions.Order Month]` |
 
 ## Formula(s)
 Aggregate the flat transactions up to the planning dimensions using the line-item attributes as mappings:
 
 ```
 // CAL160 -> Revenue
-DAT01 Transactions.Amount[SUM: DAT01 Transactions.Customer, DAT01 Transactions.Order Month]
+DAT01 Transactions.Amount[SUM: DAT01 Transactions.Customer, SUM: DAT01 Transactions.Order Month]
 ```
 
 The two `SUM` mappings (Customer and Order Month) move the per-transaction `Amount` to the Customer × Time grid. Each mapping line item must be formatted as the target dimension (Customer as a list; Order Month as Time).

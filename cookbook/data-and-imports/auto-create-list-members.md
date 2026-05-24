@@ -30,7 +30,7 @@ Import file columns:
 | `CC Name` | `Cost Centre` → Display Name | Human-readable name |
 | `Region Code` | `Cost Centre` → Parent | Slots the new item under the right region |
 
-**`SYS01 Cost Centre Details`** — attributes refreshed on each load:
+**`SYS02 Organization Details`** — attributes refreshed on each load:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |

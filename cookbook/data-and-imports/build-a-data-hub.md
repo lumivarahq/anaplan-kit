@@ -37,7 +37,7 @@ The hub is almost entirely **D** (Data — landing modules) and **S** (System �
 | Amount | Number | Sum | Entity, Account, Time | *(import target — no formula)* |
 | Source loaded? | Boolean | None | Entity, Account, Time | `Amount <> 0` |
 
-**`SYS02 Account Details`** — attributes used by every spoke (built once):
+**`SYS03 Account Details`** — attributes used by every spoke (built once):
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ The hub does little calculation. A typical published value applies the sign conv
 
 ```
 // CAL01 Actuals Clean -> Amount Signed
-DAT01 Actuals.Amount * IF SYS02 Account Details.Sign Flip? THEN -1 ELSE 1
+DAT01 Actuals.Amount * IF SYS03 Account Details.Sign Flip? THEN -1 ELSE 1
 ```
 
 Spokes then import the saved view of `OUT01` / `CAL01`. No formula in the spoke re-derives the sign — it's done once, in the hub.

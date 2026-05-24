@@ -36,7 +36,7 @@ Build a **process** with the imports in dependency order: load `Region` first, t
 | `CC Code` | `Cost Centre` → Code | the leaf item |
 | `CC Name` | `Cost Centre` → Display Name | |
 
-**`SYS01 Cost Centre Details`** — attributes for downstream use:
+**`SYS02 Organization Details`** — attributes for downstream use:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
@@ -61,7 +61,7 @@ Process step 2 — import Cost Centre:
 To verify the structure after load, derive the parent in a SYS module:
 
 ```
-// SYS01 Cost Centre Details -> Parent Region
+// SYS02 Organization Details -> Parent Region
 PARENT(ITEM(Cost Centre))
 ```
 

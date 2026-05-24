@@ -28,7 +28,7 @@ Why this is idiomatic: it serves **Performance** (small loads recalc fast) and *
 | Last Modified | Date | None | G3 Transactions | *(import target)* |
 | Match Key | Text | None | G3 Transactions | *(import target — unique key)* |
 
-**`SYS90 Load Control`** — a one-cell module (no dimension) that records watermark + counts:
+**`DAT90 Load Control`** — a one-cell module (no dimension) that records watermark + counts:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ Map "Match Key" (file) -> "Match Key" (list code)
 If you must compute a change flag inside Anaplan after a full load:
 ```
 // CAL01 Delta -> Changed?
-DAT01 Actuals.Last Modified > SYS90 Load Control.Last Successful Load
+DAT01 Actuals.Last Modified > DAT90 Load Control.Last Successful Load
 ```
 
 ## Pitfalls / gotchas

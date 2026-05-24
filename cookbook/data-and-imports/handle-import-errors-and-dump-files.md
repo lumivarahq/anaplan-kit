@@ -23,7 +23,7 @@ Why idiomatic:
 - **Sustainable:** a reconciliation step catches new unmapped codes the day they appear, not at month-end close.
 
 ## Blueprint
-**`SYS90 Load Control`** — one-cell (unmoduled) control totals, set by the import / a follow-on import of the result:
+**`DAT90 Load Control`** — one-cell (unmoduled) control totals, set by the import / a follow-on import of the result:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
@@ -31,6 +31,7 @@ Why idiomatic:
 | Rows Loaded | Number | None | *(none)* | *(from import result)* |
 | Rows Ignored | Number | None | *(none)* | *(from import result)* |
 | Rows Failed | Number | None | *(none)* | *(from import result)* |
+| Source Total | Number | None | *(none)* | *(source file value total, for the value tie)* |
 | Reconciled? | Boolean | None | *(none)* | `Rows in Source = Rows Loaded + Rows Ignored + Rows Failed` |
 | Clean Load? | Boolean | None | *(none)* | `Reconciled? AND Rows Ignored = 0 AND Rows Failed = 0` |
 
@@ -40,12 +41,12 @@ Why idiomatic:
 The reconciliation equation is the whole point — put it in a Boolean so a dashboard can show red/green:
 
 ```
-// SYS90 Load Control -> Reconciled?
+// DAT90 Load Control -> Reconciled?
 Rows in Source = Rows Loaded + Rows Ignored + Rows Failed
 ```
 
 ```
-// SYS90 Load Control -> Clean Load?
+// DAT90 Load Control -> Clean Load?
 Reconciled? AND Rows Ignored = 0 AND Rows Failed = 0
 ```
 
@@ -53,7 +54,7 @@ Tie on **value** as well as count, because two offsetting wrong rows can net to 
 
 ```
 // CAL01 Load Check -> Value Tie?
-ROUND(DAT01 Actuals.Amount[SUM: ...], 2) = SYS90 Load Control.Source Total
+ROUND(DAT01 Actuals.Amount[SUM: ...], 2) = DAT90 Load Control.Source Total
 ```
 
 ## Pitfalls / gotchas
@@ -65,7 +66,7 @@ ROUND(DAT01 Actuals.Amount[SUM: ...], 2) = SYS90 Load Control.Source Total
 
 ## Performance & PLANS notes
 - A reconciliation/control module is cheap (one cell) and is the single best **Auditable** habit on a data hub.
-- Capture the result automatically by importing the import-run statistics back into `SYS90` via the API/Anaplan Connect, so the check is hands-off.
+- Capture the result automatically by importing the import-run statistics back into `DAT90 Load Control` via the API/Anaplan Connect, so the check is hands-off.
 - Surface `Clean Load?` on an admin board; a red flag should block the downstream publish to spokes.
 
 ## Related

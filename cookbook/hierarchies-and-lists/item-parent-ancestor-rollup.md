@@ -16,7 +16,7 @@ Three workhorse functions:
 - **`PARENT(item)`** — the immediate parent of an item (one level up).
 - **`ISANCESTOR(ancestor, descendant)`** — `TRUE` if the first item is anywhere above the second in the hierarchy.
 
-Use `PARENT` to step up one level, chain `PARENT(PARENT(...))` (or use `ANCESTOR` for a named level) to reach grandparents, and `ISANCESTOR` for "is this under that branch?" tests. Build these **once** in a `SYS` module and reference them — don't re-derive the tree in every calc.
+Use `PARENT` to step up one level and chain `PARENT(PARENT(...))` to reach grandparents (Anaplan has no `ANCESTOR()` / `CHILDREN()` function — chain `PARENT`, or use a SYS mapping for a named level), and `ISANCESTOR` for "is this under that branch?" tests. Build these **once** in a `SYS` module and reference them — don't re-derive the tree in every calc.
 
 Why idiomatic:
 - **Sustainable (PLANS):** attributes follow the hierarchy automatically; restructure the tree and the values update with no formula change.

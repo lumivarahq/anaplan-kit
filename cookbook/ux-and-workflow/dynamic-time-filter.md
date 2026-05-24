@@ -11,7 +11,7 @@
 - Any filter on Time that must update itself as time moves.
 
 ## Approach
-Build a `SYS00 Time Filters` module with one **Boolean line item per filter intent** (`Show Forecast Months?`, `Show Current Quarter?`, etc.), each dimensioned by **Time**. Apply the relevant Boolean as the **filter** on a grid/chart. Because the Booleans derive from a single "current period" setting, every filtered page advances automatically — no manual re-pointing.
+Build a `SYS01 Time Filters` module with one **Boolean line item per filter intent** (`Show Forecast Months?`, `Show Current Quarter?`, etc.), each dimensioned by **Time**. Apply the relevant Boolean as the **filter** on a grid/chart. The Booleans derive from a single source-of-truth `SYS90 Model Settings` (the current period and last actual month) and the period index in `SYS01 Time Settings`, so every filtered page advances automatically — no manual re-pointing.
 
 ```
 Show Forecast Months? = period is after the last actual month
@@ -22,42 +22,49 @@ Why idiomatic:
 - **Performance:** filtering to fewer visible periods lightens the page; reusing one Boolean avoids duplicated filter logic.
 
 ## Blueprint
-**`SYS90 Settings`** — the single source of "now":
+**`SYS90 Model Settings`** — the single source of "now" (global cells):
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Last Actual Month | Time period | None | *(none)* | *(input each close)* |
+| Current Period Index | Number | None | *(none)* | `LOOKUP/derived index of the current month` |
 
-**`SYS00 Time Filters`** — one Boolean per intent, `Applies To` Time:
+**`SYS01 Time Settings`** — period scaffolding, `Applies To` Time (shared with the time recipes):
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Is Actual? | Boolean | None | Time | `START() <= START(SYS90 Settings.Last Actual Month)` |
-| Show Forecast Months? | Boolean | None | Time | `NOT Is Actual?` |
+| Period Index | Number | None | Time | `CUMULATE(1)` |
+| Is Actual? | Boolean | None | Time | `START() <= START(SYS90 Model Settings.Last Actual Month)` |
+
+**`SYS01 Time Filters`** — one Boolean per intent, `Applies To` Time:
+
+| Line Item | Format | Summary | Applies To | Formula |
+| --- | --- | --- | --- | --- |
+| Show Forecast Months? | Boolean | None | Time | `NOT SYS01 Time Settings.Is Actual?` |
 | Show Current Quarter? | Boolean | None | Time | `QUARTERVALUE-based test` (see formula) |
-| Show Next 3 Months? | Boolean | None | Time | `Period Index > Current Index AND Period Index <= Current Index + 3` |
+| Show Next 3 Months? | Boolean | None | Time | `Period Index > Current Period Index AND Period Index <= Current Period Index + 3` |
 
 ## Formula(s)
 Closed vs open months from one cutoff:
 
 ```
-// SYS00 Time Filters -> Show Forecast Months?
-NOT Is Actual?
+// SYS01 Time Filters -> Show Forecast Months?
+NOT SYS01 Time Settings.Is Actual?
 ```
 
-Where `Is Actual?` is:
+Where `Is Actual?` (in `SYS01 Time Settings`) is:
 
 ```
-// SYS00 Time Filters -> Is Actual?
-START() <= START(SYS90 Settings.Last Actual Month)
+// SYS01 Time Settings -> Is Actual?
+START() <= START(SYS90 Model Settings.Last Actual Month)
 ```
 
-"Next 3 months" using a period index (see [rolling-forecast](../time-and-forecasting/rolling-forecast.md) for `Period Index = CUMULATE(1)`):
+"Next 3 months" using the period index (see [rolling-forecast](../time-and-forecasting/rolling-forecast.md) for `Period Index = CUMULATE(1)`):
 
 ```
-// SYS00 Time Filters -> Show Next 3 Months?
-SYS00 Time Settings.Period Index > SYS90 Settings.Current Index
-AND SYS00 Time Settings.Period Index <= SYS90 Settings.Current Index + 3
+// SYS01 Time Filters -> Show Next 3 Months?
+SYS01 Time Settings.Period Index > SYS90 Model Settings.Current Period Index
+AND SYS01 Time Settings.Period Index <= SYS90 Model Settings.Current Period Index + 3
 ```
 
 Apply the Boolean as the **grid/card filter** on Time — no formula on the displayed module changes.

@@ -11,7 +11,7 @@
 - Reporting that must never double-count or show a forecast where an actual exists.
 
 ## Approach
-Drive the split from a single **cutoff** (the last actual month) held in a settings module, and a per-period Boolean **`Is Actual?`** in `SYS00`. The blended line is one `IF` on that flag — actuals up to and including the cutoff, forecast after.
+Drive the split from a single **cutoff** (the last actual month) held in a settings module, and a per-period Boolean **`Is Actual?`** in `SYS01 Time Settings`. The blended line is one `IF` on that flag — actuals up to and including the cutoff, forecast after.
 
 ```
 Current View = IF Is Actual? THEN Actuals ELSE Forecast
@@ -24,39 +24,39 @@ Why idiomatic:
 - **Logical:** actuals and forecast stay separate and traceable; the blend is explicit.
 
 ## Blueprint
-**`SYS90 Settings`** — the boundary, one cell:
+**`SYS90 Model Settings`** — the boundary, one cell:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | Last Actual Month | Time period | None | *(none)* | *(input each close)* |
 
-**`SYS00 Time Settings`** — per-period flag, `Applies To` Time:
+**`SYS01 Time Settings`** — per-period flag, `Applies To` Time:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Is Actual? | Boolean | None | Time | `START() <= START(SYS90 Settings.Last Actual Month)` |
+| Is Actual? | Boolean | None | Time | `START() <= START(SYS90 Model Settings.Last Actual Month)` |
 
-**`CAL70 Current View`** — `Applies To` Entity × Time:
+**`CAL70 Current View`** — `Applies To` L3 Cost Centre × Time:
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Actuals | Number | Sum | Entity, Time | `DAT01 Actuals.Amount` |
-| Forecast | Number | Sum | Entity, Time | `INP Forecast.Amount` |
-| Current View | Number | Sum | Entity, Time | `IF SYS00 Time Settings.Is Actual? THEN Actuals ELSE Forecast` |
+| Actuals | Number | Sum | L3 Cost Centre, Time | `DAT01 Actuals.Amount` |
+| Forecast | Number | Sum | L3 Cost Centre, Time | `INP Forecast.Amount` |
+| Current View | Number | Sum | L3 Cost Centre, Time | `IF SYS01 Time Settings.Is Actual? THEN Actuals ELSE Forecast` |
 
 ## Formula(s)
 Per-period actual flag (everything up to and including the cutoff is actual):
 
 ```
-// SYS00 Time Settings -> Is Actual?
-START() <= START(SYS90 Settings.Last Actual Month)
+// SYS01 Time Settings -> Is Actual?
+START() <= START(SYS90 Model Settings.Last Actual Month)
 ```
 
 The blended current view:
 
 ```
 // CAL70 Current View -> Current View
-IF SYS00 Time Settings.Is Actual? THEN Actuals ELSE Forecast
+IF SYS01 Time Settings.Is Actual? THEN Actuals ELSE Forecast
 ```
 
 If you use **Versions** (Actual vs Forecast), the same idea applies with the version switch, but a Boolean-driven blend in a calc module is the most transparent and auditable approach.
