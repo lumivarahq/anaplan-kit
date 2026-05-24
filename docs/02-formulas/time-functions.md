@@ -8,12 +8,11 @@ are what make rolling forecasts, opening/closing balances, lead-time logistics a
 possible.
 
 The core family is: `CUMULATE`, `DECUMULATE`, `LAG`, `LEAD`, `MOVINGSUM`, `OFFSET`, `POST`,
-`PREVIOUS`, `NEXT`, `PROFILE`, plus `TIMESUM` and the period-summary functions
+`PREVIOUS`, `NEXT`, `PROFILE`, `START`/`END`, plus `TIMESUM` and the period-summary functions
 `YEARVALUE`/`HALFYEARVALUE`/`QUARTERVALUE`/`MONTHVALUE`.
 
 > Your module must have **Time** as a dimension for most of these to do anything. The exact set of
-> time periods comes from the model's Time settings / Time Ranges. *(Modern engines can also shift
-> over non-Time dimensions for some of these — confirm in Anapedia for your platform.)*
+> time periods comes from the model's Time settings / Time Ranges.
 
 ---
 
@@ -63,7 +62,8 @@ Recovers each month's change from a running balance.
 
 **Watch out for**
 - First period has no prior, so it returns the raw input — check that's the behaviour you want.
-- Confirm the exact optional-argument behaviour in Anapedia for your engine.
+- The optional Boolean restarts the de-cumulation; the optional list de-cumulates over that list
+  instead of Time, mirroring `CUMULATE`.
 
 **Source:** https://help.anaplan.com/decumulate-eab1f7ce-5c1d-46b6-8361-69086d4876e7
 
@@ -115,7 +115,7 @@ Reads next period's demand; substitutes `0` past the end of time.
 - Same substitute-value rule as `LAG`, but at the **end** of the timeline.
 - Like `LAG`, the offset can be a line item for variable look-ahead.
 
-**Source:** https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 *(All-functions index — confirm the LEAD page for your platform version.)*
+**Source:** https://help.anaplan.com/lead-e3f4969b-65b1-4726-b41c-d028c9c71c14
 
 ---
 
@@ -164,8 +164,8 @@ Each order placed shows up as an arrival `Lead Time Months` later.
 
 **Watch out for**
 - Values posted past the end of the timeline are lost.
-- Confirm the exact argument names/order in Anapedia — `POST` arguments differ subtly from
-  `OFFSET`.
+- If several source values land on the **same** target period, `POST` **adds them together**.
+- The time range of the argument must match the result line item's time range.
 
 **Source:** https://help.anaplan.com/post-082cb491-879c-4711-b5c6-9ed162391bb1
 
@@ -272,16 +272,50 @@ Total revenue across the whole timeline, shown identically in every period.
 
 ---
 
+### START / END
+
+**Syntax**
+```
+START()            -- first date of the source module's Time dimension
+END()              -- last date of the source module's Time dimension
+START(Time Period) -- first date of a given time period
+END(Time Period)   -- last date of a given time period
+```
+
+**What it does**
+`START` returns the **first date** of a time period (or of the whole timeline when called with no
+argument); `END` returns the **last date**. They are the bridge from a Time period to a `Date`
+value — handy for maturity/due dates and as the bounds for `TIMESUM`.
+
+**Example**
+```
+Period Start Date = START()                  -- the start date of each period on the timeline
+Period End Date   = END()                    -- the last date of each period
+FY Total          = TIMESUM(Revenue, START(), END())
+```
+
+**Watch out for**
+- Both return a **Date**, not a Time period — put the result in a Date-formatted line item.
+- With an argument, the source must be **time-period-formatted**; a blank period gives a blank date.
+- The displayed date format follows the viewer's browser/OS locale.
+
+**Source:** START https://help.anaplan.com/start-bc44fa0b-7af8-4a8f-ad8f-cbeaccf22003 ·
+END https://help.anaplan.com/end-3d41a077-b391-45ca-a6e2-0c6dfaaeb85f
+
+---
+
 ### PROFILE
 
 **Syntax**
 ```
-PROFILE(Value, Profile)
+PROFILE(Numbers to change, Profile)
 ```
 
 **What it does**
-Spreads/multiplies a value across time according to a repeating **profile** (a series of weights) —
-e.g. distribute an annual number across months by a seasonality curve.
+Multiplies a value across time according to a **profile** — a sequence of weights dimensioned by a
+list *other than* Time. Each number is multiplied by the first profile weight in the first period,
+the second weight in the next period, and so on — the natural way to phase an annual figure over
+months by a seasonality curve.
 
 **Example**
 ```
@@ -291,7 +325,8 @@ Allocates the annual budget over periods using the seasonality weights.
 
 **Watch out for**
 - The profile defines the *shape*; make sure its weights sum to what you intend (often 1 / 100%).
-- Confirm the exact argument order and repeat behaviour in Anapedia for your engine.
+- The `Profile` argument is dimensioned by a **non-Time** list; the function walks its values across
+  successive time periods.
 
 **Source:** https://help.anaplan.com/41b5fb84-395b-489f-80be-521add72c581
 

@@ -83,7 +83,7 @@ Order Month = MONTH(Order Date)        -- 3 for any date in March
 - Returns the **month number**, not a month name or a Time period. To label it, map the number to
   text/an item.
 
-**Source:** https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3 *(All-functions index — confirm the MONTH page for your platform version.)*
+**Source:** https://help.anaplan.com/month-38d3ce37-2f9e-4a16-8324-f3ba10c11808
 
 ---
 
@@ -152,8 +152,8 @@ Days in Mth = DAYS(Period)         -- e.g. 31 for January
 ```
 
 **Watch out for**
-- Confirm the **argument order** (end, start) in Anapedia for your platform — getting it backwards
-  flips the sign.
+- The argument order is **(End date, Start date)** — getting it backwards flips the sign of the
+  result.
 - The two-date form and the period form are both called `DAYS`; the engine picks by argument type.
 
 **Source:** https://help.anaplan.com/days-fc064281-7c00-456f-821f-a94aebc35144

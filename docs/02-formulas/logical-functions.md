@@ -108,6 +108,78 @@ Inactive? = NOT Active?
 
 ---
 
+### ISBLANK
+
+**Syntax**
+```
+ISBLANK(Value)
+```
+
+**What it does**
+Returns a **Boolean**: TRUE when the value is blank (empty), FALSE otherwise. The clean way to test
+"did this cell get a value?" without comparing to `0` or `""`.
+
+**Example**
+```
+Missing Region? = ISBLANK(SYS Cost Centre.Region)
+```
+
+**Watch out for**
+- It is already a Boolean — use it directly, no `IF … THEN TRUE` wrapper.
+- A blank number is **not** the same as `0`; `ISBLANK` distinguishes them where `= 0` would not.
+
+**Source:** https://help.anaplan.com/isblank-709bc8d0-f645-4a83-b7d9-7cd2476cee12
+
+---
+
+### ISNOTBLANK
+
+**Syntax**
+```
+ISNOTBLANK(Value)
+```
+
+**What it does**
+The inverse of `ISBLANK`: returns TRUE when the value **is** populated. Equivalent to
+`NOT ISBLANK(...)`, but reads more clearly.
+
+**Example**
+```
+Has Email? = ISNOTBLANK(Contact Email)
+```
+
+**Watch out for**
+- Returns a Boolean directly — no wrapper needed.
+
+**Source:** https://help.anaplan.com/isnotblank-1463efe5-aff5-43fa-abf7-39b7d95a6692
+
+---
+
+### BLANK
+
+**Syntax**
+```
+BLANK
+```
+
+**What it does**
+A keyword that returns an **empty value** of the matching format. Use it in `IF THEN ELSE` to leave
+a cell empty rather than forcing `0` or `""`. Valid for text, date, time-period and list-formatted
+results.
+
+**Example**
+```
+Display Date = IF Is Confirmed? THEN Order Date ELSE BLANK
+```
+
+**Watch out for**
+- For **number** line items, returning `0` and returning a blank can behave differently in
+  downstream sums and `ISBLANK` tests — pick the one your logic expects.
+
+**Source:** https://help.anaplan.com/operators-and-constants-f1c2ec15-34af-4ebe-8114-530cf7c9f3bc
+
+---
+
 ## Nested logic — and when to stop nesting
 
 A multi-branch `IF`:
@@ -134,7 +206,7 @@ then reference that flag everywhere. This is the single highest-value logic habi
 
 ```
 -- System/Calc module, computed once:
-Is Actual?     = Period <= CURRENTPERIODSTART()          -- Boolean line item
+Is Actual?     = START() <= CURRENTPERIODSTART()         -- Boolean line item (Date vs Date)
 
 -- Reused, cleanly, in many places:
 Reported Value = IF Is Actual? THEN Actual ELSE Forecast

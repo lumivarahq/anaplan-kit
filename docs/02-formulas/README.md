@@ -87,15 +87,15 @@ Auditable and Performance. See [plans-standard.md](../03-methodology/plans-stand
 
 | Page | Covers |
 | --- | --- |
-| [aggregation-functions.md](aggregation-functions.md) | `SUM`, `AVERAGE`, `MIN`, `MAX`, `COUNT`, `ANY`, `ALL` |
+| [aggregation-functions.md](aggregation-functions.md) | `SUM`, `AVERAGE`, `MIN`, `MAX`, `COUNT`, `ANY`, `ALL`, plus numeric helpers `ROUND`, `ABS` |
 | [lookup-and-mapping.md](lookup-and-mapping.md) | `LOOKUP`, `SELECT`, `SUM` as a mapper, `FINDITEM` — the mapping patterns |
-| [time-functions.md](time-functions.md) | `CUMULATE`, `LAG`, `LEAD`, `OFFSET`, `POST`, `PREVIOUS`, `NEXT`, `MOVINGSUM`, `TIMESUM`, `PROFILE`, `*VALUE` |
-| [text-functions.md](text-functions.md) | `TEXT`, `NAME`, `LEFT`/`RIGHT`/`MID`, `LENGTH`, `FIND`, `SUBSTITUTE`, `CODE`, `MAKELINK`, `MAILTO` |
-| [logical-functions.md](logical-functions.md) | `IF THEN ELSE`, `AND`/`OR`/`NOT`, Boolean line items |
+| [time-functions.md](time-functions.md) | `CUMULATE`, `DECUMULATE`, `LAG`, `LEAD`, `OFFSET`, `POST`, `PREVIOUS`, `NEXT`, `MOVINGSUM`, `TIMESUM`, `START`/`END`, `PROFILE`, `*VALUE` |
+| [text-functions.md](text-functions.md) | `TEXT`, `NAME`, `LEFT`/`RIGHT`/`MID`, `LENGTH`, `FIND`, `SUBSTITUTE`, `TRIM`, `LOWER`/`UPPER`, `CODE`, `MAKELINK`, `MAILTO` |
+| [logical-functions.md](logical-functions.md) | `IF THEN ELSE`, `AND`/`OR`/`NOT`, `ISBLANK`/`ISNOTBLANK`/`BLANK`, Boolean line items |
 | [date-functions.md](date-functions.md) | `DATE`, `YEAR`/`MONTH`/`DAY`, `WEEKDAY`, `DAYS`, `MONTHTODATE`, `CURRENTPERIODSTART` |
 | [financial-functions.md](financial-functions.md) | `NPV`, `IRR`, `PMT`, `CUMIPMT` |
 | [ranking-functions.md](ranking-functions.md) | `RANK`, `RANKCUMULATE` (Top-N) |
-| [hierarchy-functions.md](hierarchy-functions.md) | `ITEM`, `PARENT`, `ANCESTOR`, `ISANCESTOR`, `ITEMLEVEL`, `CHILDREN`, `FIRSTNONBLANK` |
+| [hierarchy-functions.md](hierarchy-functions.md) | `ITEM`, `PARENT`, `ISANCESTOR`, `ITEMLEVEL`, `FIRSTNONBLANK` (no `ANCESTOR`/`CHILDREN` — see page) |
 | [cheatsheet.md](cheatsheet.md) | every function, one line each — the quick reference |
 
 **Related:** [The PLANS standard](../03-methodology/plans-standard.md) ·
