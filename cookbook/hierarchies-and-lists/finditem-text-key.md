@@ -69,5 +69,5 @@ DAT01 Landing.Amount[SUM: SYS50 Code Resolution.Cost Centre]
 - Keep resolution in **System/Data**; the resolved item then drives Calc modules.
 
 ## Related
-- [`docs/02-formulas/list-functions.md`](../../docs/02-formulas/list-functions.md)
+- [`docs/02-formulas/hierarchy-functions.md`](../../docs/02-formulas/hierarchy-functions.md)
 - Recipes: [concatenated-key-for-imports](../data-and-imports/concatenated-key-for-imports.md) · [sum-lookup-remap](../mapping-and-allocation/sum-lookup-remap.md) · [numbered-list-transactions](numbered-list-transactions.md)

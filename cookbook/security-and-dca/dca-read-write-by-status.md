@@ -11,7 +11,7 @@
 - Any "soft lock" that depends on data rather than role.
 
 ## Approach
-**Dynamic Cell Access (DCA)** lets a **Boolean driver line item** control, per cell, whether users can **write** (and optionally **read**). You point a target module's *Read Access* and/or *Write Access* at a Boolean in a driver module. Drive that Boolean from the **status** (see [approval-status-workflow](approval-status-workflow.md)): writable while Draft/Rejected, locked once Submitted/Approved.
+**Dynamic Cell Access (DCA)** lets a **Boolean driver line item** control, per cell, whether users can **write** (and optionally **read**). You point a target module's *Read Access* and/or *Write Access* at a Boolean in a driver module. Drive that Boolean from the **status** (see [approval-status-workflow](../ux-and-workflow/approval-status-workflow.md)): writable while Draft/Rejected, locked once Submitted/Approved.
 
 ```
 Write Access driver = NOT (Submitted OR Approved)

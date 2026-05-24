@@ -73,6 +73,6 @@ NAME(PARENT(ITEM(Cost Centre)))
 - `ISANCESTOR` Booleans feed filters, DCA, and selective access cleanly — see [cascading-selective-access](../security-and-dca/cascading-selective-access.md).
 
 ## Related
-- [`docs/02-formulas/list-functions.md`](../../docs/02-formulas/list-functions.md)
+- [`docs/02-formulas/hierarchy-functions.md`](../../docs/02-formulas/hierarchy-functions.md)
 - [`docs/01-fundamentals/lists-and-hierarchies.md`](../../docs/01-fundamentals/lists-and-hierarchies.md)
 - Recipes: [flat-file-to-hierarchy](../data-and-imports/flat-file-to-hierarchy.md) · [cascading-selective-access](../security-and-dca/cascading-selective-access.md) · [finditem-text-key](finditem-text-key.md)
