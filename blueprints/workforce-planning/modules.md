@@ -117,11 +117,17 @@ Convert and stage for the FP&A hand-off.
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| FX Rate | Number (4 dp) | None | Position × Time | `SYS04 Exchange Rates.Rate (filled)[LOOKUP: SYS02 Organization Details.Local Currency[LOOKUP: SYS30 Position Details.Cost Centre]]` |
-| Fully-Loaded Cost (USD) | Number | Sum | Position × Time | `CAL03 Fully-Loaded Cost.Fully-Loaded Cost (local) * FX Rate` |
-| Cost by CC (USD) | Number | Sum | L3 Cost Centre/Entity × Time | `Fully-Loaded Cost (USD)[SUM: SYS30 Position Details.Cost Centre]` |
+| FX Rate | Number (4 dp) | None | Position × Time × Versions | `SYS04 Exchange Rates.Rate (filled)[LOOKUP: SYS02 Organization Details.Local Currency[LOOKUP: SYS30 Position Details.Cost Centre]]` |
+| Fully-Loaded Cost (USD) | Number | Sum | Position × Time × Versions | `CAL03 Fully-Loaded Cost.Fully-Loaded Cost (local) * FX Rate` |
+| Cost by CC (local) | Number | Sum | L3 Cost Centre/Entity × Time × Versions | `CAL03 Fully-Loaded Cost.Fully-Loaded Cost (local)[SUM: SYS30 Position Details.Cost Centre]` |
+| Cost by CC (USD) | Number | Sum | L3 Cost Centre/Entity × Time × Versions | `Fully-Loaded Cost (USD)[SUM: SYS30 Position Details.Cost Centre]` |
 
-> `Cost by CC (USD)` is the FP&A `Salaries` opex feed — same Cost Centre × Time grain.
+> **FP&A `Salaries` feed.** `Cost by CC (local)` (grain **L3 Cost Centre × Time × Versions**) is the line
+> that lands in FP&A `INP02 Opex Plan.Opex (local)` against the **fixed member `Opex Category = "Salaries"`**
+> via a model-to-model import. It is fed in **local currency** so FP&A applies FX **once** on its side
+> (`CAL03 Currency Conversion.Opex (USD)`) — no double conversion. `Cost by CC (USD)` stays for this
+> model's own USD reporting (`OUT01`). See the mapping in [`formulas.md`](formulas.md) §5 and the FP&A
+> side in [`fpa-pl-planning/modules.md`](../fpa-pl-planning/modules.md) (INP02).
 
 ---
 

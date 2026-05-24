@@ -3,8 +3,8 @@
 > **Level:** L2 · **Area:** Blueprint (Sales) · **DISCO:** mixed
 
 Plans **sales targets by rep and product**, sets **quotas** from a top-down number, and tracks a
-**pipeline** to see whether coverage is sufficient. Its product **Target $** is the revenue signal
-that should reconcile with the FP&A model's `CAL01 Gross Revenue`.
+**pipeline** to see whether coverage is sufficient. Its product **Target (USD)** is the revenue signal
+that reconciles with the FP&A model's `CAL03 Currency Conversion.Revenue (USD)`.
 
 ---
 
@@ -54,11 +54,23 @@ Domain-specific lists (Sales Rep, Territory, Opportunity, Sales Stage) live in [
 - The numbered **Opportunity** list keeps the large, churning pipeline out of the planning grids.
   *(Performance)*
 
-### Hand-off to FP&A
+### Hand-off to FP&A (model-to-model import)
 
-`CAL04 Target (USD)` summed by Cost Centre × Product × Time is the **same shape** as FP&A
-`CAL01 Gross Revenue (USD)` — the two should reconcile. Sales is the *bottom-up* revenue view; FP&A
-is the *driver-based* view. See [fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
+Sales and FP&A are **separate models**, so the hand-off is a scheduled **model-to-model import**, not a
+live cross-model formula. The source is this model's `CAL04 Target in USD.Target (USD)` aggregated to the
+finance grain **L3 Cost Centre × L2 Product × Time × Versions**; the target is FP&A's
+`CAL03 Currency Conversion.Revenue (USD)` at the **same grain**.
+
+**Import mapping (Sales → FP&A):**
+
+| Sales source (this model) | FP&A target | Match on |
+| --- | --- | --- |
+| `CAL04 Target in USD.Target (USD)` `[SUM: SYS10 Rep Details.Cost Centre]` by Product, Time, Version | a `Revenue (USD) — Sales target` reconciliation line read alongside `CAL03 Currency Conversion.Revenue (USD)` | `L3 Cost Centre/Entity` (shared) · `L2 Product` (shared) · `Time` (shared) · `Versions` (shared) |
+
+Because both models dimension on the **shared `_common` lists**, the four dimensions line up member-for-member
+— no remapping. Sales is the *bottom-up* revenue view; FP&A's `CAL03.Revenue (USD)` is the *driver-based*
+(volume × price) view. They will not be bit-identical — the gap is a planning conversation, not a model error.
+See [fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
 
 ---
 

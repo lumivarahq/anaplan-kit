@@ -90,19 +90,25 @@ rate is identical across domains. *(Sustainable, Logical)*
 
 ---
 
-## 5. Reconciliation hand-off to FP&A
+## 5. Reconciliation hand-off to FP&A (model-to-model import)
 
-Summing `CAL04.Target (USD)` up the org gives a revenue number on the same grain as FP&A's
-`CAL01 Gross Revenue (USD)`:
+Sales and FP&A are **separate models**. Summing `CAL04.Target (USD)` up to the finance grain gives a
+revenue number on the same grain as FP&A's `CAL03 Currency Conversion.Revenue (USD)`:
 
 ```
-Sales Target (USD)  [SUM: SYS10 Rep Details.Cost Centre]  by Product, Time
-   ≈  FP&A CAL01 Gross Revenue (USD)  by Cost Centre, Product, Time
+Sales Target (USD)  [SUM: SYS10 Rep Details.Cost Centre]  by L2 Product, Time, Version
+   ≈  FP&A CAL03 Currency Conversion.Revenue (USD)  by L3 Cost Centre, L2 Product, Time, Version
 ```
+
+**The mechanism is a scheduled model-to-model import** (not a live cross-model formula):
+
+| Sales source line item | FP&A target line item | Mapping (matched on shared `_common` lists) |
+| --- | --- | --- |
+| `CAL04 Target in USD.Target (USD)` aggregated `[SUM: SYS10 Rep Details.Cost Centre]` | the `Revenue (USD) — Sales target` reconciliation line in FP&A's `OUT02`-side check (read against `CAL03.Revenue (USD)`) | `L3 Cost Centre/Entity` → `L3 Cost Centre/Entity`; `L2 Product` → `L2 Product`; `Time` → `Time`; `Versions` → `Versions` |
 
 The two won't be bit-identical (one is bottom-up quota, the other is volume × price), but they
 **must reconcile** — the gap is a planning conversation, not a model error. The `Target (USD)`
-feeds the `Product Revenue` P&L account in [FP&A](../fpa-pl-planning/formulas.md).
+reconciles against the `Product Revenue` branch of the P&L in [FP&A](../fpa-pl-planning/formulas.md).
 
 ---
 

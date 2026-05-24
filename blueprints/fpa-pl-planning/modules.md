@@ -24,14 +24,22 @@ What planners type. Volume and price by Cost Centre × Product × month × versi
 
 ## INP02 Opex Plan — **Inputs**
 
-Operating-expense plan by Cost Centre × Opex Category. **Salaries** rows are normally **fed from
-Workforce** (see hand-off below) rather than typed.
+Operating-expense plan by Cost Centre × Opex Category. Most categories (Travel, Marketing, IT, Other) are
+typed by planners; the **`Salaries` row is import-fed from the Workforce model**, not typed (see hand-off
+below).
 
 **Applies To:** L3 Cost Centre/Entity *(common)* × Opex Category × Time *(common)* × Versions *(common)*
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| Opex (local) | Number | Sum | CC × Opex Category × Time × Versions | input — expense in local currency |
+| Opex (local) | Number | Sum | CC × Opex Category × Time × Versions | input (typed) — **except `Opex Category = "Salaries"`, which is fed by a model-to-model import** (see note) |
+
+> **Salaries hand-off (Workforce → here):** the `Opex Category = "Salaries"` slice of `Opex (local)` is
+> populated by a model-to-model import from Workforce `CAL04 Cost in USD.Cost by CC (local)` (grain
+> **L3 Cost Centre × Time × Versions**). The import pins the `Opex Category` dimension to the fixed member
+> **`"Salaries"`**, so Workforce's grain expands to this module's grain cleanly. The figure arrives in
+> **local** currency and is converted to USD once by `CAL03` (`Opex (USD)`). Planners leave the Salaries row
+> read-only; all other categories are typed. See [`workforce-planning/formulas.md`](../workforce-planning/formulas.md) §5.
 
 ---
 
@@ -44,6 +52,20 @@ Cost ratios. Kept separate from `SYS` because planners *do* tune these each cycl
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
 | COGS % | Number (%) | None | L2 Product | input — direct cost as % of revenue (e.g. Hardware 60%, Software 15%) |
+
+---
+
+## INP04 Direct Materials (imported) — **Inputs**
+
+The **receiving line for bottom-up COGS** fed from the Supply Chain model. Same grain as `CAL02` so the
+two reconcile. Blank where Supply Chain has no plan for that Cost Centre × Product — `CAL02` then falls
+back to the `COGS %` driver. **Import-fed, not typed** (see hand-off below).
+
+**Applies To:** L3 Cost Centre/Entity *(common)* × L2 Product *(common)* × Time *(common)* × Versions *(common)*
+
+| Line Item | Format | Summary | Applies To | Formula |
+| --- | --- | --- | --- | --- |
+| Direct Materials (local) | Number | Sum | CC × Product × Time × Versions | **import** from Supply Chain `CAL04 Supply Cost.Supply Cost by CC (local)` — blank ⇒ use COGS % fallback |
 
 ---
 
@@ -80,14 +102,22 @@ Volume × Price, in local currency. One step per line item. *(Auditable)*
 
 ## CAL02 Cost Calculation — **Calculations**
 
-Direct cost (COGS) derived from revenue × the product's COGS %.
+Direct cost (COGS): use the **imported** bottom-up figure from Supply Chain when present, else fall back to
+revenue × the product's COGS %.
 
 **Applies To:** L3 Cost Centre/Entity *(common)* × L2 Product *(common)* × Time *(common)* × Versions *(common)*
 
 | Line Item | Format | Summary | Applies To | Formula |
 | --- | --- | --- | --- | --- |
-| COGS (local) | Number | Sum | CC × Product × Time × Versions | `CAL01 Revenue Calculation.Gross Revenue (local) * INP03 Cost Drivers.COGS %` |
+| COGS (local) | Number | Sum | CC × Product × Time × Versions | `IF ISNOTBLANK(INP04 Direct Materials (imported).Direct Materials (local)) THEN INP04 Direct Materials (imported).Direct Materials (local) ELSE CAL01 Revenue Calculation.Gross Revenue (local) * INP03 Cost Drivers.COGS %` |
 | Gross Profit (local) | Number | Sum | CC × Product × Time × Versions | `CAL01 Revenue Calculation.Gross Revenue (local) - COGS (local)` |
+
+> **Bottom-up COGS hand-off (Supply Chain → here):** `INP04 Direct Materials (local)` is fed by a
+> model-to-model import from Supply Chain `CAL04 Supply Cost.Supply Cost by CC (local)` — both at grain
+> **L3 Cost Centre × L2 Product × Time × Versions**, so the dimensions match member-for-member. Where the
+> import leaves a cell blank, `COGS (local)` reverts to the `COGS %` driver. The local figure is converted
+> to USD once by `CAL03` (`COGS (USD)`). See [`formulas.md`](formulas.md) §2 and
+> [`supply-chain/modules.md`](../supply-chain/modules.md) (CAL04).
 
 ---
 

@@ -55,11 +55,15 @@ Domain-specific lists (SKU, Location) live in [`lists.md`](lists.md).
   acyclic across time. *(Logical, no circular reference.)*
 - SKU × Location is the heavy grid — `SYS` flags and time ranges keep it lean. *(Performance)*
 
-### Hand-off to FP&A
+### Hand-off to FP&A (model-to-model import)
 
-`CAL04 Supply Cost` rolled up by Cost Centre × Time onto the `Direct Materials` account is a
-**bottom-up COGS** that can replace FP&A's `COGS % × Revenue` driver. See
-[fpa-pl-planning/formulas.md](../fpa-pl-planning/formulas.md).
+Supply Chain and FP&A are **separate models**, so the feed is a scheduled **model-to-model import**, not a
+live formula. `CAL04 Supply Cost.Supply Cost by CC (local)` (grain **L3 Cost Centre × L2 Product × Time ×
+Versions**) imports into FP&A's `INP04 Direct Materials (imported).Direct Materials (local)` at the **same
+grain**, matched 1:1 on the shared `_common` lists. FP&A's `CAL02 COGS (local)` then uses the imported figure
+where present and falls back to `Revenue × COGS %` otherwise — making COGS **bottom-up** for planned SKUs.
+This is the `Direct Materials` branch of the P&L. See [`formulas.md`](formulas.md) §4 and
+[fpa-pl-planning/modules.md](../fpa-pl-planning/modules.md).
 
 ---
 
