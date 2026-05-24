@@ -113,3 +113,78 @@ so they pass with **no network and no Anaplan tenant**.
 
 See [`../docs/04-integration/rest-api.md`](../docs/04-integration/rest-api.md)
 for the full conceptual reference.
+
+## Modeling tools (offline, no tenant needed)
+
+The `anaplan_kit.modeling` subpackage helps you **design new features faster** by
+operationalizing this kit's conventions ([DISCO](../docs/03-methodology/disco.md),
+[naming](../templates/naming-conventions.md), the
+[formula cheat sheet](../docs/02-formulas/cheatsheet.md), blueprint tables). It is
+**pure local logic** — it never contacts an Anaplan tenant or the network, so you
+can scaffold, lint and size a feature entirely offline before you ever open a model.
+
+Run it via `python -m anaplan_kit.modeling …` or, once installed, the
+`anaplan-model` console script.
+
+### `scaffold` — start from a correct shape
+
+```bash
+# A full DISCO skeleton (DAT/INP/SYS/CAL/OUT + a README), printed as Markdown.
+python -m anaplan_kit.modeling scaffold feature "Headcount Bonus"
+
+# A single module skeleton with your dimensions and line items.
+python -m anaplan_kit.modeling scaffold module "CAL01 Revenue" \
+    --disco CALC --dims "L3 Cost Centre,Time,Versions" \
+    --line-items "Gross Revenue:Number:Sum,Margin %:Number:None"
+```
+
+Each scaffold uses the correct prefix (`DAT01`, `INP01`, `SYS01 Time Settings`,
+`CAL01`, `OUT01`), the canonical Time/Org dimensions, and the `Is Actual?` flag.
+
+### `lint` — check a blueprint against the conventions
+
+```bash
+python -m anaplan_kit.modeling lint ../blueprints/fpa-pl-planning/modules.md
+```
+
+It parses every canonical `| Line Item | Format | Summary | Applies To | Formula |`
+table in the file and reports findings by severity:
+
+- **ERROR** — wrong DISCO prefix, empty line-item name, banned `ANCESTOR()` /
+  `CHILDREN()`, `[NEXT: …]` bracket-offset misuse, single-keyword multi-mappings
+  (`[SUM: a, b]`), or unbalanced `()` `[]` / quotes. Exit code is `1` if any ERROR.
+- **WARN** — `SYS00` time-settings naming (use `SYS01`), `Is Actual Month?`
+  (use `Is Actual?`), a numeric line item with no deliberate Summary, hard-coded
+  list items (`SELECT:`), nested `IF` deeper than 3.
+- **INFO** — a `WORD(` token not in the known-function list (it may be a newer
+  function or a typo — never an error).
+
+### `size` — back-of-envelope cell count
+
+```bash
+python -m anaplan_kit.modeling size \
+    --dims "L3 Cost Centre=500,Time=36,Versions=3" --line-items 20
+```
+
+Prints `product(dimension sizes) × line items` and warns when the estimate
+exceeds the threshold (default 10,000,000 cells) — the single most useful
+*Performance* number to know before you build.
+
+### Programmatic use
+
+```python
+from anaplan_kit.modeling import (
+    Disco, Module, LineItem,
+    lint_module, render_module, parse_blueprint, cell_count,
+)
+
+m = Module("CAL01 Revenue", Disco.CALC, [
+    LineItem("Gross Revenue", "Number", "Sum",
+             ["L3 Cost Centre", "Time"], "Volume * Price"),
+])
+print(render_module(m))         # Markdown blueprint
+print(lint_module(m))           # list[Finding]
+print(cell_count({"L3 Cost Centre": 500, "Time": 36}, 1))
+```
+
+The modeling tools are covered by the same offline `pytest` suite.
