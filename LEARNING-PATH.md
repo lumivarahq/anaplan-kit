@@ -74,6 +74,7 @@ spoke model, design with subsets/time ranges to control size, and explain why ea
 | Data hub **architecture** (hub-and-spoke) | [`docs/08-advanced-features/data-hub-architecture.md`](docs/08-advanced-features/data-hub-architecture.md) |
 | Specialised features: Optimizer, PlanIQ, Workflow, Office add-ins | [`docs/08-advanced-features/`](docs/08-advanced-features/) |
 | Troubleshooting, reconciliation, testing & model size | [`docs/09-troubleshooting/`](docs/09-troubleshooting/) |
+| Real-world anti-patterns & bringing engineering discipline | [`docs/10-field-guide/`](docs/10-field-guide/) |
 | **Capstone:** build from requirements | [`exercises/`](exercises/) |
 
 **You're "L3-ready" when you can:** take a written requirement, design a multi-model architecture
