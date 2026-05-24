@@ -1,0 +1,2 @@
+# Runtime dependencies for anaplan_kit.
+requests>=2.28,<3
