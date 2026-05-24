@@ -9,19 +9,10 @@ and it all comes back to one number: **cell count**.
 
 ## Cell count is the master lever
 
-A module's size is, roughly:
-
-```
-cells in a module = (size of dimension 1)
-                  × (size of dimension 2)
-                  × … × (size of each further dimension)
-                  × (number of line items)
-```
-
-Every dimension you add **multiplies** the total; every line item adds to it. A module
-dimensioned by Product (500) × Cost Centre (200) × Month (36) × 20 line items is already
-**72 million cells** — and that's one module. Add a Version or a Region you don't truly need
-and you double or quintuple it.
+A module's cell count is the **product of its dimension sizes × its line items** — every dimension
+*multiplies*, every line item *adds*, so a handful of dimensions reaches tens of millions of cells
+fast. See the formula and the worked 72M-cell example in
+[sparsity-and-engine.md](sparsity-and-engine.md).
 
 > **The biggest performance win is almost always *removing* a dimension or a line item you
 > didn't need** — not optimising a formula. Necessity *is* performance. *(Performance,

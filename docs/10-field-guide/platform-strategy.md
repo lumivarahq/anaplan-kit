@@ -1,6 +1,6 @@
 # Platform-Aware Decisions
 
-> **Level:** L2–L3 · **Area:** Field Guide · In-scope platform facts that should change a **decision you make**.
+> **Level:** L2–L3 · **Area:** Field Guide · **PLANS:** Performance, Sustainable
 
 The Anaplan platform has moving parts — multiple engines, multiple APIs, two UX generations, hard
 size limits, scattered docs. You can't change any of that. But each one **changes a decision you or
@@ -79,14 +79,13 @@ because pages get renamed and links rot. (This kit's own function pages cite the
 
 ## Protect your own effectiveness (individual scope)
 
-The only career-adjacent points that are *actionable for you*:
-- **Document your logic** so your value isn't trapped as tribal knowledge — it makes you promotable
-  *and* the model maintainable.
+A few habits that are *actionable for you*:
+- **Document your logic** so it isn't trapped as tribal knowledge — it keeps the model maintainable.
 - **Keep the transferable concepts sharp** — dimensional modeling, data-flow design, reconciliation,
   performance reasoning. These outlast any one platform feature or rebrand.
-- **Think like an engineer even though the toolchain doesn't.** The builders who bring
+- **Think like an engineer even though the toolchain doesn't.** Models built with
   [PLANS](../03-methodology/plans-standard.md) and the [engineering disciplines](engineering-discipline.md)
-  are the ones whose models survive the next reorg, the next architect, and the next you.
+  survive the next reorg and the next builder who inherits them.
 
 ---
 
