@@ -44,6 +44,7 @@ product) and an **annual price-increase %** (per product, per year); the model d
 price. Planners can still override a specific month.
 
 **RQ3 — Cost plan.** Two cost streams:
+
 - **Variable COGS** = revenue × a per-product `COGS %`. The `COGS %` is a **cost driver** that lives
   in its own Inputs module (`INP03 Cost Drivers`) at product grain — set by finance, not editable on
   the revenue-input page.

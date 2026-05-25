@@ -22,6 +22,7 @@ Both rely on a **mapping line item**: a line item (usually in a **System** modul
 ### LOOKUP
 
 **Syntax**
+
 ```
 Source.Line Item[LOOKUP: MappingLineItem]
 ```
@@ -32,15 +33,18 @@ formatted as the **source's** dimension and tells Anaplan which source item to f
 of the result. In plain terms: "for this row, go look up the value belonging to *that* item."
 
 **Example**
+
 ```
 -- SYS Cost Centre.Region is formatted as the Region list (one region per cost centre)
 -- FX01 Rates.Rate is dimensioned by Region
 CC FX Rate = FX01 Rates.Rate[LOOKUP: SYS Cost Centre.Region]
 ```
+
 Each cost centre picks up the FX rate of the region it maps to. The result is dimensioned by
 **Cost Centre**; the rate lived on **Region**; the mapping bridged them.
 
 **Watch out for**
+
 - The mapping line item's **format must match the dimension of the source** you are looking into
   (here `Region`, because the rate is *by region*).
 - A blank mapping returns blank for that cell — incomplete mappings = silent gaps.
@@ -55,6 +59,7 @@ examples: https://help.anaplan.com/lookup-examples-18ec86e1-8e21-4d7b-a207-cf378
 ### SELECT
 
 **Syntax**
+
 ```
 Source.Line Item[SELECT: List.Item]
 ```
@@ -64,9 +69,11 @@ Picks **one specific, named item** from a dimension — e.g. always read the `US
 `Total Company` total. It hard-codes the choice into the formula.
 
 **Example**
+
 ```
 USD Rate = FX01 Rates.Rate[SELECT: Currency.USD]
 ```
+
 Always returns the USD row of the rate module.
 
 **Watch out for**
@@ -83,6 +90,7 @@ Always returns the USD row of the rate module.
 ### SUM (as a mapping aggregator)
 
 **Syntax**
+
 ```
 Source.Line Item[SUM: MappingLineItem]
 ```
@@ -93,12 +101,15 @@ it adds every source item whose mapping points at the target. See also `AVERAGE`
 `ALL` in [aggregation-functions.md](aggregation-functions.md).
 
 **Example**
+
 ```
 Region Cost = COST01 Cost by CC.Amount[SUM: SYS Cost Centre.Region]
 ```
+
 For each region, total the `Amount` of every cost centre mapped to that region.
 
 **Watch out for**
+
 - The result line item **must be dimensioned by the mapping's target** (`Region`).
 - The mapping line item must be **formatted as that target list** (`Region`).
 - This is the direction-up partner to `LOOKUP`'s direction-down. Get the two confused and you'll
@@ -111,6 +122,7 @@ For each region, total the `Amount` of every cost centre mapped to that region.
 ### FINDITEM
 
 **Syntax**
+
 ```
 FINDITEM(List, Text)
 ```
@@ -121,14 +133,17 @@ some lists). Essential when imported data arrives as text and you need a real li
 on.
 
 **Example**
+
 ```
 Country Item = FINDITEM(Countries, "US")     -- returns the Countries item named/coded "US"
 Mapped Country = FINDITEM(Countries, DAT01.Country Text)
 ```
+
 Turn a text country code on imported rows into an actual `Countries` list item you can `LOOKUP`/
 `SUM` against.
 
 **Watch out for**
+
 - Returns **blank** if no item matches — no error. Pair with `ISBLANK` to catch bad data.
 - The result line item must be **formatted as that list** (`Countries`).
 - Match is on the item's name/code; trailing spaces or case can cause misses (clean with

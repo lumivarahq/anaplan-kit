@@ -85,6 +85,7 @@ and `Revenue_OLD`, rename the survivor clearly.
 ## Part 3 — Refactor
 
 **R1.** Issues in the draft:
+
 1. `region` (typed Text) is a **mapping/attribute** → belongs in **System**, derived with `PARENT()`.
 2. `cogs pct` typed every month is a per-product **cost driver** → belongs in an **Inputs** module at
    `L2 Product` grain (`INP03 Cost Drivers`), not retyped per period inside the calc.

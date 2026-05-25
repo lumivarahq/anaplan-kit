@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 
 from .formula import check_formula
-from .model import Disco, Feature, Finding, Module
+from .model import Feature, Finding, Module
 
 # Formats that should normally carry a deliberate Summary choice.
 _NUMERIC_FORMATS = ("number", "number (%)", "number (2 dp)", "number (4 dp)")
@@ -29,30 +29,44 @@ def lint_module(m: Module) -> list[Finding]:
     name = (m.name or "").strip()
     expected = m.disco.prefix
 
-    # --- Module-name prefix must match the DISCO type. ---
-    # Names look like "CAL01 Revenue": three letters + digits + space + title.
-    actual_prefix_match = re.match(r"^([A-Za-z]{3})", name)
-    actual_prefix = actual_prefix_match.group(1).upper() if actual_prefix_match else ""
-    if actual_prefix != expected:
+    if not name:
+        # A blueprint table the parser couldn't attribute to a heading is a
+        # documentation gap, not a model error — flag as INFO, never fail on it.
         findings.append(
             Finding(
-                "ERROR", "BAD_PREFIX",
-                f"module name '{name}' should start with '{expected}' for a "
-                f"{m.disco.name.title()} module",
-                name or "<unnamed module>",
+                "INFO",
+                "UNNAMED_MODULE",
+                "blueprint table has no detectable module name — add a '## NAME' heading "
+                "above it so naming/DISCO can be checked",
+                "<unnamed module>",
             )
         )
+    else:
+        # --- Module-name prefix must match the DISCO type. ---
+        # Names look like "CAL01 Revenue": three letters + digits + space + title.
+        actual_prefix_match = re.match(r"^([A-Za-z]{3})", name)
+        actual_prefix = actual_prefix_match.group(1).upper() if actual_prefix_match else ""
+        if actual_prefix != expected:
+            findings.append(
+                Finding(
+                    "ERROR",
+                    "BAD_PREFIX",
+                    f"module name '{name}' should start with '{expected}' for a "
+                    f"{m.disco.name.title()} module",
+                    name,
+                )
+            )
 
-    # --- Time-settings module should be SYS01, not SYS00. ---
-    if re.match(r"^SYS00\b", name, re.IGNORECASE):
-        findings.append(
-            Finding(
-                "WARN", "SYS00_TIME",
-                "time-settings module is conventionally 'SYS01 Time Settings', "
-                "not 'SYS00'",
-                name,
+        # --- Time-settings module should be SYS01, not SYS00. ---
+        if re.match(r"^SYS00\b", name, re.IGNORECASE):
+            findings.append(
+                Finding(
+                    "WARN",
+                    "SYS00_TIME",
+                    "time-settings module is conventionally 'SYS01 Time Settings', not 'SYS00'",
+                    name,
+                )
             )
-        )
 
     for li in m.line_items:
         loc = f"{name} → {li.name}" if li.name else f"{name} → <unnamed>"
@@ -60,15 +74,14 @@ def lint_module(m: Module) -> list[Finding]:
 
         # --- Empty line-item name is an error. ---
         if not li_name:
-            findings.append(
-                Finding("ERROR", "EMPTY_NAME", "line item has no name", loc)
-            )
+            findings.append(Finding("ERROR", "EMPTY_NAME", "line item has no name", loc))
 
         # --- The actual/forecast flag is 'Is Actual?', not 'Is Actual Month?'. ---
         if li_name.lower() == "is actual month?":
             findings.append(
                 Finding(
-                    "WARN", "IS_ACTUAL_NAME",
+                    "WARN",
+                    "IS_ACTUAL_NAME",
                     "the actual/forecast flag is conventionally named "
                     "'Is Actual?', not 'Is Actual Month?'",
                     loc,
@@ -82,7 +95,8 @@ def lint_module(m: Module) -> list[Finding]:
             if summary is None or norm in _EMPTY_SUMMARIES:
                 findings.append(
                     Finding(
-                        "WARN", "MISSING_SUMMARY",
+                        "WARN",
+                        "MISSING_SUMMARY",
                         f"numeric line item '{li_name}' has no deliberate Summary "
                         "— set it (Sum/Average/None) on purpose",
                         loc,

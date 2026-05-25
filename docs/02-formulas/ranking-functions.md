@@ -10,6 +10,7 @@ rank". They return a **number** (the rank), which you then use to filter or labe
 ### RANK
 
 **Syntax**
+
 ```
 RANK(Source values [, Direction] [, Equal value behavior] [, Include value] [, Ranking groups])
 ```
@@ -22,14 +23,17 @@ item so ranking restarts within each group. The group argument is the **last** (
 use it you must also supply the preceding optional arguments (or their defaults).
 
 **Example**
+
 ```
 Sales Rank        = RANK(Total Sales, DESCENDING)
 Sales Rank in Rgn = RANK(Total Sales, DESCENDING, MINIMUM, TRUE, SYS Product.Region)
 ```
+
 The first ranks all products so the highest seller is `1`. The second ranks **within each region**
 independently — `SYS Product.Region` is the `Ranking groups` item in the fifth slot.
 
 **Watch out for**
+
 - **Direction matters** — without it the default `DESCENDING` ranks the largest value as 1.
 - **Ties:** the `Equal value behavior` keyword (`MINIMUM` / `MAXIMUM` / `AVERAGE` / `SEQUENTIAL`)
   decides how equal values share or split a rank — pick one deliberately.
@@ -44,6 +48,7 @@ independently — `SYS Product.Region` is the `Ranking groups` item in the fifth
 ### RANKCUMULATE
 
 **Syntax**
+
 ```
 RANKCUMULATE(Cumulation values, Ranking values [, Direction] [, Include value] [, Ranking groups])
 ```
@@ -54,13 +59,16 @@ goes. Perfect for "cumulative share by rank" / Pareto / ABC analysis: sort by sa
 sales down the ranking.
 
 **Example**
+
 ```
 Cumulative Sales by Rank = RANKCUMULATE(Total Sales, Total Sales, DESCENDING)
 ```
+
 Accumulates `Total Sales` from the top seller downward — the first item shows its own sales, the
 second shows the top two combined, and so on.
 
 **Watch out for**
+
 - The **first** argument is *what you accumulate*; the **second** is *what you rank by* — they are
   often the same line item but need not be.
 - Use `Ranking groups` (the last argument) to accumulate within each group (e.g. cumulative within

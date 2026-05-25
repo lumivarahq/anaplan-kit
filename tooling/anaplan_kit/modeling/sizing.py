@@ -53,7 +53,8 @@ def size_report(
     if count > threshold:
         findings.append(
             Finding(
-                "WARN", "LARGE_MODULE",
+                "WARN",
+                "LARGE_MODULE",
                 f"estimated {count:,} cells exceeds threshold {threshold:,} — "
                 "consider trimming Applies To or splitting Inputs from Calculations "
                 "(Performance)",

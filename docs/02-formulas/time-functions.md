@@ -19,6 +19,7 @@ The core family is: `CUMULATE`, `DECUMULATE`, `LAG`, `LEAD`, `MOVINGSUM`, `OFFSE
 ### CUMULATE
 
 **Syntax**
+
 ```
 CUMULATE(Values to cumulate [, Boolean to include] [, list to cumulate over])
 ```
@@ -27,13 +28,16 @@ CUMULATE(Values to cumulate [, Boolean to include] [, list to cumulate over])
 Running total: each period gets the sum of itself and all earlier periods.
 
 **Example**
+
 ```
 YTD Revenue = CUMULATE(Revenue)
 ```
+
 A cumulative running total of `Revenue` across the timeline. Add a Boolean to restart the
 accumulation (e.g. reset each year).
 
 **Watch out for**
+
 - The optional Boolean **includes/excludes** periods — a common pattern is to feed it
   `Time Settings.Year To Date?` to get a clean YTD that resets annually.
 - It cumulates across the module's Time by default; the third argument lets it cumulate over a list
@@ -46,6 +50,7 @@ accumulation (e.g. reset each year).
 ### DECUMULATE
 
 **Syntax**
+
 ```
 DECUMULATE(Values to decumulate [, Boolean to include] [, list to decumulate over])
 ```
@@ -55,12 +60,15 @@ The inverse of `CUMULATE`: subtracts the previous period's value from the curren
 cumulative/balance series back into period movements. The first period returns its input value.
 
 **Example**
+
 ```
 Monthly Movement = DECUMULATE(Cumulative Balance)
 ```
+
 Recovers each month's change from a running balance.
 
 **Watch out for**
+
 - First period has no prior, so it returns the raw input — check that's the behaviour you want.
 - The optional Boolean restarts the de-cumulation; the optional list de-cumulates over that list
   instead of Time, mirroring `CUMULATE`.
@@ -72,6 +80,7 @@ Recovers each month's change from a running balance.
 ### LAG
 
 **Syntax**
+
 ```
 LAG(Value to offset, Offset amount, Substitute value [, Non-positive behavior, List])
 ```
@@ -80,12 +89,15 @@ LAG(Value to offset, Offset amount, Substitute value [, Non-positive behavior, L
 Returns the value from **N periods earlier**. The bread-and-butter "prior period" function.
 
 **Example**
+
 ```
 Prior Month Sales = LAG(Sales, 1, 0)
 ```
+
 Last month's sales; for the very first period (no prior) it returns the substitute `0`.
 
 **Watch out for**
+
 - The **substitute value** fills periods where the offset falls off the start of time — don't omit
   it or you'll get blanks where you expected zeros.
 - `Offset amount` can itself be a line item (a *variable* lag), enabling driver-based shifts.
@@ -98,6 +110,7 @@ Last month's sales; for the very first period (no prior) it returns the substitu
 ### LEAD
 
 **Syntax**
+
 ```
 LEAD(Value to offset, Offset amount, Substitute value [, Non-positive behavior, List])
 ```
@@ -106,12 +119,15 @@ LEAD(Value to offset, Offset amount, Substitute value [, Non-positive behavior, 
 The forward-looking twin of `LAG`: returns the value from **N periods later**.
 
 **Example**
+
 ```
 Next Quarter Demand = LEAD(Demand, 1, 0)
 ```
+
 Reads next period's demand; substitutes `0` past the end of time.
 
 **Watch out for**
+
 - Same substitute-value rule as `LAG`, but at the **end** of the timeline.
 - Like `LAG`, the offset can be a line item for variable look-ahead.
 
@@ -122,6 +138,7 @@ Reads next period's demand; substitutes `0` past the end of time.
 ### OFFSET
 
 **Syntax**
+
 ```
 OFFSET(Value to offset, Offset amount, Substitute value [, List])
 ```
@@ -131,12 +148,15 @@ Returns the value a given number of periods away — **positive** offset looks f
 looks back. Think of it as `LAG`/`LEAD` combined, with the direction set by the sign.
 
 **Example**
+
 ```
 Three Months Ago = OFFSET(Headcount, -3, 0)
 ```
+
 Headcount three periods earlier; `0` before the timeline begins.
 
 **Watch out for**
+
 - Sign convention catches everyone out: **negative = earlier**, positive = later.
 - Don't forget the substitute value for edge periods.
 
@@ -147,6 +167,7 @@ Headcount three periods earlier; `0` before the timeline begins.
 ### POST
 
 **Syntax**
+
 ```
 POST(Value to post, Number of periods [, List])
 ```
@@ -157,12 +178,15 @@ later. Classic use: stock ordered now arrives after a lead time. (Conceptually t
 `OFFSET`: instead of *reading* from another period, it *places* a value into a future one.)
 
 **Example**
+
 ```
 Stock Arrivals = POST(Orders Placed, Lead Time Months)
 ```
+
 Each order placed shows up as an arrival `Lead Time Months` later.
 
 **Watch out for**
+
 - Values posted past the end of the timeline are lost.
 - If several source values land on the **same** target period, `POST` **adds them together**.
 - The time range of the argument must match the result line item's time range.
@@ -174,6 +198,7 @@ Each order placed shows up as an arrival `Lead Time Months` later.
 ### PREVIOUS
 
 **Syntax**
+
 ```
 PREVIOUS(Value)
 ```
@@ -183,12 +208,15 @@ Returns the value from the **immediately preceding** period (or list item). A si
 one-step `LAG`.
 
 **Example**
+
 ```
 Opening Balance = PREVIOUS(Closing Balance)
 ```
+
 This period opens where the last one closed — the canonical balance-roll pattern.
 
 **Watch out for**
+
 - First period returns blank (no prior) — handle it, e.g. `IF ISBLANK(PREVIOUS(...)) THEN Opening
   Input ELSE PREVIOUS(...)`.
 - Beware accidental **circularity** in balance formulas; Anaplan resolves period-to-period chains
@@ -201,6 +229,7 @@ This period opens where the last one closed — the canonical balance-roll patte
 ### NEXT
 
 **Syntax**
+
 ```
 NEXT(Value)
 ```
@@ -210,11 +239,13 @@ Returns the value from the **immediately following** period (or list item) — t
 `PREVIOUS`.
 
 **Example**
+
 ```
 Next Period Plan = NEXT(Plan)
 ```
 
 **Watch out for**
+
 - Last period returns blank (no successor).
 - For a *variable* look-ahead, use `LEAD`/`OFFSET` instead.
 
@@ -225,6 +256,7 @@ Next Period Plan = NEXT(Plan)
 ### MOVINGSUM
 
 **Syntax**
+
 ```
 MOVINGSUM(Line item to aggregate [, Start offset] [, End offset] [, Aggregation method] [, List])
 ```
@@ -234,12 +266,15 @@ Aggregates a **rolling window** of periods that moves with time — e.g. a trail
 Default method is `SUM` for numbers (`ANY` for Boolean, `FIRSTNONBLANK` for text/date/list).
 
 **Example**
+
 ```
 Rolling 3M Sales = MOVINGSUM(Sales, -2, 0)
 ```
+
 Sum of this month plus the two before it (a trailing-3 window).
 
 **Watch out for**
+
 - Offsets are **relative to the current period**: `-2, 0` = last 3 months; `0, 2` = next 3.
 - Override the aggregation method to get a moving average etc.; otherwise it sums.
 
@@ -250,6 +285,7 @@ Sum of this month plus the two before it (a trailing-3 window).
 ### TIMESUM
 
 **Syntax**
+
 ```
 TIMESUM(Line item to aggregate [, Start period] [, End period] [, Aggregation method])
 ```
@@ -259,12 +295,15 @@ Aggregates between **two fixed time periods** and returns **a single value** rep
 unlike `MOVINGSUM`, the window does *not* move with the current period.
 
 **Example**
+
 ```
 FY Total = TIMESUM(Revenue, START(), END())
 ```
+
 Total revenue across the whole timeline, shown identically in every period.
 
 **Watch out for**
+
 - Returns the **same** total in every period — useful as a denominator (e.g. % of full-year).
 - Default method by data type, same as `MOVINGSUM`.
 
@@ -275,6 +314,7 @@ Total revenue across the whole timeline, shown identically in every period.
 ### START / END
 
 **Syntax**
+
 ```
 START()            -- first date of the source module's Time dimension
 END()              -- last date of the source module's Time dimension
@@ -288,6 +328,7 @@ argument); `END` returns the **last date**. They are the bridge from a Time peri
 value — handy for maturity/due dates and as the bounds for `TIMESUM`.
 
 **Example**
+
 ```
 Period Start Date = START()                  -- the start date of each period on the timeline
 Period End Date   = END()                    -- the last date of each period
@@ -295,6 +336,7 @@ FY Total          = TIMESUM(Revenue, START(), END())
 ```
 
 **Watch out for**
+
 - Both return a **Date**, not a Time period — put the result in a Date-formatted line item.
 - With an argument, the source must be **time-period-formatted**; a blank period gives a blank date.
 - The displayed date format follows the viewer's browser/OS locale.
@@ -307,6 +349,7 @@ END https://help.anaplan.com/end-3d41a077-b391-45ca-a6e2-0c6dfaaeb85f
 ### PROFILE
 
 **Syntax**
+
 ```
 PROFILE(Numbers to change, Profile)
 ```
@@ -318,12 +361,15 @@ the second weight in the next period, and so on — the natural way to phase an 
 months by a seasonality curve.
 
 **Example**
+
 ```
 Phased Spend = PROFILE(Annual Budget, Seasonality %)
 ```
+
 Allocates the annual budget over periods using the seasonality weights.
 
 **Watch out for**
+
 - The profile defines the *shape*; make sure its weights sum to what you intend (often 1 / 100%).
 - The `Profile` argument is dimensioned by a **non-Time** list; the function walks its values across
   successive time periods.
@@ -335,6 +381,7 @@ Allocates the annual budget over periods using the seasonality weights.
 ### YEARVALUE / HALFYEARVALUE / QUARTERVALUE / MONTHVALUE
 
 **Syntax**
+
 ```
 YEARVALUE(Line item)
 HALFYEARVALUE(Line item)
@@ -348,12 +395,15 @@ periods inside it. `YEARVALUE` puts the year's total (per the line item's Summar
 every month of that year; `QUARTERVALUE` does the same at quarter level, and so on.
 
 **Example**
+
 ```
 Pct of Year = Revenue / YEARVALUE(Revenue)
 ```
+
 Each month's share of its full-year revenue — `YEARVALUE` supplies the annual total in every month.
 
 **Watch out for**
+
 - The value returned respects the line item's **Summary** setting (Sum/Average/…). A line item set
   to Average will give the *average*, not the total — a frequent surprise.
 - These need the corresponding period to exist in your Time settings (a model with no

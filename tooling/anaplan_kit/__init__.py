@@ -21,7 +21,7 @@ Typical usage::
 
 from __future__ import annotations
 
-from .auth import AuthToken, Authenticator
+from .auth import Authenticator, AuthToken
 from .client import AnaplanClient
 from .errors import (
     AnaplanAPIError,

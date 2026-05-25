@@ -83,8 +83,8 @@ and inherited by all.
 
 ## Concatenated text keys for matching
 
-Source systems rarely hand you a single tidy ID. A GL row might be identified by *Entity + Account
-+ Cost Centre + Period* together. To import that row reliably — and to look it up later — you build
+Source systems rarely hand you a single tidy ID. A GL row might be identified by *Entity, Account,
+Cost Centre and Period* together. To import that row reliably — and to look it up later — you build
 a **concatenated text key**: a single text line item that glues the component codes together with a
 delimiter.
 

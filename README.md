@@ -64,8 +64,10 @@ anaplan-kit/
 ├── blueprints/             worked models — shared _common backbone + FP&A / Sales / Supply Chain / Workforce
 ├── tutorials/              build the FP&A model end-to-end, step by step
 ├── exercises/              practice problems + solutions (incl. an L3 capstone)
-├── tooling/                Python package for the Anaplan REST API v2 (+ mocked tests)
+├── tooling/                Python package: Anaplan REST API v2 client + offline modeling tools
 ├── templates/              naming conventions, checklists, blueprint CSV templates
+├── tools/                  repo dev scripts (relative-link checker, blueprint conventions linter)
+├── .github/workflows/      CI: ruff + pytest, markdownlint, link & conventions checks
 └── SOURCES.md              reference URLs used to validate content
 ```
 
@@ -81,6 +83,23 @@ modules so a change in an assumption ripples through the whole plan instantly, i
 A model builder's job is to turn business requirements into modules, line items and formulas that
 are **fast, logical, auditable, necessary and sustainable** (that's **PLANS**) — and this kit
 teaches you exactly that. Start at [`docs/00-getting-started/`](docs/00-getting-started/README.md).
+
+---
+
+## Quality, linting & CI
+
+The repo lints itself with the same standards it teaches:
+
+- **Anaplan conventions linter** — `python tools/lint_blueprints.py` runs `anaplan-model lint` over
+  `blueprints/` (flags `ANCESTOR`/`CHILDREN`, single-keyword multi-mappings, non-canonical naming,
+  missing summaries, nested-`IF`, …). See [`tooling/`](tooling/README.md).
+- **Relative-link check** — `python tools/check_links.py .` (every Markdown link must resolve).
+- **Markdown lint** — `npx markdownlint-cli2 "**/*.md"` (config in [`.markdownlint.json`](.markdownlint.json)).
+- **Python** — `ruff check tooling` + `ruff format --check tooling`, and `cd tooling && python -m pytest` (offline, mocked HTTP).
+
+Run them locally with **pre-commit**: `pip install pre-commit && pre-commit install`
+([`.pre-commit-config.yaml`](.pre-commit-config.yaml)). The same checks run in **GitHub Actions** on
+every push and PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
 
 ---
 

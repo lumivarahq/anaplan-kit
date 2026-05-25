@@ -13,8 +13,13 @@ def _sample_module() -> Module:
         name="CAL01 Revenue Calculation",
         disco=Disco.CALC,
         line_items=[
-            LineItem("Gross Revenue", "Number", "Sum",
-                     ["L3 Cost Centre", "Time", "Versions"], "Volume * Price"),
+            LineItem(
+                "Gross Revenue",
+                "Number",
+                "Sum",
+                ["L3 Cost Centre", "Time", "Versions"],
+                "Volume * Price",
+            ),
             LineItem("Margin %", "Number (%)", None, ["L3 Cost Centre"], None),
         ],
     )
@@ -57,9 +62,9 @@ def test_disco_inferred_from_prefix():
         ("CAL01 X", Disco.CALC),
         ("OUT01 X", Disco.OUTPUTS),
     ]:
-        m = Module(name=prefix, disco=disco, line_items=[
-            LineItem("A", "Number", "Sum", ["Time"], None)
-        ])
+        m = Module(
+            name=prefix, disco=disco, line_items=[LineItem("A", "Number", "Sum", ["Time"], None)]
+        )
         parsed = parse_blueprint(render_module(m))
         assert parsed[0].disco == disco
 

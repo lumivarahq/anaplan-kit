@@ -21,27 +21,32 @@ one module is the #1 cause of slow, unauditable models.
 ## What goes where
 
 ### D — Data
+
 - The raw result of an import (e.g. `DAT01 Actuals from GL`).
 - Keep it **flat and faithful** to the source. Don't calculate here.
 - Often dimensioned by a **numbered list** for transactional rows.
 
 ### I — Inputs
+
 - Driver assumptions: growth %, price, headcount plan, FX rates.
 - These are the only modules most planners should be able to **edit**.
 - Style: clear, dashboard-friendly, minimal dimensionality.
 
 ### S — System
+
 - The quiet backbone: `SYS01 Time Settings`, `SYS02 Account Details`, mapping modules that link
   one list to another, Boolean flags (`Is Actual?`, `Include in Plan?`).
 - Built **once**, referenced **everywhere**. This is what makes a model *sustainable* — change the
   flag in one place, the whole model follows.
 
 ### C — Calculations
+
 - Where Inputs, Data and System meet. Revenue = Volume × Price; allocations; roll-ups.
 - **Break logic into steps** (one line item per step) for speed and auditability.
 - Usually not shown directly to users.
 
 ### O — Outputs
+
 - The presentation layer: a module shaped exactly for a dashboard card or an export file.
 - No new business logic — just selecting, formatting, and arranging existing results.
 

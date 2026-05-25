@@ -6,7 +6,7 @@ single base class to handle any failure originating from this package.
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
 class AnaplanError(Exception):
@@ -28,8 +28,8 @@ class AnaplanAPIError(AnaplanError):
     def __init__(
         self,
         message: str,
-        status_code: Optional[int] = None,
-        payload: Optional[Any] = None,
+        status_code: int | None = None,
+        payload: Any | None = None,
     ) -> None:
         super().__init__(message)
         self.status_code = status_code
@@ -47,8 +47,8 @@ class AnaplanTaskError(AnaplanError):
     def __init__(
         self,
         message: str,
-        task_id: Optional[str] = None,
-        result: Optional[Any] = None,
+        task_id: str | None = None,
+        result: Any | None = None,
     ) -> None:
         super().__init__(message)
         self.task_id = task_id

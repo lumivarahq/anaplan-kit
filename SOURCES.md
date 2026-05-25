@@ -15,6 +15,7 @@ the Anapedia page for that function, and the per-function source URL is listed t
 ## Key reference URLs
 
 ### Function reference (Anapedia)
+
 - All functions index — https://help.anaplan.com/all-functions-160769b0-de37-4f08-87a0-cc3aa55525a3
 - Formula usage tips — https://help.anaplan.com/formula-usage-tips-89bd50bd-dbbf-4465-b085-36163aa74450
 - LOOKUP — https://help.anaplan.com/lookup-f8baa402-606d-4764-a349-d8003fa383be
@@ -43,12 +44,14 @@ the Anapedia page for that function, and the per-function source URL is listed t
 > mapping module; to aggregate children, use the Sum summary method or `SUM` with a mapping.
 
 ### Methodology & best practices
+
 - Anapedia home — https://help.anaplan.com/
 - The Planual (Anaplan's model-building rulebook) — published by Anaplan; see https://help.anaplan.com/ and the Anaplan Community.
 - Anaplan Community / Academy best practices — https://community.anaplan.com/
 - PLANS modeling standard & DISCO — Anaplan best-practice materials (Academy / Community).
 
 ### Calculation engines, performance diagnostics & ALM (field guide)
+
 - Anaplan calculation engines (Classic vs Polaris) — https://help.anaplan.com/anaplan-calculation-engines-06c06ade-2807-4f3d-9a6e-d69ae0e257e5
 - Polaris calculation engine — https://help.anaplan.com/polaris-calculation-engine-8b466778-42b2-4e35-b318-e5e4128b63b7
 - Understand sparsity and density — https://help.anaplan.com/understand-sparsity-and-density-616ee341-8a5f-4718-8c90-c82e34eca86c
@@ -59,6 +62,7 @@ the Anapedia page for that function, and the per-function source URL is listed t
 - OEG Best Practice: Anaplan Performance Triangle (Community) — https://community.anaplan.com/discussion/140709/oeg-best-practice-anaplan-performance-triangle
 
 ### REST API & integration
+
 - Anaplan REST API & integration docs — https://help.anaplan.com/ (Data Integrations section)
 - Anaplan Connect — https://help.anaplan.com/ (Anaplan Connect section)
 - CloudWorks — https://help.anaplan.com/ (CloudWorks section)

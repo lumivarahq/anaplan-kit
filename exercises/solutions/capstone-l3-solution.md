@@ -55,6 +55,7 @@ INP03 (Fixed Opex) ──────────────> CAL03 Cost ──
 SYS04 (FX) + SYS02 (Local Currency) ─────────────────────────────┘                            │
 DAT01 Actuals ────────────────────────────────────────────────────────────────────────────────┘ (blend via SYS01.Is Actual?)
 ```
+
 *(AC2 — each module is exactly one DISCO type, correctly prefixed.)*
 
 ---
@@ -78,13 +79,17 @@ Base price compounds by the annual % via a power of "years since base" — deriv
 ### RQ1/RQ3 — Revenue & costs
 
 **`CAL02 Revenue`** · L3 CC × L2 Product × Time × Versions:
+
 ```
 Gross Revenue (local) = 'INP01 Revenue Assumptions'.Volume * 'CAL01 Price'.Price (local)
 ```
+
 **`CAL03 Cost`** · same grain:
+
 ```
 COGS (local) = 'CAL02 Revenue'.Gross Revenue (local) * 'INP03 Cost Drivers'.COGS %
 ```
+
 `COGS %` is a per-product driver in `INP03 Cost Drivers` (Product grain); it broadcasts across Cost
 Centre/Time/Versions automatically. *(AC4)*
 
@@ -106,28 +111,33 @@ Centre/Time/Versions automatically. *(AC4)*
 **`SYS04 Exchange Rates`** holds `Rate to USD` per Currency × Time × Versions (filled to 1 for
 USD). **`CAL05 P&L (USD)`** converts each line, looking up the rate by the cost centre's local
 currency:
+
 ```
 Revenue USD = 'CAL04 P&L (Local)'.Revenue
             * 'SYS04 Exchange Rates'.Rate (filled)[LOOKUP: 'SYS02 Organization Details'.Local Currency]
 ```
+
 (Same pattern for COGS, Opex; Gross Profit/EBITDA recompute from the USD lines.) No rate
 hard-coded; roll to FY28 and new months' rates simply get imported. *(Sustainable)*
 
 ### RQ6 — Actuals/forecast blend *(AC6)*
 
 **`CAL06 Reported P&L`** · L3 CC × Time × Versions:
+
 ```
 Reported Revenue =
   IF 'SYS01 Time Settings'.Is Actual?
   THEN 'DAT01 Actuals'.Revenue[SUM: L2 Product]
   ELSE 'CAL05 P&L (USD)'.Revenue USD
 ```
+
 (Repeat per line.) Keyed to `Is Actual?` (driven by the current period) — advancing the period
 re-splits automatically, **no edits**. *(Sustainable, Auditable)*
 
 ### RQ7 — Ranking *(AC7)*
 
 **`OUT02 Top Products`** · L2 Product × Time:
+
 ```
 Revenue           = 'CAL02 Revenue'.Gross Revenue (local)[SUM: L3 Cost Centre]
 Product Rev Rank  = RANK(Revenue, DESCENDING, ANY, , L2 Product)   // within each month: Groups slot = L2 Product

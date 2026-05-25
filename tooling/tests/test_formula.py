@@ -86,9 +86,7 @@ def test_real_item_quote_balanced_pair_not_unbalanced():
 
 
 def test_balanced_complex_is_clean_of_unbalanced():
-    findings = check_formula(
-        "IF ISBLANK(Sales) THEN 0 ELSE Source.LI[LOOKUP: Map]"
-    )
+    findings = check_formula("IF ISBLANK(Sales) THEN 0 ELSE Source.LI[LOOKUP: Map]")
     assert "UNBALANCED" not in _codes(findings)
 
 

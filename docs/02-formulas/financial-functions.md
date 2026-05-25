@@ -15,6 +15,7 @@ schedules: net present value, internal rate of return, and loan payments.
 ### NPV
 
 **Syntax**
+
 ```
 -- Cash-flow-over-Time form (module dimensioned by Time):
 NPV(Interest rate, Cash flow line item)
@@ -26,12 +27,15 @@ Calculates the **net present value** of a series of cash flows (inflows positive
 negative) discounted at a constant interest rate.
 
 **Example**
+
 ```
 Project NPV = NPV(Discount Rate, Net Cash Flow)
 ```
+
 Discounts the `Net Cash Flow` series back to a present value at `Discount Rate`.
 
 **Watch out for**
+
 - There are **two syntaxes** (time-series vs. date/value pairs); which one applies is determined by
   whether you pass more or fewer than two arguments.
 - The rate must match the cash-flow **period** (a monthly series needs a monthly rate).
@@ -43,6 +47,7 @@ Discounts the `Net Cash Flow` series back to a present value at `Discount Rate`.
 ### IRR
 
 **Syntax**
+
 ```
 IRR(Cash flow line item)              -- cash-flow-over-Time form
 -- (A second form takes date/cash-flow pairs and more arguments.)
@@ -53,11 +58,13 @@ Returns the **internal rate of return** — the discount rate at which the NPV o
 zero.
 
 **Example**
+
 ```
 Project IRR = IRR(Net Cash Flow)
 ```
 
 **Watch out for**
+
 - Like `NPV`, `IRR` has two forms distinguished by **how many arguments** you pass — more or fewer
   than two arguments selects the form. The date/value-pairs form is the equivalent of Excel's
   `XIRR`.
@@ -71,6 +78,7 @@ Project IRR = IRR(Net Cash Flow)
 ### PMT
 
 **Syntax**
+
 ```
 PMT(Interest rate, Number of periods, Present value [, Future value] [, Timing])
 ```
@@ -80,12 +88,15 @@ Returns the **periodic payment** for a loan or annuity, given a constant rate an
 periods.
 
 **Example**
+
 ```
 Monthly Payment = PMT(Annual Rate / 12, Term Months, Loan Amount)
 ```
+
 The level monthly payment that repays `Loan Amount` over `Term Months`.
 
 **Watch out for**
+
 - The **rate and the number of periods must use the same unit** — a monthly schedule needs a
   monthly rate (annual ÷ 12).
 - `Timing` controls payment at start vs. end of period; the optional `Future value` defaults to 0.
@@ -98,6 +109,7 @@ The level monthly payment that repays `Loan Amount` over `Term Months`.
 ### CUMIPMT
 
 **Syntax**
+
 ```
 CUMIPMT(Interest rate, Number of periods, Principal, Start period, End period [, Timing])
 ```
@@ -106,12 +118,15 @@ CUMIPMT(Interest rate, Number of periods, Principal, Start period, End period [,
 Returns the **cumulative interest** payable on a loan between a start and end period.
 
 **Example**
+
 ```
 Interest Yr1 = CUMIPMT(Annual Rate / 12, Term Months, Loan Amount, 1, 12)
 ```
+
 Total interest paid across months 1–12.
 
 **Watch out for**
+
 - Same rate/period unit-matching rule as `PMT`.
 - `Start period` / `End period` are **period numbers** within the loan, not dates.
 

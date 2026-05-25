@@ -15,6 +15,7 @@ there.
 ### ITEM
 
 **Syntax**
+
 ```
 ITEM(List)
 ```
@@ -24,13 +25,16 @@ Returns the **current list item** for the cell being calculated — the item on 
 dimension. The key to "am I this item?" tests and to building self-referential logic.
 
 **Example**
+
 ```
 Is HQ Cost Centre? = ITEM(Cost Centre) = Cost Centre.'HQ'
 Own Name           = NAME(ITEM(Cost Centre))
 ```
+
 The first asks, for each cost-centre row, "is this row the HQ item?"
 
 **Watch out for**
+
 - `ITEM(List)` only works if the module **is dimensioned by** that list.
 - Comparing `ITEM(...)` to a hard-coded item name is acceptable for a one-off, but for recurring
   logic drive it from a System flag instead. *(Sustainable.)*
@@ -42,6 +46,7 @@ The first asks, for each cost-centre row, "is this row the HQ item?"
 ### PARENT
 
 **Syntax**
+
 ```
 PARENT(Child item)
 ```
@@ -51,13 +56,16 @@ Returns the **immediate parent** of a list item (or time period) — one level u
 Returns a value of the same data type as the child, but at the parent's level.
 
 **Example**
+
 ```
 CC Region = PARENT(ITEM(Cost Centre))     -- if Region is the parent list of Cost Centre
 ```
+
 Gives each cost centre its region item — a quick way to build a mapping when the hierarchy already
 encodes the relationship.
 
 **Watch out for**
+
 - Result is **formatted as the parent list** — your line item must match that format.
 - `PARENT` goes **exactly one** level up. For "two levels up", chain it (`PARENT(PARENT(item))`) or
   build a SYS mapping line item — see *Reaching ancestors and children* below.
@@ -69,6 +77,7 @@ encodes the relationship.
 ### ISANCESTOR
 
 **Syntax**
+
 ```
 ISANCESTOR(Item1, Item2)
 ```
@@ -78,12 +87,15 @@ Returns a **Boolean**: TRUE if `Item1` is an ancestor of `Item2` (its parent, gr
 on). Great for "does this detail row belong under that node?" tests across composite hierarchies.
 
 **Example**
+
 ```
 Under Selected Node? = ISANCESTOR(Selected Region, ITEM(Cost Centre))
 ```
+
 TRUE for every cost centre that sits beneath the chosen region.
 
 **Watch out for**
+
 - Returns a **Boolean** — use it directly, no `IF … THEN TRUE` wrapper.
 - Order matters: `ISANCESTOR(ancestor, descendant)`. Swapping the arguments inverts the test.
 
@@ -94,6 +106,7 @@ TRUE for every cost centre that sits beneath the chosen region.
 ### ITEMLEVEL
 
 **Syntax**
+
 ```
 ITEMLEVEL(Item, ROOT)     -- count of items from the item up to its root, inclusive
 ITEMLEVEL(Item, LEAF)     -- count of items from the item down to its furthest descendant, inclusive
@@ -105,18 +118,23 @@ root (`ROOT`) or down toward its deepest leaf (`LEAF`), counting the item itself
 return a Boolean and does not, on its own, give a single "level index" of the classic kind.
 
 **Example**
+
 ```
 Depth To Root  = ITEMLEVEL(ITEM(Cost Centre), ROOT)   -- 1 at the top, larger further down
 Depth To Leaf  = ITEMLEVEL(ITEM(Cost Centre), LEAF)   -- 1 at a leaf, larger higher up
 ```
+
 A clean leaf test follows from the `LEAF` direction — a leaf has no descendants below it:
+
 ```
 Is Leaf? = ITEMLEVEL(ITEM(Cost Centre), LEAF) = 1     -- Boolean: true only for bottom-level items
 ```
+
 Note `Is Leaf?` is the **comparison** `= 1`; `ITEMLEVEL(...)` by itself is a number, so a Boolean
 line item cannot take the bare function.
 
 **Watch out for**
+
 - `ITEMLEVEL` is **only available in the Polaris calculation engine** — it is not in Classic. If you
   are on Classic, derive leaf status another way (e.g. flag items that have no children via a SYS
   module).
@@ -129,6 +147,7 @@ line item cannot take the bare function.
 ### FIRSTNONBLANK
 
 **Syntax**
+
 ```
 Values to search[FIRSTNONBLANK: Mapping]
 ```
@@ -139,12 +158,15 @@ An **aggregation** function: returns the **first non-blank** value found for eac
 exists" — e.g. the first month a product had sales. Returns a value matching the source's type.
 
 **Example**
+
 ```
 First Active Region = SYS Cost Centre.Region[FIRSTNONBLANK: SYS Cost Centre.Division]
 ```
+
 For each division, the first non-blank region among its cost centres.
 
 **Watch out for**
+
 - The containing line item must be **dimensioned by all of the mapping's dimensions**.
 - "First" follows the **order of the list/time dimension** — make sure that order means what you
   think.

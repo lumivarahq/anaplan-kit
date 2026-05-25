@@ -17,10 +17,10 @@ import argparse
 import sys
 
 from .blueprint import parse_blueprint
-from .lint import has_errors, lint_module
+from .lint import lint_module
 from .model import Disco, LineItem
 from .scaffold import scaffold_feature, scaffold_module
-from .sizing import cell_count, DEFAULT_THRESHOLD
+from .sizing import DEFAULT_THRESHOLD, cell_count
 
 
 def _parse_dims_csv(text: str) -> list[str]:
@@ -80,32 +80,48 @@ def _cmd_scaffold(args: argparse.Namespace) -> int:
 
 
 def _cmd_lint(args: argparse.Namespace) -> int:
-    try:
-        with open(args.path, "r", encoding="utf-8") as fh:
-            md = fh.read()
-    except OSError as exc:
-        print(f"ERROR: cannot read {args.path}: {exc}", file=sys.stderr)
-        return 2
+    import glob
+    import os
 
-    modules = parse_blueprint(md)
-    findings = []
-    for m in modules:
-        findings.extend(lint_module(m))
-
-    if not findings:
-        print(f"OK — parsed {len(modules)} module(s), no findings.")
+    if os.path.isdir(args.path):
+        files = sorted(glob.glob(os.path.join(args.path, "**", "*.md"), recursive=True))
+    else:
+        files = [args.path]
+    if not files:
+        print(f"OK — no Markdown files found under {args.path}.")
         return 0
 
     counts = {"ERROR": 0, "WARN": 0, "INFO": 0}
-    for f in findings:
-        counts[f.severity] += 1
-        print(str(f))
+    total_modules = 0
+    printed = False
+    for path in files:
+        try:
+            with open(path, encoding="utf-8") as fh:
+                md = fh.read()
+        except OSError as exc:
+            print(f"ERROR: cannot read {path}: {exc}", file=sys.stderr)
+            return 2
+        modules = parse_blueprint(md)
+        total_modules += len(modules)
+        for m in modules:
+            for finding in lint_module(m):
+                counts[finding.severity] += 1
+                # Prefix multi-file runs with the file so findings are locatable.
+                prefix = f"{path}: " if len(files) > 1 else ""
+                print(f"{prefix}{finding}")
+                printed = True
+
+    if not printed:
+        scope = f"{len(files)} file(s)" if len(files) > 1 else args.path
+        print(f"OK — parsed {total_modules} module(s) across {scope}, no findings.")
+        return 0
+
     print(
-        f"\n{len(modules)} module(s); "
+        f"\n{total_modules} module(s) in {len(files)} file(s); "
         f"{counts['ERROR']} error(s), {counts['WARN']} warning(s), "
         f"{counts['INFO']} info."
     )
-    return 1 if has_errors(findings) else 0
+    return 1 if counts["ERROR"] else 0
 
 
 def _cmd_size(args: argparse.Namespace) -> int:
@@ -135,38 +151,45 @@ def build_parser() -> argparse.ArgumentParser:
     scaffold_sub = p_scaffold.add_subparsers(dest="kind", required=True)
 
     p_feat = scaffold_sub.add_parser("feature", help="a full DISCO skeleton set")
-    p_feat.add_argument("name", help="feature name, e.g. \"Headcount Bonus\"")
+    p_feat.add_argument("name", help='feature name, e.g. "Headcount Bonus"')
     p_feat.set_defaults(func=_cmd_scaffold)
 
     p_mod = scaffold_sub.add_parser("module", help="a single module skeleton")
-    p_mod.add_argument("name", help="module name, e.g. \"CAL01 Revenue\"")
+    p_mod.add_argument("name", help='module name, e.g. "CAL01 Revenue"')
     p_mod.add_argument(
-        "--disco", required=True,
+        "--disco",
+        required=True,
         choices=[d.name for d in Disco],
         help="DISCO type (DATA/INPUTS/SYSTEM/CALC/OUTPUTS)",
     )
-    p_mod.add_argument("--dims", default="", help="comma-separated dimensions, e.g. \"A,B\"")
+    p_mod.add_argument("--dims", default="", help='comma-separated dimensions, e.g. "A,B"')
     p_mod.add_argument(
-        "--line-items", default=None,
-        help="comma-separated Name:Format:Summary, e.g. "
-        "\"Revenue:Number:Sum,Price:Number:None\"",
+        "--line-items",
+        default=None,
+        help='comma-separated Name:Format:Summary, e.g. "Revenue:Number:Sum,Price:Number:None"',
     )
     p_mod.set_defaults(func=_cmd_scaffold)
 
     # lint
-    p_lint = sub.add_parser("lint", help="parse a blueprint .md and lint it")
-    p_lint.add_argument("path", help="path to a blueprint Markdown file")
+    p_lint = sub.add_parser("lint", help="parse a blueprint .md (or a directory) and lint it")
+    p_lint.add_argument(
+        "path",
+        help="path to a blueprint Markdown file, or a directory to lint all *.md under it",
+    )
     p_lint.set_defaults(func=_cmd_lint)
 
     # size
     p_size = sub.add_parser("size", help="estimate a module's cell count")
     p_size.add_argument(
-        "--dims", required=True,
-        help="comma-separated NAME=SIZE, e.g. \"L3 Cost Centre=500,Time=36\"",
+        "--dims",
+        required=True,
+        help='comma-separated NAME=SIZE, e.g. "L3 Cost Centre=500,Time=36"',
     )
     p_size.add_argument("--line-items", type=int, required=True, help="number of line items")
     p_size.add_argument(
-        "--threshold", type=int, default=DEFAULT_THRESHOLD,
+        "--threshold",
+        type=int,
+        default=DEFAULT_THRESHOLD,
         help=f"warn above this cell count (default {DEFAULT_THRESHOLD:,})",
     )
     p_size.set_defaults(func=_cmd_size)

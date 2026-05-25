@@ -1,0 +1,43 @@
+# Pre-commit hooks for the Anaplan Data Modeler Kit.
+#
+# Setup:  pip install pre-commit && pre-commit install
+# Run on everything:  pre-commit run --all-files
+#
+# These run as local/system hooks, so contributors need: ruff, Python 3.10+,
+# and Node (for markdownlint-cli2 via npx). This avoids pinning external hook
+# revisions and keeps the linters identical to what CI runs.
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff (lint)
+        entry: ruff check
+        language: system
+        types: [python]
+
+      - id: ruff-format
+        name: ruff (format check)
+        entry: ruff format --check
+        language: system
+        types: [python]
+
+      - id: anaplan-conventions-lint
+        name: Anaplan conventions lint (blueprints)
+        entry: python tools/lint_blueprints.py
+        language: system
+        pass_filenames: false
+        files: ^blueprints/.*\.md$
+
+      - id: markdown-link-check
+        name: relative Markdown links resolve
+        entry: python tools/check_links.py
+        language: system
+        pass_filenames: false
+        files: \.md$
+
+      - id: markdownlint
+        name: markdownlint-cli2
+        entry: npx --yes markdownlint-cli2
+        language: system
+        files: \.md$
+        exclude: /node_modules/

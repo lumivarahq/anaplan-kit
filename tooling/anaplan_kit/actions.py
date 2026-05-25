@@ -14,8 +14,12 @@ class _SupportsRunActionAndWait(Protocol):
     """Structural type for the lifecycle method this mixin reuses."""
 
     def run_action_and_wait(
-        self, workspace_id: str, model_id: str, resource: str,
-        resource_id: str, **kwargs: Any,
+        self,
+        workspace_id: str,
+        model_id: str,
+        resource: str,
+        resource_id: str,
+        **kwargs: Any,
     ) -> dict[str, Any]: ...
 
 
@@ -44,9 +48,7 @@ class ActionsMixin:
             The completed task status payload, whose ``result`` rolls up each
             contained action's outcome.
         """
-        return self.run_action_and_wait(
-            workspace_id, model_id, "processes", process_id, **kwargs
-        )
+        return self.run_action_and_wait(workspace_id, model_id, "processes", process_id, **kwargs)
 
     def run_generic_action(
         self: _SupportsRunActionAndWait,
@@ -62,6 +64,4 @@ class ActionsMixin:
             model_id: Model ID.
             action_id: The action to run.
         """
-        return self.run_action_and_wait(
-            workspace_id, model_id, "actions", action_id, **kwargs
-        )
+        return self.run_action_and_wait(workspace_id, model_id, "actions", action_id, **kwargs)

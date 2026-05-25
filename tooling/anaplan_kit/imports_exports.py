@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import os
 import time
-from typing import Any, Optional, Protocol
+from typing import Any, Protocol
 
 from .errors import AnaplanTaskError
 
@@ -67,9 +67,7 @@ class ImportsExportsMixin:
         """
         file_size = os.path.getsize(file_path)
         chunk_count = max(1, -(-file_size // chunk_size))  # ceil division
-        base = (
-            f"/workspaces/{workspace_id}/models/{model_id}/files/{file_id}"
-        )
+        base = f"/workspaces/{workspace_id}/models/{model_id}/files/{file_id}"
 
         # 1. Declare how many chunks are coming.
         self._request("POST", base, json={"chunkCount": chunk_count})
@@ -99,7 +97,7 @@ class ImportsExportsMixin:
         resource: str,
         resource_id: str,
         *,
-        body: Optional[dict[str, Any]] = None,
+        body: dict[str, Any] | None = None,
         poll_interval: float = DEFAULT_POLL_INTERVAL,
         timeout: float = DEFAULT_POLL_TIMEOUT,
     ) -> dict[str, Any]:
@@ -125,9 +123,7 @@ class ImportsExportsMixin:
         Raises:
             AnaplanTaskError: If the task fails or times out.
         """
-        task_id = self.start_task(
-            workspace_id, model_id, resource, resource_id, body=body
-        )
+        task_id = self.start_task(workspace_id, model_id, resource, resource_id, body=body)
         return self.poll_task(
             workspace_id,
             model_id,
@@ -145,21 +141,16 @@ class ImportsExportsMixin:
         resource: str,
         resource_id: str,
         *,
-        body: Optional[dict[str, Any]] = None,
+        body: dict[str, Any] | None = None,
     ) -> str:
         """Start an async task and return its ``taskId``."""
-        path = (
-            f"/workspaces/{workspace_id}/models/{model_id}/"
-            f"{resource}/{resource_id}/tasks"
-        )
+        path = f"/workspaces/{workspace_id}/models/{model_id}/{resource}/{resource_id}/tasks"
         payload = body if body is not None else {"localeName": "en_US"}
         response = self._request("POST", path, json=payload)
         task = response.get("task", response)
         task_id = task.get("taskId")
         if not task_id:
-            raise AnaplanTaskError(
-                f"Task start response missing taskId: {response!r}"
-            )
+            raise AnaplanTaskError(f"Task start response missing taskId: {response!r}")
         return task_id
 
     def poll_task(
@@ -187,8 +178,7 @@ class ImportsExportsMixin:
             AnaplanTaskError: If the task reports failure or the timeout is hit.
         """
         path = (
-            f"/workspaces/{workspace_id}/models/{model_id}/"
-            f"{resource}/{resource_id}/tasks/{task_id}"
+            f"/workspaces/{workspace_id}/models/{model_id}/{resource}/{resource_id}/tasks/{task_id}"
         )
         deadline = time.monotonic() + timeout
         while True:
@@ -210,8 +200,7 @@ class ImportsExportsMixin:
 
             if time.monotonic() >= deadline:
                 raise AnaplanTaskError(
-                    f"Task {task_id} did not complete within {timeout}s "
-                    f"(last state: {state}).",
+                    f"Task {task_id} did not complete within {timeout}s (last state: {state}).",
                     task_id=task_id,
                     result=status.get("result"),
                 )
@@ -227,9 +216,7 @@ class ImportsExportsMixin:
         **kwargs: Any,
     ) -> dict[str, Any]:
         """Run an import action and wait for it to complete."""
-        return self.run_action_and_wait(
-            workspace_id, model_id, "imports", import_id, **kwargs
-        )
+        return self.run_action_and_wait(workspace_id, model_id, "imports", import_id, **kwargs)
 
     def run_export(
         self,
@@ -242,9 +229,7 @@ class ImportsExportsMixin:
 
         Use :meth:`download_export` afterwards to fetch the produced file.
         """
-        return self.run_action_and_wait(
-            workspace_id, model_id, "exports", export_id, **kwargs
-        )
+        return self.run_action_and_wait(workspace_id, model_id, "exports", export_id, **kwargs)
 
     # -- chunked download ---------------------------------------------------
 
@@ -268,17 +253,13 @@ class ImportsExportsMixin:
         Returns:
             ``dest_path``.
         """
-        base = (
-            f"/workspaces/{workspace_id}/models/{model_id}/files/{file_id}"
-        )
+        base = f"/workspaces/{workspace_id}/models/{model_id}/files/{file_id}"
         meta = self._request("GET", f"{base}/chunks")
         chunks = meta.get("chunks", [])
 
         with open(dest_path, "wb") as handle:
             for chunk in chunks:
                 chunk_id = chunk["id"]
-                data = self._request(
-                    "GET", f"{base}/chunks/{chunk_id}", expect_json=False
-                )
+                data = self._request("GET", f"{base}/chunks/{chunk_id}", expect_json=False)
                 handle.write(data)
         return dest_path
