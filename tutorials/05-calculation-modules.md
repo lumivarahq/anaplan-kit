@@ -31,6 +31,7 @@ Revenue = `Volume × Price (local)`. Both drivers live in `INP01 Revenue Assumpt
 | `Gross Revenue (local)` | Number | Sum | L3 Cost Centre, L2 Product, Time, Versions | `Volume * Price (local)` |
 
 Notes:
+
 - We pull `Volume` and `Price (local)` into local line items first, then multiply. That extra step is
   deliberate — it keeps `Gross Revenue (local)` a one-token-per-side formula that reads itself
   (*Auditable*). You could multiply the `INP01` references directly, but the stepped form is the
@@ -57,6 +58,7 @@ gross profit.
 | `Gross Profit (local)` | Number | Sum | L3 Cost Centre, L2 Product, Time, Versions | `'CAL01 Revenue'.Gross Revenue (local) - COGS (local)` |
 
 Notes:
+
 - `COGS %` is read from `INP03 Cost Drivers` (dimensioned by Product only); Anaplan broadcasts each
   product's value across Cost Centre, Time and Versions automatically — no mapping function needed.
 - `COGS (local)` reads `Gross Revenue (local)` once; don't re-derive `Volume * Price * COGS %` here.
@@ -82,6 +84,7 @@ local currency, then converted on the way up. We convert here, reading the FX ra
 | `Opex (USD)` | Number | Sum | L3 Cost Centre, Time, Versions | `'INP02 Opex Plan'.Opex (local) * FX Rate` |
 
 Notes:
+
 - `LOOKUP` picks the `SYS04` row whose `Currency` equals the cost centre's `Local Currency`
   (from `SYS02`). `Rate (filled)` returns `1` for USD, so USD cost centres pass through unchanged.
 - This is the **kit's signature currency pattern** — the same shape Sales and Workforce reuse. See
@@ -112,6 +115,7 @@ Versions** and pulls each USD measure at the right grain, summing over Product w
 | `EBITDA` | Number | Sum | L3 Cost Centre, Time, Versions | `Gross Profit - Opex` |
 
 Notes:
+
 - `[SUM: L2 Product]` collapses the Product dimension — it sums each product's USD revenue/COGS up to
   the cost centre. `Opex (USD)` is already at cost-centre grain, so it's pulled once here — **not**
   double-counted across products.

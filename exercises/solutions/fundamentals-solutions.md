@@ -56,6 +56,7 @@ Multiply that mistake across many modules and a model becomes slow or won't open
 ## C. Formats
 
 **C1.**
+
 1. `Gross Revenue (local)` → **Number**
 2. `COGS %` → **Number** formatted as a **percentage** (`Number (%)`)
 3. `Is Active?` → **Boolean**
@@ -74,6 +75,7 @@ clean and filters/aggregations behave.
 ## D. Summary methods
 
 **D1.**
+
 1. `Gross Revenue (local)` → **Sum** (money adds up across products/cost centres/months).
 2. `Price (local)` → **Average** (a price shouldn't add up; the average across the grain is
    meaningful-ish).
@@ -93,6 +95,7 @@ and Revenue), rather than averaging the monthly percentages.
 ## E. DISCO classification
 
 **E1.**
+
 1. Imported GL actuals → **Data** → `DAT01`
 2. Typed headcount plan → **Inputs** → `INP0x`
 3. `Gross Profit = Revenue − COGS` → **Calculations** → `CAL0x`
@@ -100,6 +103,7 @@ and Revenue), rather than averaging the monthly percentages.
 5. Dashboard-shaped P&L card → **Outputs** → `OUT0x`
 
 **E2.**
+
 1. `Cost Centre → Region` mapping → **System** (`SYS02 Organization Details`)
 2. A product's `COGS %` cost driver → **Inputs** (`INP03 Cost Drivers`) — planners *do* tune it each
    cycle, so it's a typed assumption, not a structural attribute. (Contrast a truly fixed attribute

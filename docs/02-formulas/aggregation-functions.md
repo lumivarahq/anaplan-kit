@@ -25,6 +25,7 @@ There are two shapes you will meet:
 ### SUM
 
 **Syntax**
+
 ```
 Values to sum[SUM: Mapping]
 ```
@@ -34,12 +35,15 @@ Adds up source values, grouping them onto the target by a mapping line item. The
 cost-centre numbers up to region" tool.
 
 **Example**
+
 ```
 Region Cost = COST01 Cost by CC.Amount[SUM: SYS Cost Centre.Region]
 ```
+
 For each region, sum every cost-centre's `Amount` whose mapping `Region` equals that region.
 
 **Watch out for**
+
 - The mapping line item must be **formatted as the target list** (here, `Region`).
 - Your result line item must be dimensioned by `Region`; the source by `Cost Centre`.
 - Blank mappings drop those source rows from the total — check your mapping is complete.
@@ -51,6 +55,7 @@ For each region, sum every cost-centre's `Amount` whose mapping `Region` equals 
 ### AVERAGE
 
 **Syntax**
+
 ```
 Values to average[AVERAGE: Mapping]
 ```
@@ -59,12 +64,15 @@ Values to average[AVERAGE: Mapping]
 Returns the mean of the mapped source values on each target item.
 
 **Example**
+
 ```
 Avg Deal Size = SALES.Deal Value[AVERAGE: SYS Rep.Region]
 ```
+
 Average deal value per region across that region's sales reps.
 
 **Watch out for**
+
 - `AVERAGE` here averages the **source cells**, not a sum-divided-by-something you define. For a
   weighted average, compute `SUM(numerator) / SUM(denominator)` in separate line items instead.
 - Beware blanks: a blank source cell is excluded from the average, which may not be what you want.
@@ -76,6 +84,7 @@ Average deal value per region across that region's sales reps.
 ### MIN
 
 **Syntax**
+
 ```
 Values[MIN: Mapping]
 ```
@@ -85,12 +94,15 @@ Returns the smallest mapped value on each target item. (`MIN` is also used as a 
 comparison: `MIN(a, b)` returns the smaller of two values.)
 
 **Example**
+
 ```
 Earliest Start = TASKS.Start Date[MIN: SYS Task.Project]
 ```
+
 The earliest task start date per project.
 
 **Watch out for**
+
 - Works on numbers and dates. For dates, "minimum" means earliest.
 - Don't confuse the aggregation form `[MIN: …]` with the inline `MIN(x, y)` comparison form.
 
@@ -101,6 +113,7 @@ The earliest task start date per project.
 ### MAX
 
 **Syntax**
+
 ```
 Values[MAX: Mapping]
 ```
@@ -109,12 +122,15 @@ Values[MAX: Mapping]
 Returns the largest mapped value on each target item. Also available inline as `MAX(a, b)`.
 
 **Example**
+
 ```
 Peak Headcount = HC.Headcount[MAX: SYS Dept.Division]
 ```
+
 The highest headcount any department reached, rolled up per division.
 
 **Watch out for**
+
 - `MAX(Value, 0)` is a common idiom to floor a number at zero (no negatives) — clearer and faster
   than an `IF`.
 
@@ -125,6 +141,7 @@ The highest headcount any department reached, rolled up per division.
 ### COUNT
 
 **Syntax**
+
 ```
 Values to count[COUNT: Mapping]
 ```
@@ -133,12 +150,15 @@ Values to count[COUNT: Mapping]
 Counts the non-blank source items mapped to each target.
 
 **Example**
+
 ```
 Reps per Region = SYS Rep.Active?[COUNT: SYS Rep.Region]
 ```
+
 Number of (non-blank/active) reps in each region.
 
 **Watch out for**
+
 - `COUNT` counts **non-blank** cells, not "rows that are TRUE". To count Booleans that are TRUE,
   filter first (e.g. a line item that is blank when FALSE) or use `SUM` over a 1/0 indicator.
 - `COUNT` is an aggregation **method** (used as `[COUNT: Mapping]`), not a standalone `COUNT(...)`
@@ -151,6 +171,7 @@ Number of (non-blank/active) reps in each region.
 ### ANY
 
 **Syntax**
+
 ```
 Boolean values[ANY: Mapping]
 ```
@@ -160,12 +181,15 @@ Returns TRUE if **at least one** mapped source cell is TRUE. The Boolean equival
 roll-up.
 
 **Example**
+
 ```
 Region Has Overspend? = COST01.Over Budget?[ANY: SYS Cost Centre.Region]
 ```
+
 TRUE for a region if any of its cost centres is over budget.
 
 **Watch out for**
+
 - Source and result must be **Boolean**.
 - `ANY` is the default aggregation method for Boolean line items in functions like `MOVINGSUM`.
 
@@ -176,6 +200,7 @@ TRUE for a region if any of its cost centres is over budget.
 ### ALL
 
 **Syntax**
+
 ```
 Boolean values[ALL: Mapping]
 ```
@@ -185,12 +210,15 @@ Returns TRUE only if **every** mapped source cell is TRUE. The Boolean equivalen
 roll-up.
 
 **Example**
+
 ```
 Region Fully Approved? = WF.Approved?[ALL: SYS Cost Centre.Region]
 ```
+
 TRUE for a region only when all its cost centres are approved.
 
 **Watch out for**
+
 - An empty group (no source items mapped) can return TRUE — "all of nothing is true". Guard with a
   `COUNT > 0` check if that matters. (Note the *unmapped-cell* default itself differs by engine:
   TRUE in Classic, FALSE in Polaris.)
@@ -207,6 +235,7 @@ reference has a home for them.
 ### ROUND
 
 **Syntax**
+
 ```
 ROUND(Number to round [, Number of decimal places] [, Rounding direction] [, Rounding method])
 ```
@@ -217,12 +246,14 @@ rounding **direction** and **method**; if you supply a later optional argument y
 earlier ones too.
 
 **Example**
+
 ```
 Rounded Rate = ROUND(Raw Rate, 2)        -- 0.12345 -> 0.12
 Whole Units  = ROUND(Forecast Units)     -- to the nearest integer
 ```
 
 **Watch out for**
+
 - Round **for display/output**, not mid-calculation, unless the business rule genuinely rounds at
   that step — repeated intermediate rounding accumulates error.
 
@@ -233,6 +264,7 @@ Whole Units  = ROUND(Forecast Units)     -- to the nearest integer
 ### ABS
 
 **Syntax**
+
 ```
 ABS(Number)
 ```
@@ -241,11 +273,13 @@ ABS(Number)
 Returns the **absolute value** of a number — drops the sign, so negatives become positive.
 
 **Example**
+
 ```
 Variance Magnitude = ABS(Actual - Plan)
 ```
 
 **Watch out for**
+
 - Useful for "how far off, regardless of direction" tests, e.g. `ABS(Variance) > Tolerance`.
 
 **Source:** https://help.anaplan.com/abs-76d009f0-95e2-4233-9b72-026e49264cfd

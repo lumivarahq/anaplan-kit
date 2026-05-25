@@ -16,6 +16,7 @@ be converted** afterwards. Classic stores data **densely** (every cell costs mem
 Polaris is **natively sparse** (well-suited to sparse data). ([Anaplan calculation engines](https://help.anaplan.com/anaplan-calculation-engines-06c06ade-2807-4f3d-9a6e-d69ae0e257e5), [Polaris engine](https://help.anaplan.com/polaris-calculation-engine-8b466778-42b2-4e35-b318-e5e4128b63b7), [sparsity & density](https://help.anaplan.com/understand-sparsity-and-density-616ee341-8a5f-4718-8c90-c82e34eca86c))
 
 **The decision you own:**
+
 - **Find out which engine your workspace uses** before you design. It changes how hard you fight cell count.
 - On **Classic**, sparsity is your enemy — the [anti-patterns](anti-patterns-catalog.md) about
   dimensionality, boolean-as-dimension, and right-sized formats matter *enormously*.
@@ -32,6 +33,7 @@ Polaris is **natively sparse** (well-suited to sparse data). ([Anaplan calculati
 **Transactional API**. (See [integration](../04-integration/) and [REST API](../04-integration/rest-api.md).)
 
 **The decision you own:**
+
 - **Pick per use case, not per habit:** bulk data loads → Bulk/Connect/CloudWorks; small real-time
   reads/writes → Transactional API; scheduled chained flows → CloudWorks.
 - **Don't pin to the oldest API just because it works.** Document *which* API each integration uses,
@@ -53,6 +55,7 @@ new pages as tools, not printouts ([app design](../05-ux/app-design-principles.m
 drives it.
 
 **The decision you own — this is mostly *control*:**
+
 - Reduce size through **good modeling**, not fidelity-destroying hacks: right-sized dimensionality,
   [Time Ranges](../07-performance/time-ranges.md), [subsets](../07-performance/line-item-subsets.md),
   tight formats, archive strategies for unbounded lists.
@@ -80,6 +83,7 @@ because pages get renamed and links rot. (This kit's own function pages cite the
 ## Protect your own effectiveness (individual scope)
 
 A few habits that are *actionable for you*:
+
 - **Document your logic** so it isn't trapped as tribal knowledge — it keeps the model maintainable.
 - **Keep the transferable concepts sharp** — dimensional modeling, data-flow design, reconciliation,
   performance reasoning. These outlast any one platform feature or rebrand.

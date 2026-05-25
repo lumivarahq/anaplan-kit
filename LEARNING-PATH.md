@@ -9,6 +9,7 @@ able to do** before moving on. Every doc page and cookbook recipe carries a `Lev
 can always tell where something sits.
 
 > **How the levels map to Anaplan's courses**
+>
 > - **Level 1 — Model Building** = the foundations: navigate the platform and build a small,
 >   correct model end-to-end.
 > - **Level 2 — Model Building** = build *well*: DISCO structure, numbered lists, subsets, time

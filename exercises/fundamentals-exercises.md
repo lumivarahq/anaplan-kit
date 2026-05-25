@@ -45,6 +45,7 @@ Versions (3)` and has **4 line items**. Roughly how many cells is that? Why does
 ## C. Formats
 
 **C1 (L1).** Give the correct **Format** for each line item:
+
 1. `Gross Revenue`
 2. `COGS %`
 3. `Is Active?`
@@ -61,6 +62,7 @@ Versions (3)` and has **4 line items**. Roughly how many cells is that? Why does
 
 **D1 (L1).** For each line item, choose the right **Summary** method (Sum / Average / None /
 Formula) and say why:
+
 1. `Gross Revenue (local)`
 2. `Price (local)`
 3. `COGS %`
@@ -77,6 +79,7 @@ correct.
 ## E. DISCO classification
 
 **E1 (L1).** Classify each module by DISCO type (D/I/S/C/O) and give its prefix:
+
 1. A module holding imported actuals from the GL.
 2. A module where planners type next year's headcount.
 3. A module computing `Revenue − COGS = Gross Profit`.
@@ -84,6 +87,7 @@ correct.
 5. A module shaped exactly for a dashboard P&L card.
 
 **E2 (L2).** In which DISCO module type does each of these belong?
+
 1. The mapping `Cost Centre → Region`.
 2. A product's `COGS %` cost driver.
 3. A planner's monthly `Volume` assumption.

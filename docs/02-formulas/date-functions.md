@@ -5,6 +5,7 @@
 Date functions build and dissect **date values** (a specific calendar day, like `15 Mar 2026`).
 
 > ⚠️ **Date vs. Time Period — know the difference.** This trips up every newcomer.
+>
 > - A **Date** is a line item *format*: a single calendar day stored in a cell (e.g. an order date).
 >   You manipulate it with the functions on this page (`DATE`, `YEAR`, `DAYS`, …).
 > - **Time** is a model **dimension** — the columns Jan/Feb/Mar/Q1/FY26 across the top of a module.
@@ -20,6 +21,7 @@ Date functions build and dissect **date values** (a specific calendar day, like 
 ### DATE
 
 **Syntax**
+
 ```
 DATE(Year, Month, Day)
 ```
@@ -28,12 +30,15 @@ DATE(Year, Month, Day)
 Builds a date value from three numbers. Month is 1–12, Day is 1–31.
 
 **Example**
+
 ```
 Period End = DATE(Year Num, Month Num, 28)
 ```
+
 Constructs a date from numeric parts (e.g. assembling dates from imported components).
 
 **Watch out for**
+
 - Out-of-range parts (month 13, day 32) are invalid — validate inputs first.
 - To get the day a *time period* starts, use `CURRENTPERIODSTART`, not `DATE`.
 
@@ -44,6 +49,7 @@ Constructs a date from numeric parts (e.g. assembling dates from imported compon
 ### YEAR
 
 **Syntax**
+
 ```
 YEAR(Date)
 ```
@@ -52,11 +58,13 @@ YEAR(Date)
 Extracts the year from a date as a number (e.g. `2026`).
 
 **Example**
+
 ```
 Order Year = YEAR(Order Date)
 ```
 
 **Watch out for**
+
 - Returns a **number**, so put it in a Number-formatted line item.
 - Blank date in → blank/0 out; guard if you'll do arithmetic on it.
 
@@ -67,6 +75,7 @@ Order Year = YEAR(Order Date)
 ### MONTH
 
 **Syntax**
+
 ```
 MONTH(Date)
 ```
@@ -75,11 +84,13 @@ MONTH(Date)
 Extracts the month number (1–12) from a date.
 
 **Example**
+
 ```
 Order Month = MONTH(Order Date)        -- 3 for any date in March
 ```
 
 **Watch out for**
+
 - Returns the **month number**, not a month name or a Time period. To label it, map the number to
   text/an item.
 
@@ -90,6 +101,7 @@ Order Month = MONTH(Order Date)        -- 3 for any date in March
 ### DAY
 
 **Syntax**
+
 ```
 DAY(Date)
 ```
@@ -98,11 +110,13 @@ DAY(Date)
 Extracts the day-of-month (1–31) from a date.
 
 **Example**
+
 ```
 Day of Month = DAY(Invoice Date)
 ```
 
 **Watch out for**
+
 - This is the day **number within the month**, not the weekday — for weekday use `WEEKDAY`.
 
 **Source:** https://help.anaplan.com/day-2acab59d-aca5-4c8a-8a79-b98f5846c200
@@ -112,6 +126,7 @@ Day of Month = DAY(Invoice Date)
 ### WEEKDAY
 
 **Syntax**
+
 ```
 WEEKDAY(Date [, Starting day of week])
 ```
@@ -120,12 +135,15 @@ WEEKDAY(Date [, Starting day of week])
 Returns the day of the week as a number. The optional second argument sets which day counts as `1`.
 
 **Example**
+
 ```
 Is Weekend? = WEEKDAY(D) = 6 OR WEEKDAY(D) = 7
 ```
+
 Flags Saturday/Sunday (numbering depends on the starting-day argument you choose).
 
 **Watch out for**
+
 - The number-to-day mapping depends on the **starting-day** argument — set it explicitly so the
   meaning of `1` is unambiguous.
 
@@ -136,6 +154,7 @@ Flags Saturday/Sunday (numbering depends on the starting-day argument you choose
 ### DAYS
 
 **Syntax**
+
 ```
 DAYS(End date, Start date)     -- number of days between two dates
 DAYS(Time period)              -- number of days in a time period
@@ -146,12 +165,14 @@ Returns a **number of days** — either between two dates, or the count of days 
 period (the period overload is handy for daily-rate calculations).
 
 **Example**
+
 ```
 Lead Days  = DAYS(Receipt Date, Order Date)
 Days in Mth = DAYS(Period)         -- e.g. 31 for January
 ```
 
 **Watch out for**
+
 - The argument order is **(End date, Start date)** — getting it backwards flips the sign of the
   result.
 - The two-date form and the period form are both called `DAYS`; the engine picks by argument type.
@@ -163,6 +184,7 @@ Days in Mth = DAYS(Period)         -- e.g. 31 for January
 ### MONTHTODATE
 
 **Syntax**
+
 ```
 MONTHTODATE(Values to cumulate)
 ```
@@ -172,11 +194,13 @@ Cumulates a numeric line item **within each month** — a month-to-date running 
 the start of every month. Most useful on daily/weekly time scales.
 
 **Example**
+
 ```
 MTD Sales = MONTHTODATE(Daily Sales)
 ```
 
 **Watch out for**
+
 - **Cannot** be used if the model's calendar type is **Weeks: General**.
 - Needs a sub-monthly Time granularity for the "to date" to mean anything.
 
@@ -187,6 +211,7 @@ MTD Sales = MONTHTODATE(Daily Sales)
 ### CURRENTPERIODSTART
 
 **Syntax**
+
 ```
 CURRENTPERIODSTART()
 ```
@@ -197,13 +222,16 @@ arguments. The bridge from the Time dimension to a Date value — and the *susta
 "are we in the past?" without hard-coding a date.
 
 **Example**
+
 ```
 Is Actual? = Period Start Date < CURRENTPERIODSTART()
 ```
+
 A Boolean that flips actual/forecast automatically as the Current Period rolls forward — no formula
 edit ever needed. *(Sustainable.)*
 
 **Watch out for**
+
 - Returns a **Date**, not a Time period.
 - It tracks the **Current Period** setting, so changing that setting re-drives every formula that
   uses it — which is exactly the point.

@@ -14,7 +14,7 @@ users the right to run CloudWorks integrations within their assigned workspaces.
 
 | Concept | What it is |
 | --- | --- |
-| **Connection** | A saved, reusable link to a cloud data source — **AWS S3**, **Google Cloud Storage**, or **Azure Blob Storage** (flat files), plus supported cloud data warehouses | 
+| **Connection** | A saved, reusable link to a cloud data source — **AWS S3**, **Google Cloud Storage**, or **Azure Blob Storage** (flat files), plus supported cloud data warehouses |
 | **Integration** | A single move: a file in the connected storage ↔ an Anaplan [import or export action](actions-and-processes.md) |
 | **Integration flow** | An **ordered sequence** of integrations that run one after another — the cloud equivalent of an Anaplan [process](actions-and-processes.md) spanning steps |
 

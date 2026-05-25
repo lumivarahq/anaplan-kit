@@ -30,6 +30,7 @@ It mirrors `CAL04 P&L Build` but adds a display ratio and the comparison lines a
 | `EBITDA Margin %` | Number (%) | Formula | L3 Cost Centre, Time, Versions | `IF Revenue = 0 THEN 0 ELSE EBITDA / Revenue` |
 
 Notes:
+
 - Every amount line is a **straight reference** to `CAL04 P&L Build` (all in USD) — no recomputation.
   `EBITDA Margin %` looks like a calculation, but it's a *display ratio* derived from already-final
   numbers, which belongs with the report. (If a margin were a planning driver, it would live in CAL.)

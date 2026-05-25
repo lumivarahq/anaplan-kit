@@ -60,6 +60,7 @@ item.
 formula. The engine has to process the whole thing on every recalc, and you can't audit it.
 
 **How to fix.**
+
 - **Break it into stepped line items**, one logical step each. This is faster to recalc *and*
   readable. If you can't explain a formula in one sentence, it's too long.
 - Replace long `IF…THEN…ELSE` chains with a **`LOOKUP`** against a mapping module. Rule of thumb:
@@ -119,6 +120,7 @@ mismatch; wrong delimiter or encoding; the target list isn't a production list; 
 trailing spaces/case differences.
 
 **How to fix.**
+
 - Map on **codes**, not display names — codes are stable, names change.
 - Read the **import log / dump file** — it lists exactly which rows failed and why.
 - Confirm the source column formats match the target line-item formats.
@@ -137,6 +139,7 @@ trailing spaces/case differences.
 unfiltered; calculations happening *in the view* rather than pre-computed; charts over huge ranges.
 
 **How to fix.**
+
 - **Pre-calculate** what the page shows in a dedicated Output module — don't make the page do math.
 - Trim grids with filters, subsets and **Time Ranges** so they render a slice, not the universe.
 - Fewer objects per page; split a heavy dashboard into focused ones.
@@ -155,6 +158,7 @@ need. Cell count = product of all dimension sizes × line items, so each extra d
 *multiplies* the total.
 
 **How to fix.**
+
 - Remove any dimension the module doesn't actually use. **Removing a dimension is the biggest win.**
 - Apply a **Time Range** so it covers only the periods it needs.
 - Use **subsets** so it spans only the relevant members.

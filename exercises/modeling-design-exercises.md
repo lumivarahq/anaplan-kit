@@ -33,6 +33,7 @@ module is editable, which is read-only, and how DISCO separation helps.
 For each bad design below, name **which PLANS principle(s)** it breaks and give the fix.
 
 **V1 (L2).** A calc line item:
+
 ```
 Revenue = IF Time = Apr 2026 THEN Volume * Price * 1.05 ELSE Volume * Price
 ```
@@ -41,10 +42,12 @@ Revenue = IF Time = Apr 2026 THEN Volume * Price * 1.05 ELSE Volume * Price
 Cost Centre→Region mapping, `Revenue = Volume × Price`, **and** the dashboard view — all in one grid.
 
 **V3 (L2).** `CAL` module:
+
 ```
 Gross Profit = (Volume * Price) - (Volume * Price * COGS %)
 Net Margin %  = ((Volume * Price) - (Volume * Price * COGS %)) / (Volume * Price)
 ```
+
 (`Volume * Price` and the gross-profit expression are each written out multiple times.)
 
 **V4 (L2).** A reporting module is dimensioned `L3 Cost Centre × L2 Product × Customer × SKU × Day ×

@@ -11,6 +11,7 @@ How to use: find your task in the table below, open the recipe, copy the bluepri
 ---
 
 ## Data & Imports
+
 Getting source data into Anaplan cleanly — hubs, deltas, list creation, hierarchies, error handling, keys.
 
 | Recipe | Category | Level | What it solves |
@@ -23,6 +24,7 @@ Getting source data into Anaplan cleanly — hubs, deltas, list creation, hierar
 | [Concatenated key for imports](data-and-imports/concatenated-key-for-imports.md) | Data & Imports | L2 | Build a unique text key (e.g. Entity#Account#Month) for matching/upsert |
 
 ## Mapping & Allocation
+
 Moving and spreading numbers across dimensions with mappings and ratios.
 
 | Recipe | Category | Level | What it solves |
@@ -33,6 +35,7 @@ Moving and spreading numbers across dimensions with mappings and ratios.
 | [Allocate cost by a driver](mapping-and-allocation/allocate-by-driver.md) | Mapping & Allocation | L2 | Allocate shared cost by headcount / sqft / revenue driver |
 
 ## Time & Forecasting
+
 Cumulatives, rolling windows, actual/forecast blends, phasing, and prior-year comparisons.
 
 | Recipe | Category | Level | What it solves |
@@ -44,6 +47,7 @@ Cumulatives, rolling windows, actual/forecast blends, phasing, and prior-year co
 | [Prior-year comparison (YoY)](time-and-forecasting/prior-year-comparison.md) | Time & Forecasting | L2 | Same-period-last-year and growth % with LAG / OFFSET |
 
 ## Financial Calcs
+
 The classic finance building blocks: FX, depreciation, debt, and variance bridges.
 
 | Recipe | Category | Level | What it solves |
@@ -55,6 +59,7 @@ The classic finance building blocks: FX, depreciation, debt, and variance bridge
 | [Variance waterfall / bridge](financial-calcs/variance-waterfall-bridge.md) | Financial Calcs | L2 | Decompose a variance into named effects for a waterfall chart |
 
 ## Hierarchies & Lists
+
 Working with the tree, carrying values, resolving codes, and transactional numbered lists.
 
 | Recipe | Category | Level | What it solves |
@@ -66,6 +71,7 @@ Working with the tree, carrying values, resolving codes, and transactional numbe
 | [Clear a numbered list before reload](hierarchies-and-lists/clear-a-numbered-list.md) | Hierarchies & Lists | L2 | DELETE action to wipe transactional data before a full reload |
 
 ## UX & Workflow
+
 Building usable pages and simple workflows for planners and reviewers.
 
 | Recipe | Category | Level | What it solves |
@@ -76,6 +82,7 @@ Building usable pages and simple workflows for planners and reviewers.
 | [Dynamic time filter](ux-and-workflow/dynamic-time-filter.md) | UX & Workflow | L2 | A SYS Boolean time module controlling which periods a page shows |
 
 ## Security & DCA
+
 Controlling who sees and edits what — roles, selective access, and Dynamic Cell Access.
 
 | Recipe | Category | Level | What it solves |
@@ -85,6 +92,7 @@ Controlling who sees and edits what — roles, selective access, and Dynamic Cel
 | [Hide or lock by role](security-and-dca/hide-or-lock-by-role.md) | Security & DCA | L3 | Combine roles + DCA for per-role visibility and editability |
 
 ## Performance
+
 Keeping the model fast and small, and proving it still ties.
 
 | Recipe | Category | Level | What it solves |

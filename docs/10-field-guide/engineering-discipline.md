@@ -18,6 +18,7 @@ revision tags on a dev model synced to deployed models; you can clone a model bu
 fork that can't rejoin the trunk. (See [ALM](../06-security-alm/alm.md).)
 
 **Run instead:**
+
 - **Treat ALM revision tags as your commits.** Tag at every meaningful, working checkpoint — not
   once a sprint. Name them consistently (`YYYY-MM-DD_sprintN_short-desc`). Keep them small and
   frequent so a "revert" means syncing the previous tag, not unpicking weeks of work.
@@ -38,6 +39,7 @@ fork that can't rejoin the trunk. (See [ALM](../06-security-alm/alm.md).)
 **Missing:** pull requests and a reviewable formula-by-formula diff.
 
 **Run instead:**
+
 - **Blueprint-diff review.** Export the blueprint before and after a change and diff the text (in
   your Git repo, or any diff tool). Review *that*. It's the closest thing to a PR diff Anaplan allows.
 - **Walkthrough review.** A second builder opens the module in blueprint view and walks the changed
@@ -51,6 +53,7 @@ fork that can't rejoin the trunk. (See [ALM](../06-security-alm/alm.md).)
 **Missing:** xUnit, mocking (every module is statically wired), automated regression.
 
 **Run instead:**
+
 - **Reconciliation / control-total ("check") modules.** A `CHK` module compares calculated totals
   to source totals and raises a Boolean `Out of Balance?`. This is your assertion library — keep
   them permanently in the model, not just at build time. See
@@ -71,6 +74,7 @@ fork that can't rejoin the trunk. (See [ALM](../06-security-alm/alm.md).)
 CloudWorks is a *scheduler*, not CI — it runs what you point it at.
 
 **Run instead:**
+
 - **A health-check dashboard.** A single page that surfaces every `Out of Balance?` and `Fail` flag
   across the model. Green-before-promote is your manual quality gate.
 - **Scheduled validation.** Use a CloudWorks/Process chain to run import + reconciliation actions on
@@ -83,6 +87,7 @@ CloudWorks is a *scheduler*, not CI — it runs what you point it at.
 **Missing:** APM, distributed tracing, cross-model observability.
 
 **Run instead:**
+
 - **Use the in-model diagnostics that *do* exist:** the **Calculation Effort column** (shows each
   line item's % of calc effort, right in the blueprint) and **Model Open Analysis** (calc time in ms
   per module/line item). These are your profiler — learn them early. See
@@ -97,6 +102,7 @@ CloudWorks is a *scheduler*, not CI — it runs what you point it at.
 **Missing:** ADRs, service catalogs, and a culture that writes things down.
 
 **Run instead:**
+
 - **Architecture Decision Records.** Keep a short decisions log (in this repo, or a model notes
   module): *versions vs scenario list, single model vs hub-and-spoke, why this hierarchy.* The "why"
   is what the next builder — or future-you after a reorg — needs.

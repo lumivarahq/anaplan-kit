@@ -110,7 +110,7 @@ The **chart of accounts** is the spine the whole P&L rolls up to. Build it top-d
 
 Then a flat **Currency** list:
 
-4. **New List** → `Currency`. Add `GBP`, `EUR`, `USD`, `INR`. The **group/reporting currency is USD**
+1. **New List** → `Currency`. Add `GBP`, `EUR`, `USD`, `INR`. The **group/reporting currency is USD**
    — every local amount converts to it in [Step 5](05-calculation-modules.md).
 
 **List definition** (how we document lists in this kit — template in

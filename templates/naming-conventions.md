@@ -23,12 +23,14 @@ number**, then a clear name. The prefix tells you the module's role at a glance.
 | `OUT` | **Outputs** | Reporting/export views — no new logic. | `OUT01 P&L Statement` |
 
 **Numbering (`SYS01`, `SYS02`, …):**
+
 - Two digits, zero-padded, **per prefix** (`SYS01`, `SYS02`, `CAL01`, `CAL02`).
 - Number roughly in **build/data-flow order** so a sorted module list reads top-to-bottom like the
   model: System first, then Inputs, then Calculations, then Outputs.
 - Leave gaps if helpful (`CAL10`, `CAL20`) when you expect to insert related modules later.
 
 **Module name after the prefix:**
+
 - Title Case, a short noun phrase: `INP01 Revenue Assumptions`, not `INP01 rev_ass`.
 - Describe *what it holds*, not how: `CAL02 Cost`, not `CAL02 Multiply Stuff`.
 
@@ -44,6 +46,7 @@ number**, then a clear name. The prefix tells you the module's role at a glance.
 | **Subset** | Reference the parent list + the slice. | `Active Products` (subset of `Product`) |
 
 Notes:
+
 - The **leaf** level of a hierarchy is what modules are usually dimensioned by; the `L1/L2/L3`
   prefixes make "which level?" unambiguous.
 - Use the `L1/L2/L3` prefixes consistently — the kit's one org hierarchy is
@@ -77,6 +80,7 @@ Notes:
 | **Time Ranges** | Name for the span + grain. | `FY26 Months`, `Plan Years` |
 
 Notes:
+
 - Configure Time and Versions **once** at the model level (see
   [Time & Versions tutorial](../tutorials/02-time-and-versions.md)); don't rebuild them as ordinary
   lists.

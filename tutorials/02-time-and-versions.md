@@ -43,9 +43,9 @@ calendar as the [blueprint](../blueprints/_common/time-and-versions.md).
 | `Budget` | — | The locked annual plan |
 | `Forecast` | — | The living re-plan; default *current* version |
 
-3. Set **Forecast** as the **Current** version (the dot/radio in the Current column) — it's the one
+1. Set **Forecast** as the **Current** version (the dot/radio in the Current column) — it's the one
    users land on.
-4. The **Actual** version's "Is Actual?" flag is special: combined with a **switchover** date it
+2. The **Actual** version's "Is Actual?" flag is special: combined with a **switchover** date it
    lets a module show actuals for past months and forecast for future months automatically (you'll
    use this in [Step 5](05-calculation-modules.md)).
 

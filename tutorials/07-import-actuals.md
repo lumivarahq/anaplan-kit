@@ -47,6 +47,7 @@ CC-3100 US Sales, Sensor A,         Jan 2025, 31000,   18600, 55000
 ```
 
 Tips:
+
 - Use list member names that **exactly match** your lists (`CC-1100 UK Sales`, `Sensor A`) — or map
   them.
 - Month format must match what Anaplan expects (`Jan 2025` / `Jan 25` depending on calendar

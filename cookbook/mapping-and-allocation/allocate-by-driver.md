@@ -3,14 +3,17 @@
 > **Level:** L2 · **Area:** Mapping & Allocation · **PLANS:** Logical, Auditable, Sustainable · **DISCO:** Calculations
 
 ## The ask
+
 "Facilities costs sit in one shared cost centre. Allocate them out to the business units by floor space. Oh, and IT cost should go by headcount, and corporate overhead by revenue."
 
 ## When you'll see this
+
 - Shared/indirect costs must be pushed to consuming units for full-cost reporting.
 - Different cost pools use **different drivers** (headcount, sqft, revenue, transaction count).
 - Management reporting / transfer pricing / activity-based costing.
 
 ## Approach
+
 This is top-down allocation with a twist: the **driver is selectable per cost pool**. Model each driver as a line item, pick the right one per pool, compute each unit's share of that driver, and multiply the pool cost by the share.
 
 ```
@@ -20,10 +23,12 @@ allocated cost = pool cost × (unit's driver ÷ total driver for that pool)
 Keep drivers in a System/Inputs module and the **pool → driver** choice in a small mapping, so adding a pool or switching its driver is data, not a formula edit.
 
 Why idiomatic:
+
 - **Sustainable (PLANS):** the driver choice is data (a mapping cell), not hard-coded logic.
 - **Auditable:** stepped line items show the driver, the share, and the allocated amount separately.
 
 ## Blueprint
+
 **`SYS20 Driver by Pool`** — which driver each cost pool uses:
 
 | Line Item | Format | Summary | Applies To | Formula |
@@ -55,6 +60,7 @@ Why idiomatic:
 | Allocated Cost | Number | Sum | Cost Pool, Business Unit, Time | `Pool Cost × Share` |
 
 ## Formula(s)
+
 Pick the driver per pool (small, readable `IF`/`LOOKUP` on the **driver type**, not on item names):
 
 ```
@@ -85,6 +91,7 @@ Pool Cost * Share
 ```
 
 ## Pitfalls / gotchas
+
 - **Divide-by-zero** when a pool's total driver is 0 (e.g. a BU with no headcount month) — guard it.
 - Choosing the driver by **list item, not item name** keeps it Sustainable. Selecting on `Driver Types` (a small fixed list) is fine; `SELECT: BusinessUnit.Acme` is not.
 - **Allocated cost should reconcile to the pool total.** Sum `Allocated Cost` across BUs per pool and check it equals `Pool Cost` — see [reconciliation-check-module](../performance/reconciliation-check-module.md).
@@ -92,10 +99,12 @@ Pool Cost * Share
 - Time alignment: if drivers are monthly, allocate monthly; mixing an annual driver with monthly cost skews results.
 
 ## Performance & PLANS notes
+
 - The `Selected Driver` `IF` is small (over the Driver Types list, a handful of items) — acceptable. Avoid `IF` chains over large lists; map instead.
 - Stepped line items make the allocation **Auditable** and let the engine cache `Total Driver` once.
 - Keep drivers in **Inputs**, the pool→driver choice in **System** — change a driver without touching the calc engine.
 
 ## Related
+
 - [`docs/02-formulas/lookup-and-mapping.md`](../../docs/02-formulas/lookup-and-mapping.md)
 - Recipes: [top-down-allocation-by-ratio](top-down-allocation-by-ratio.md) · [sum-lookup-remap](sum-lookup-remap.md) · [reconciliation-check-module](../performance/reconciliation-check-module.md) · [replace-if-with-boolean](../performance/replace-if-with-boolean.md)

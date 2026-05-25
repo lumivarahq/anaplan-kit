@@ -18,6 +18,7 @@ To join text, use the `&` operator: `"Q" & TEXT(Quarter Num)`.
 ### TEXT
 
 **Syntax**
+
 ```
 TEXT(Value)
 ```
@@ -28,11 +29,13 @@ functions that expect text. (For turning a *list item* into text, use `NAME` or 
 `TEXT` is the number→text converter.)
 
 **Example**
+
 ```
 Label = "Year " & TEXT(Year Num)        -- "Year 2026"
 ```
 
 **Watch out for**
+
 - You **must** convert numbers before joining: `"Q" & 1` errors; `"Q" & TEXT(1)` works.
 - `TEXT` of a number may include decimals/formatting you don't want — combine with `ROUND` first.
 
@@ -43,6 +46,7 @@ Label = "Year " & TEXT(Year Num)        -- "Year 2026"
 ### NAME
 
 **Syntax**
+
 ```
 NAME(List item)
 ```
@@ -52,11 +56,13 @@ Returns the **name** of a list item as text. The bridge from a list-formatted li
 text label.
 
 **Example**
+
 ```
 Region Label = NAME(ITEM(Region))       -- the current region's name as text
 ```
 
 **Watch out for**
+
 - `NAME` returns the display name; `CODE` returns the code — pick deliberately when names aren't
   unique.
 - Don't store `NAME(...)` if you can just reference the list item; text duplicates cost memory.
@@ -68,6 +74,7 @@ Region Label = NAME(ITEM(Region))       -- the current region's name as text
 ### LEFT
 
 **Syntax**
+
 ```
 LEFT(Text, Number of characters)
 ```
@@ -76,11 +83,13 @@ LEFT(Text, Number of characters)
 Returns the leftmost N characters of a string.
 
 **Example**
+
 ```
 Country Prefix = LEFT(Product Code, 2)      -- "US-1234" -> "US"
 ```
 
 **Watch out for**
+
 - If N exceeds the length, you simply get the whole string (no error).
 
 **Source:** https://help.anaplan.com/left-9c2a45d9-5af8-433a-b45c-46b0d6ae8462
@@ -90,6 +99,7 @@ Country Prefix = LEFT(Product Code, 2)      -- "US-1234" -> "US"
 ### RIGHT
 
 **Syntax**
+
 ```
 RIGHT(Text, Number of characters)
 ```
@@ -98,11 +108,13 @@ RIGHT(Text, Number of characters)
 Returns the rightmost N characters of a string.
 
 **Example**
+
 ```
 Last4 = RIGHT(Account No, 4)
 ```
 
 **Watch out for**
+
 - To grab "everything after a fixed prefix", combine with `LENGTH`/`FIND` rather than guessing N.
 
 **Source:** https://help.anaplan.com/right-f076e4fd-3f63-4b7b-9ed2-3769a0dfd0e7
@@ -112,6 +124,7 @@ Last4 = RIGHT(Account No, 4)
 ### MID
 
 **Syntax**
+
 ```
 MID(Text, Start position [, Number of characters])
 ```
@@ -120,11 +133,13 @@ MID(Text, Start position [, Number of characters])
 Returns characters from the **middle** of a string, starting at `Start position` (1-based).
 
 **Example**
+
 ```
 Middle = MID(Product Code, 3, 4)        -- chars 3-6
 ```
 
 **Watch out for**
+
 - Position is **1-based** (the first character is position 1), unlike many languages.
 - Combine with `LENGTH` to extract "from position X to the end".
 
@@ -135,6 +150,7 @@ Middle = MID(Product Code, 3, 4)        -- chars 3-6
 ### LENGTH
 
 **Syntax**
+
 ```
 LENGTH(Text)
 ```
@@ -143,11 +159,13 @@ LENGTH(Text)
 Returns the number of characters in a string. (Also written `LEN`.)
 
 **Example**
+
 ```
 Code Length = LENGTH(Product Code)
 ```
 
 **Watch out for**
+
 - Counts spaces too — trim first if leading/trailing spaces shouldn't count.
 
 **Source:** https://help.anaplan.com/length-49846ba7-7b09-4d11-b203-58ba512e7727
@@ -157,6 +175,7 @@ Code Length = LENGTH(Product Code)
 ### FIND
 
 **Syntax**
+
 ```
 FIND(Text to find, Within text [, Start])
 ```
@@ -166,12 +185,14 @@ Returns the **position** of the first occurrence of one string inside another (o
 the search at a given position).
 
 **Example**
+
 ```
 Dash Pos = FIND("-", Product Code)              -- position of the first "-"
 Prefix   = LEFT(Product Code, FIND("-", Product Code) - 1)   -- everything before it
 ```
 
 **Watch out for**
+
 - Returns `0` when the substring is not found — guard with an `IF FIND(...) > 0` test before
   feeding the result into `LEFT`/`MID`.
 - Position is 1-based and case-sensitive.
@@ -183,6 +204,7 @@ Prefix   = LEFT(Product Code, FIND("-", Product Code) - 1)   -- everything befor
 ### SUBSTITUTE
 
 **Syntax**
+
 ```
 SUBSTITUTE(Text, Text to find, Replacement text)
 ```
@@ -191,11 +213,13 @@ SUBSTITUTE(Text, Text to find, Replacement text)
 Finds **all** occurrences of a substring and replaces them with another.
 
 **Example**
+
 ```
 Clean = SUBSTITUTE(Raw Name, "_", " ")      -- "Cost_Centre_01" -> "Cost Centre 01"
 ```
 
 **Watch out for**
+
 - Replaces **every** match, not just the first. Unlike Excel, Anaplan's `SUBSTITUTE` has **no
   optional fourth (occurrence) argument** — you cannot target only the Nth instance; it always
   replaces all of them, left to right.
@@ -209,6 +233,7 @@ Clean = SUBSTITUTE(Raw Name, "_", " ")      -- "Cost_Centre_01" -> "Cost Centre 
 ### TRIM
 
 **Syntax**
+
 ```
 TRIM(Text)
 ```
@@ -218,11 +243,13 @@ Removes **leading and trailing spaces**, and collapses runs of spaces *between* 
 single space. The go-to cleaner for text imported from external systems with irregular spacing.
 
 **Example**
+
 ```
 Code Norm = UPPER(TRIM(Raw Code))           -- "  ab   cd " -> "AB CD"
 ```
 
 **Watch out for**
+
 - `TRIM` is **not available in Polaris** (Classic Engine only).
 - Trim **before** matching (e.g. before `FINDITEM`), since stray spaces silently break exact-text
   lookups.
@@ -234,6 +261,7 @@ Code Norm = UPPER(TRIM(Raw Code))           -- "  ab   cd " -> "AB CD"
 ### LOWER
 
 **Syntax**
+
 ```
 LOWER(Text)
 ```
@@ -242,11 +270,13 @@ LOWER(Text)
 Converts text to lower case.
 
 **Example**
+
 ```
 Key = LOWER(Email)
 ```
 
 **Watch out for**
+
 - Use `LOWER`/`UPPER` to **normalise before matching** (e.g. before `FINDITEM`) since text
   comparison is case-sensitive.
 - An optional `Locale` argument exists in the **Classic Engine** (not Polaris) for language-aware
@@ -259,6 +289,7 @@ Key = LOWER(Email)
 ### UPPER
 
 **Syntax**
+
 ```
 UPPER(Text)
 ```
@@ -267,11 +298,13 @@ UPPER(Text)
 Converts text to upper case.
 
 **Example**
+
 ```
 Code Norm = UPPER(TRIM(Raw Code))
 ```
 
 **Watch out for**
+
 - Same matching/normalisation use as `LOWER`. Pick one convention and apply it consistently.
 
 **Source:** https://help.anaplan.com/upper-6b58ff23-ffc1-475e-b96a-421f127f87b4
@@ -281,6 +314,7 @@ Code Norm = UPPER(TRIM(Raw Code))
 ### CODE
 
 **Syntax**
+
 ```
 CODE(List item)
 ```
@@ -289,11 +323,13 @@ CODE(List item)
 Returns the **code** of a list item as text (the unique code, as opposed to its display name).
 
 **Example**
+
 ```
 CC Code = CODE(ITEM(Cost Centre))
 ```
 
 **Watch out for**
+
 - Codes are stable keys; **names** can change. For mapping/joins, prefer `CODE` over `NAME`.
 - Returns blank if the item has no code.
 
@@ -304,6 +340,7 @@ CC Code = CODE(ITEM(Cost Centre))
 ### MAKELINK
 
 **Syntax**
+
 ```
 MAKELINK(Text to display, URL)
 ```
@@ -313,11 +350,13 @@ Produces a **clickable hyperlink** cell: the first argument is the **display tex
 cell, the second is the **URL** it points to.
 
 **Example**
+
 ```
 Doc Link = MAKELINK("Open", "https://intranet/cc/" & CODE(ITEM(Cost Centre)))
 ```
 
 **Watch out for**
+
 - **Display text comes first, URL second** — easy to transpose if you think of it as "make a link
   from a URL".
 - Only valid `http://` / `https://` URLs work, and the line item needs the **Text** format
@@ -331,6 +370,7 @@ Doc Link = MAKELINK("Open", "https://intranet/cc/" & CODE(ITEM(Cost Centre)))
 ### MAILTO
 
 **Syntax**
+
 ```
 MAILTO(Display text, To [, CC] [, BCC] [, Subject] [, Body text])
 ```
@@ -339,11 +379,13 @@ MAILTO(Display text, To [, CC] [, BCC] [, Subject] [, Body text])
 Produces a clickable cell that opens a pre-filled email.
 
 **Example**
+
 ```
 Notify = MAILTO("Email approver", Approver Email, "", "", "Budget ready", "Please review.")
 ```
 
 **Watch out for**
+
 - Not available in the **Polaris** engine (Classic Engine only).
 - The first argument is the **display text**, then recipients — easy to transpose.
 

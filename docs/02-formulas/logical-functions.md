@@ -11,6 +11,7 @@ nested `IF`s on a big module. This page shows the right tool for each job.
 ### IF THEN ELSE
 
 **Syntax**
+
 ```
 IF Condition THEN Result1 ELSE Result2
 ```
@@ -20,11 +21,13 @@ Returns `Result1` when the Boolean `Condition` is TRUE, otherwise `Result2`. You
 (`… ELSE IF … THEN … ELSE …`) for multiple branches.
 
 **Example**
+
 ```
 Bonus = IF Revenue > Target THEN Revenue * Bonus % ELSE 0
 ```
 
 **Watch out for**
+
 - `Result1` and `Result2` must be the **same data type** as the line item (both numbers, both the
   same list, etc.).
 - **Don't nest deeply.** Anapedia's own guidance: if you'd need **10+** `IF THEN ELSE`s, switch to
@@ -40,6 +43,7 @@ Bonus = IF Revenue > Target THEN Revenue * Bonus % ELSE 0
 ### AND
 
 **Syntax**
+
 ```
 Condition1 AND Condition2
 ```
@@ -48,11 +52,13 @@ Condition1 AND Condition2
 Returns TRUE only when **both** Booleans are TRUE.
 
 **Example**
+
 ```
 Eligible? = Active? AND Revenue > 0
 ```
 
 **Watch out for**
+
 - Operands must be **Boolean**. A bare comparison (`Revenue > 0`) already is one — no `IF` needed
   to make it.
 - For combining many flags, a dedicated Boolean line item per flag (then `AND` them) reads far
@@ -65,6 +71,7 @@ Eligible? = Active? AND Revenue > 0
 ### OR
 
 **Syntax**
+
 ```
 Condition1 OR Condition2
 ```
@@ -73,11 +80,13 @@ Condition1 OR Condition2
 Returns TRUE when **at least one** Boolean is TRUE.
 
 **Example**
+
 ```
 Needs Review? = Over Budget? OR Flagged?
 ```
 
 **Watch out for**
+
 - To OR a *list item* against several options, compare via `ITEM(...)` =, or better, drive it from
   a System flag. Avoid hard-coding item names. *(Sustainable.)*
 
@@ -88,6 +97,7 @@ Needs Review? = Over Budget? OR Flagged?
 ### NOT
 
 **Syntax**
+
 ```
 NOT Condition
 ```
@@ -96,11 +106,13 @@ NOT Condition
 Inverts a Boolean: TRUE becomes FALSE and vice versa.
 
 **Example**
+
 ```
 Inactive? = NOT Active?
 ```
 
 **Watch out for**
+
 - Often clearer to store the positive flag once (`Active?`) and use `NOT Active?` where needed than
   to maintain two opposite flags that can drift apart. *(Necessary.)*
 
@@ -111,6 +123,7 @@ Inactive? = NOT Active?
 ### ISBLANK
 
 **Syntax**
+
 ```
 ISBLANK(Value)
 ```
@@ -120,11 +133,13 @@ Returns a **Boolean**: TRUE when the value is blank (empty), FALSE otherwise. Th
 "did this cell get a value?" without comparing to `0` or `""`.
 
 **Example**
+
 ```
 Missing Region? = ISBLANK(SYS Cost Centre.Region)
 ```
 
 **Watch out for**
+
 - It is already a Boolean — use it directly, no `IF … THEN TRUE` wrapper.
 - A blank number is **not** the same as `0`; `ISBLANK` distinguishes them where `= 0` would not.
 
@@ -135,6 +150,7 @@ Missing Region? = ISBLANK(SYS Cost Centre.Region)
 ### ISNOTBLANK
 
 **Syntax**
+
 ```
 ISNOTBLANK(Value)
 ```
@@ -144,11 +160,13 @@ The inverse of `ISBLANK`: returns TRUE when the value **is** populated. Equivale
 `NOT ISBLANK(...)`, but reads more clearly.
 
 **Example**
+
 ```
 Has Email? = ISNOTBLANK(Contact Email)
 ```
 
 **Watch out for**
+
 - Returns a Boolean directly — no wrapper needed.
 
 **Source:** https://help.anaplan.com/isnotblank-1463efe5-aff5-43fa-abf7-39b7d95a6692
@@ -158,6 +176,7 @@ Has Email? = ISNOTBLANK(Contact Email)
 ### BLANK
 
 **Syntax**
+
 ```
 BLANK
 ```
@@ -168,11 +187,13 @@ a cell empty rather than forcing `0` or `""`. Valid for text, date, time-period 
 results.
 
 **Example**
+
 ```
 Display Date = IF Is Confirmed? THEN Order Date ELSE BLANK
 ```
 
 **Watch out for**
+
 - For **number** line items, returning `0` and returning a blank can behave differently in
   downstream sums and `ISBLANK` tests — pick the one your logic expects.
 

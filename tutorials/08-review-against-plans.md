@@ -14,6 +14,7 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
 ## 8.1 Walk the checklist
 
 ### Structure (DISCO)
+
 - [x] Every module is **one** DISCO type — `DAT01` (Data), `INP01/02/03` (Inputs),
       `SYS01/02/03/04` (System), `CAL01/02/03/04` (Calculations), `OUT01` (Outputs).
 - [x] Mappings/attributes live in System (`SYS02 Region/Local Currency`, `SYS03 Sign`), not in calcs;
@@ -23,6 +24,7 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
       [naming conventions](../templates/naming-conventions.md)).
 
 ### Performance (P)
+
 - [ ] **Apply Time Ranges.** `INP01/INP02` only need the plan years — give them a Time Range of
       `FY25` (or `FY25–FY26`) instead of the full `FY24–FY26` calendar. `DAT01` only needs actual
       months. This is the single biggest size lever. See
@@ -36,6 +38,7 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
 - [x] Sub-expressions computed once (`Gross Revenue (local)` is referenced, not re-derived in COGS).
 
 ### Logical & Auditable (L, A)
+
 - [x] Logic is **stepped**: `Volume → Price (local) → Gross Revenue (local)`; `Revenue → COGS →
       Gross Profit → EBITDA`. Each line readable.
 - [x] Names describe meaning (`Gross Revenue (local)`, `EBITDA Margin %` — not `R1`, `X2`).
@@ -44,12 +47,14 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
 - [x] A reviewer can trace `EBITDA` back to `Volume × Price`, including the FX conversion in `CAL03`.
 
 ### Necessary (N)
+
 - [x] No optional "just in case" line items left behind — `INP01`/`INP02`/`INP03` hold only the
       drivers the model uses.
 - [x] No duplicate calculations (`COGS %` defined once in `INP03`; FX rate looked up once in `CAL03`).
 - [x] `OUT01` adds no new logic beyond a display ratio.
 
 ### Sustainable (S)
+
 - [x] **No hard-coded** dates/periods — the switchover reads `SYS01.Is Actual?` and the current
       period, so a roll to FY27 needs no formula edits.
 - [x] **No hard-coded FX rate** — `CAL03` looks the rate up from `SYS04` by `Local Currency`.
@@ -60,6 +65,7 @@ Use the copyable version: [`templates/model-build-checklist.md`](../templates/mo
       [integration docs](../docs/04-integration/).
 
 ### Delivery
+
 - [x] Built to the brief (revenue → P&L, actuals blend, a report page) — no scope creep.
 - [ ] **Test edge cases:** blank Volume/Price (does `COGS` go blank or zero?), a new entity with no
       data, the **year rollover** (advance Current Period and confirm the blend re-splits).

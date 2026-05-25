@@ -120,6 +120,7 @@ CAL04 ─────────────────► OUT01 P&L Statement
 ```
 
 Cross-domain (model-to-model imports, matched on shared `_common` dimensions):
+
 - **Workforce** `Cost by CC (local)` → `INP02 Opex Plan.Opex (local)` at `Opex Category = "Salaries"`.
 - **Supply Chain** `Supply Cost by CC (local)` → `INP04 Direct Materials (local)` → `CAL02` COGS.
 - **Sales** `Target (USD)` reconciles against `CAL03 Currency Conversion.Revenue (USD)` (same grain).

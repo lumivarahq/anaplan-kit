@@ -31,6 +31,7 @@ Version. Prices are in each cost centre's **local currency** — conversion to U
 | `Price (local)` | Number (2 dp) | Average | L3 Cost Centre, L2 Product, Time, Versions | *(input — unit price in local currency)* |
 
 Notes:
+
 - **`Price (local)` summary = Average, not Sum.** A price shouldn't add up across months/products —
   summing it is meaningless. Choosing summary deliberately is a PLANS *Auditable* point.
 - Enter a few values for the `Forecast` version, FY25 months (e.g. Sensor A in a UK cost centre:
