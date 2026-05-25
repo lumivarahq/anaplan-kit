@@ -50,18 +50,14 @@ def test_request_empty_body_returns_empty_dict(client: AnaplanClient) -> None:
 
 @responses.activate
 def test_request_non_json_when_expected_raises(client: AnaplanClient) -> None:
-    responses.add(
-        responses.GET, f"{API_BASE}/bad", body="<html>nope</html>", status=200
-    )
+    responses.add(responses.GET, f"{API_BASE}/bad", body="<html>nope</html>", status=200)
     with pytest.raises(AnaplanAPIError):
         client._request("GET", "/bad")
 
 
 @responses.activate
 def test_request_raw_bytes(client: AnaplanClient) -> None:
-    responses.add(
-        responses.GET, f"{API_BASE}/raw", body=b"\x00\x01\x02", status=200
-    )
+    responses.add(responses.GET, f"{API_BASE}/raw", body=b"\x00\x01\x02", status=200)
     assert client._request("GET", "/raw", expect_json=False) == b"\x00\x01\x02"
 
 
@@ -78,9 +74,7 @@ def test_retry_then_succeed(client: AnaplanClient) -> None:
 @responses.activate
 def test_retry_exhausted_raises(client: AnaplanClient) -> None:
     for _ in range(client.max_retries):
-        responses.add(
-            responses.GET, f"{API_BASE}/r", body=ReqConnectionError("boom")
-        )
+        responses.add(responses.GET, f"{API_BASE}/r", body=ReqConnectionError("boom"))
     with pytest.raises(AnaplanAPIError):
         client._request("GET", "/r")
     assert len(responses.calls) == client.max_retries

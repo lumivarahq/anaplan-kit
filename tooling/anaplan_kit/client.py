@@ -16,7 +16,7 @@ provided as mixins so they all share this one request path.
 from __future__ import annotations
 
 import time
-from typing import Any, Optional
+from typing import Any
 
 import requests
 
@@ -46,7 +46,7 @@ class AnaplanClient(MetadataMixin, ImportsExportsMixin, ActionsMixin):
         self,
         authenticator: Authenticator,
         api_base: str = DEFAULT_API_BASE,
-        session: Optional[requests.Session] = None,
+        session: requests.Session | None = None,
         timeout: float = 60.0,
         max_retries: int = 3,
         backoff: float = 0.5,
@@ -64,9 +64,9 @@ class AnaplanClient(MetadataMixin, ImportsExportsMixin, ActionsMixin):
         email: str,
         password: str,
         api_base: str = DEFAULT_API_BASE,
-        auth_url: Optional[str] = None,
+        auth_url: str | None = None,
         **kwargs: Any,
-    ) -> "AnaplanClient":
+    ) -> AnaplanClient:
         """Construct a client directly from an email/password pair.
 
         A convenience wrapper that builds the :class:`Authenticator` for you.
@@ -88,10 +88,10 @@ class AnaplanClient(MetadataMixin, ImportsExportsMixin, ActionsMixin):
         method: str,
         path: str,
         *,
-        params: Optional[dict[str, Any]] = None,
-        json: Optional[Any] = None,
-        data: Optional[bytes] = None,
-        headers: Optional[dict[str, str]] = None,
+        params: dict[str, Any] | None = None,
+        json: Any | None = None,
+        data: bytes | None = None,
+        headers: dict[str, str] | None = None,
         expect_json: bool = True,
     ) -> Any:
         """Make an authenticated request and return parsed JSON (or raw bytes).
@@ -149,9 +149,9 @@ class AnaplanClient(MetadataMixin, ImportsExportsMixin, ActionsMixin):
         *,
         method: str,
         url: str,
-        params: Optional[dict[str, Any]],
-        json: Optional[Any],
-        data: Optional[bytes],
+        params: dict[str, Any] | None,
+        json: Any | None,
+        data: bytes | None,
         headers: dict[str, str],
     ) -> requests.Response:
         """Send the request, retrying on transient network-level errors.
@@ -160,7 +160,7 @@ class AnaplanClient(MetadataMixin, ImportsExportsMixin, ActionsMixin):
         are retried (with exponential backoff). HTTP error *statuses* are not
         retried here — they're surfaced to :meth:`_request`.
         """
-        last_exc: Optional[Exception] = None
+        last_exc: Exception | None = None
         for attempt in range(self.max_retries):
             try:
                 return self.session.request(
@@ -176,9 +176,7 @@ class AnaplanClient(MetadataMixin, ImportsExportsMixin, ActionsMixin):
                 last_exc = exc
                 if attempt < self.max_retries - 1:
                     time.sleep(self.backoff * (2**attempt))
-        raise AnaplanAPIError(
-            f"Network error after {self.max_retries} attempts: {last_exc}"
-        )
+        raise AnaplanAPIError(f"Network error after {self.max_retries} attempts: {last_exc}")
 
     @staticmethod
     def _raise_for_status(response: requests.Response) -> None:

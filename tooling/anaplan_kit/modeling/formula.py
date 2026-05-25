@@ -23,33 +23,94 @@ from .model import Finding
 KNOWN_FUNCTIONS: frozenset[str] = frozenset(
     {
         # Aggregation
-        "SUM", "AVERAGE", "MIN", "MAX", "COUNT", "ANY", "ALL", "ROUND", "ABS",
+        "SUM",
+        "AVERAGE",
+        "MIN",
+        "MAX",
+        "COUNT",
+        "ANY",
+        "ALL",
+        "ROUND",
+        "ABS",
         # Lookup & mapping
-        "LOOKUP", "SELECT", "FINDITEM", "FIRSTNONBLANK",
+        "LOOKUP",
+        "SELECT",
+        "FINDITEM",
+        "FIRSTNONBLANK",
         # Time series
-        "CUMULATE", "DECUMULATE", "LAG", "LEAD", "OFFSET", "POST", "PREVIOUS",
-        "NEXT", "MOVINGSUM", "TIMESUM", "START", "END", "PROFILE", "YEARVALUE",
-        "HALFYEARVALUE", "QUARTERVALUE", "MONTHVALUE",
+        "CUMULATE",
+        "DECUMULATE",
+        "LAG",
+        "LEAD",
+        "OFFSET",
+        "POST",
+        "PREVIOUS",
+        "NEXT",
+        "MOVINGSUM",
+        "TIMESUM",
+        "START",
+        "END",
+        "PROFILE",
+        "YEARVALUE",
+        "HALFYEARVALUE",
+        "QUARTERVALUE",
+        "MONTHVALUE",
         # Text
-        "TEXT", "NAME", "LEFT", "RIGHT", "MID", "LENGTH", "FIND", "SUBSTITUTE",
-        "TRIM", "LOWER", "UPPER", "CODE", "MAKELINK", "MAILTO",
+        "TEXT",
+        "NAME",
+        "LEFT",
+        "RIGHT",
+        "MID",
+        "LENGTH",
+        "FIND",
+        "SUBSTITUTE",
+        "TRIM",
+        "LOWER",
+        "UPPER",
+        "CODE",
+        "MAKELINK",
+        "MAILTO",
         # Logical
-        "ISBLANK", "ISNOTBLANK",
+        "ISBLANK",
+        "ISNOTBLANK",
         # Date
-        "DATE", "YEAR", "MONTH", "DAY", "WEEKDAY", "DAYS", "MONTHTODATE",
+        "DATE",
+        "YEAR",
+        "MONTH",
+        "DAY",
+        "WEEKDAY",
+        "DAYS",
+        "MONTHTODATE",
         "CURRENTPERIODSTART",
         # Financial
-        "NPV", "IRR", "PMT", "CUMIPMT",
+        "NPV",
+        "IRR",
+        "PMT",
+        "CUMIPMT",
         # Ranking
-        "RANK", "RANKCUMULATE",
+        "RANK",
+        "RANKCUMULATE",
         # Hierarchy
-        "ITEM", "PARENT", "ISANCESTOR", "ITEMLEVEL",
+        "ITEM",
+        "PARENT",
+        "ISANCESTOR",
+        "ITEMLEVEL",
     }
 )
 
 # Bracket keywords that are valid aggregation/lookup *mappings* inside [ ].
-_MAPPING_KEYWORDS = ("SUM", "LOOKUP", "MIN", "MAX", "AVERAGE", "COUNT", "ANY", "ALL",
-                     "SELECT", "FIRSTNONBLANK")
+_MAPPING_KEYWORDS = (
+    "SUM",
+    "LOOKUP",
+    "MIN",
+    "MAX",
+    "AVERAGE",
+    "COUNT",
+    "ANY",
+    "ALL",
+    "SELECT",
+    "FIRSTNONBLANK",
+)
 
 # Time offsets that some modelers wrongly write in bracket form (e.g. [NEXT: 1]).
 # The correct form is the function call NEXT(...)/LAG(...) etc.
@@ -85,21 +146,25 @@ def _check_balanced(text: str, location: str) -> list[Finding]:
         elif ch in pairs:
             if not stack or stack[-1] != pairs[ch]:
                 findings.append(
-                    Finding("ERROR", "UNBALANCED",
-                            f"unbalanced '{ch}' — no matching opener", location)
+                    Finding(
+                        "ERROR", "UNBALANCED", f"unbalanced '{ch}' — no matching opener", location
+                    )
                 )
                 # keep scanning but don't pop a bad match
             else:
                 stack.pop()
     if stack:
         findings.append(
-            Finding("ERROR", "UNBALANCED",
-                    f"unbalanced delimiter(s): {''.join(stack)} left open", location)
+            Finding(
+                "ERROR",
+                "UNBALANCED",
+                f"unbalanced delimiter(s): {''.join(stack)} left open",
+                location,
+            )
         )
     if quote_count % 2 != 0:
         findings.append(
-            Finding("ERROR", "UNBALANCED",
-                    "unbalanced single quote — odd number of '", location)
+            Finding("ERROR", "UNBALANCED", "unbalanced single quote — odd number of '", location)
         )
     return findings
 
@@ -117,7 +182,8 @@ def _check_banned_functions(text: str, location: str) -> list[Finding]:
             if not re.search(r"IS$", before):
                 findings.append(
                     Finding(
-                        "ERROR", "BANNED_FUNCTION",
+                        "ERROR",
+                        "BANNED_FUNCTION",
                         "ANCESTOR() does not exist in Anaplan — chain "
                         "PARENT(PARENT(...)) or use a SYS mapping",
                         location,
@@ -127,7 +193,8 @@ def _check_banned_functions(text: str, location: str) -> list[Finding]:
     if re.search(r"(?<![A-Za-z])CHILDREN\s*\(", text):
         findings.append(
             Finding(
-                "ERROR", "BANNED_FUNCTION",
+                "ERROR",
+                "BANNED_FUNCTION",
                 "CHILDREN() does not exist in Anaplan — aggregate children with "
                 "Summary = Sum or a SUM mapping",
                 location,
@@ -143,9 +210,9 @@ def _check_bracket_offsets(text: str, location: str) -> list[Finding]:
         if re.search(rf"\[\s*{kw}\s*:", text, re.IGNORECASE):
             findings.append(
                 Finding(
-                    "ERROR", "BRACKET_OFFSET",
-                    f"[{kw}: …] bracket syntax is invalid — use the function "
-                    f"form {kw}(...)",
+                    "ERROR",
+                    "BRACKET_OFFSET",
+                    f"[{kw}: …] bracket syntax is invalid — use the function form {kw}(...)",
                     location,
                 )
             )
@@ -183,9 +250,7 @@ def _check_multi_mapping(text: str, location: str) -> list[Finding]:
     by another mapping keyword is the classic mistake.
     """
     findings: list[Finding] = []
-    keyword_re = re.compile(
-        r"^\s*(?:" + "|".join(_MAPPING_KEYWORDS) + r")\s*:", re.IGNORECASE
-    )
+    keyword_re = re.compile(r"^\s*(?:" + "|".join(_MAPPING_KEYWORDS) + r")\s*:", re.IGNORECASE)
     for kw, inner in _iter_bracket_blocks(text):
         if kw not in {"SUM", "LOOKUP"}:
             continue
@@ -200,7 +265,8 @@ def _check_multi_mapping(text: str, location: str) -> list[Finding]:
             if not keyword_re.match(seg):
                 findings.append(
                     Finding(
-                        "ERROR", "MULTI_MAPPING",
+                        "ERROR",
+                        "MULTI_MAPPING",
                         f"[{kw}: …] has multiple mappings but the extra one(s) "
                         f"lack a keyword — write [{kw}: a, {kw}: b]",
                         location,
@@ -243,7 +309,8 @@ def _check_hardcoded_items(text: str, location: str) -> list[Finding]:
     if re.search(r"\[\s*SELECT\s*:", text, re.IGNORECASE):
         findings.append(
             Finding(
-                "WARN", "HARDCODED_ITEM",
+                "WARN",
+                "HARDCODED_ITEM",
                 "SELECT: pins a specific list item — prefer a LOOKUP mapping or "
                 "a SYS flag (Sustainable)",
                 location,
@@ -253,7 +320,8 @@ def _check_hardcoded_items(text: str, location: str) -> list[Finding]:
     if re.search(r"[A-Za-z0-9 )\]]\.'[^']+'", text):
         findings.append(
             Finding(
-                "WARN", "HARDCODED_ITEM",
+                "WARN",
+                "HARDCODED_ITEM",
                 "hard-coded list item reference (X.'Item') — drive selection from "
                 "a System flag instead (Sustainable)",
                 location,
@@ -286,7 +354,8 @@ def _check_if_depth(text: str, location: str) -> list[Finding]:
     if max_depth > 3:
         return [
             Finding(
-                "WARN", "NESTED_IF",
+                "WARN",
+                "NESTED_IF",
                 f"nested IF depth {max_depth} > 3 — use a Boolean line item, "
                 "MIN/MAX, or a LOOKUP mapping (Auditable / Performance)",
                 location,
@@ -311,7 +380,8 @@ def _check_unknown_functions(text: str, location: str) -> list[Finding]:
         if up not in KNOWN_FUNCTIONS:
             findings.append(
                 Finding(
-                    "INFO", "UNKNOWN_FUNCTION",
+                    "INFO",
+                    "UNKNOWN_FUNCTION",
                     f"'{name}(' is not in the known-function list (it may be a "
                     "newer/Polaris function, or a typo)",
                     location,

@@ -33,10 +33,7 @@ _BOLD_HEADING_RE = re.compile(r"^\s*\*\*(.+?)\*\*\s*$")
 
 def _badge_line(m: Module) -> str:
     """A one-line context badge above the heading."""
-    return (
-        f"> **Level:** L2 · **Area:** Blueprint · "
-        f"**DISCO:** {m.disco.name.title()}"
-    )
+    return f"> **Level:** L2 · **Area:** Blueprint · **DISCO:** {m.disco.name.title()}"
 
 
 def _cell(value: str | None) -> str:
@@ -102,7 +99,9 @@ def _split_row(line: str) -> list[str]:
 
 def _is_separator_row(cells: list[str]) -> bool:
     """A separator row is all dashes/colons (``| --- | :--: |``)."""
-    return all(re.fullmatch(r":?-{1,}:?", c.strip()) is not None for c in cells if c.strip() != "") and any(cells)
+    return all(
+        re.fullmatch(r":?-{1,}:?", c.strip()) is not None for c in cells if c.strip() != ""
+    ) and any(cells)
 
 
 def _is_header_row(cells: list[str]) -> bool:
@@ -137,16 +136,26 @@ def _parse_applies_to(text: str) -> list[str]:
 
 
 def _module_name_from_heading(heading: str) -> str:
-    """Pull a module name out of a heading line.
+    """Pull a module *code* name out of a heading line.
 
-    Strips trailing DISCO tags like " — **Inputs**" that the kit's blueprints
-    append after the module name.
+    Handles the kit's real headings, e.g. ``## CAL01 Revenue``,
+    ``**INP01 Assumptions**`` and ``` ## `SYS04 Exchange Rates` — the FX module
+    shape ``` — by stripping markdown markers and any trailing descriptive
+    suffix ("— ...", "– ...", "- ...", "(...").
+
+    Returns ``""`` for headings that are *not* module codes (prose section
+    headings like "How to read a blueprint"), so a table under them parses as an
+    un-named module (an INFO, not a naming error).
     """
-    name = heading.strip()
-    # Remove a trailing " — **Type**" / " - Type" annotation.
-    name = re.split(r"\s+[—–-]\s+\*?\*?(?:Data|Inputs|System|Calculations|Outputs)",
-                    name, maxsplit=1)[0]
-    return name.strip().strip("*").strip()
+    name = heading.strip().replace("`", "").replace("**", "")
+    # Drop a trailing descriptive annotation after a dash or an opening paren.
+    name = re.split(r"\s+[—–-]\s+|\s+\(", name, maxsplit=1)[0]
+    name = name.strip().strip("*").strip()
+    # Only accept it as a module name if it looks like a module code: three
+    # letters followed by a digit (SYS01, CAL02, DAT90, OUT01, …).
+    if not re.match(r"^[A-Za-z]{3}\d", name):
+        return ""
+    return name
 
 
 def _disco_from_name(name: str) -> Disco | None:

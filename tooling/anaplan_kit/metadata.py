@@ -27,9 +27,7 @@ class MetadataMixin:
         body = self._request("GET", "/workspaces")
         return body.get("workspaces", [])
 
-    def list_models(
-        self: _SupportsRequest, workspace_id: str
-    ) -> list[dict[str, Any]]:
+    def list_models(self: _SupportsRequest, workspace_id: str) -> list[dict[str, Any]]:
         """List models within a workspace.
 
         Args:
@@ -50,40 +48,22 @@ class MetadataMixin:
         body = self._request("GET", path)
         return body.get(key, [])
 
-    def list_files(
-        self, workspace_id: str, model_id: str
-    ) -> list[dict[str, Any]]:
+    def list_files(self, workspace_id: str, model_id: str) -> list[dict[str, Any]]:
         """List file resources in a model (upload/download targets)."""
         return self._model_resources(workspace_id, model_id, "files", "files")
 
-    def list_imports(
-        self, workspace_id: str, model_id: str
-    ) -> list[dict[str, Any]]:
+    def list_imports(self, workspace_id: str, model_id: str) -> list[dict[str, Any]]:
         """List import actions in a model."""
-        return self._model_resources(
-            workspace_id, model_id, "imports", "imports"
-        )
+        return self._model_resources(workspace_id, model_id, "imports", "imports")
 
-    def list_exports(
-        self, workspace_id: str, model_id: str
-    ) -> list[dict[str, Any]]:
+    def list_exports(self, workspace_id: str, model_id: str) -> list[dict[str, Any]]:
         """List export actions in a model."""
-        return self._model_resources(
-            workspace_id, model_id, "exports", "exports"
-        )
+        return self._model_resources(workspace_id, model_id, "exports", "exports")
 
-    def list_actions(
-        self, workspace_id: str, model_id: str
-    ) -> list[dict[str, Any]]:
+    def list_actions(self, workspace_id: str, model_id: str) -> list[dict[str, Any]]:
         """List generic actions (e.g. delete-from-list) in a model."""
-        return self._model_resources(
-            workspace_id, model_id, "actions", "actions"
-        )
+        return self._model_resources(workspace_id, model_id, "actions", "actions")
 
-    def list_processes(
-        self, workspace_id: str, model_id: str
-    ) -> list[dict[str, Any]]:
+    def list_processes(self, workspace_id: str, model_id: str) -> list[dict[str, Any]]:
         """List processes (ordered groups of actions) in a model."""
-        return self._model_resources(
-            workspace_id, model_id, "processes", "processes"
-        )
+        return self._model_resources(workspace_id, model_id, "processes", "processes")

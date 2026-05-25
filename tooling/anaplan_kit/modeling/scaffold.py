@@ -73,41 +73,59 @@ def scaffold_feature(feature_name: str) -> dict[str, str]:
         name="DAT01 Source Data",
         disco=Disco.DATA,
         line_items=[
-            LineItem("Amount (raw)", "Number", "Sum", org_time_ver,
-                     "import — landing zone, do not calculate here"),
+            LineItem(
+                "Amount (raw)",
+                "Number",
+                "Sum",
+                org_time_ver,
+                "import — landing zone, do not calculate here",
+            ),
         ],
     )
     inp = Module(
         name="INP01 Assumptions",
         disco=Disco.INPUTS,
         line_items=[
-            LineItem("Driver", "Number", "Sum", org_time_ver,
-                     "input — the number a planner types"),
+            LineItem("Driver", "Number", "Sum", org_time_ver, "input — the number a planner types"),
         ],
     )
     sys = Module(
         name="SYS01 Time Settings",
         disco=Disco.SYSTEM,
         line_items=[
-            LineItem("Is Actual?", "Boolean", None, [TIME_DIMENSION],
-                     "flag — TRUE for closed/actual periods"),
+            LineItem(
+                "Is Actual?",
+                "Boolean",
+                None,
+                [TIME_DIMENSION],
+                "flag — TRUE for closed/actual periods",
+            ),
         ],
     )
     cal = Module(
         name="CAL01 Calculation",
         disco=Disco.CALC,
         line_items=[
-            LineItem("Result", "Number", "Sum", org_time_ver,
-                     "INP01 Assumptions.Driver * DAT01 Source Data.Amount (raw)"),
+            LineItem(
+                "Result",
+                "Number",
+                "Sum",
+                org_time_ver,
+                "INP01 Assumptions.Driver * DAT01 Source Data.Amount (raw)",
+            ),
         ],
     )
     out = Module(
         name="OUT01 Report",
         disco=Disco.OUTPUTS,
         line_items=[
-            LineItem("Reported Value", "Number", "Sum",
-                     [ORG_DIMENSION, TIME_DIMENSION],
-                     "CAL01 Calculation.Result"),
+            LineItem(
+                "Reported Value",
+                "Number",
+                "Sum",
+                [ORG_DIMENSION, TIME_DIMENSION],
+                "CAL01 Calculation.Result",
+            ),
         ],
     )
 

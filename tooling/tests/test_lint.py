@@ -15,8 +15,9 @@ def _clean_module() -> Module:
         name="CAL01 Revenue",
         disco=Disco.CALC,
         line_items=[
-            LineItem("Gross Revenue", "Number", "Sum",
-                     ["L3 Cost Centre", "Time"], "Volume * Price"),
+            LineItem(
+                "Gross Revenue", "Number", "Sum", ["L3 Cost Centre", "Time"], "Volume * Price"
+            ),
             LineItem("Margin %", "Number (%)", "None", ["L3 Cost Centre"], None),
         ],
     )
@@ -31,8 +32,9 @@ def _dirty_module() -> Module:
         line_items=[
             LineItem("Is Actual Month?", "Boolean", None, ["Time"], None),
             LineItem("Period Index", "Number", None, ["Time"], None),
-            LineItem("Parent CC", "List", None, ["L3 Cost Centre"],
-                     "ANCESTOR(ITEM(L3 Cost Centre))"),
+            LineItem(
+                "Parent CC", "List", None, ["L3 Cost Centre"], "ANCESTOR(ITEM(L3 Cost Centre))"
+            ),
         ],
     )
 
@@ -102,6 +104,15 @@ def test_formula_findings_get_module_arrow_location():
     banned = [f for f in findings if f.code == "BANNED_FUNCTION"]
     assert banned
     assert banned[0].location == "CAL01 X → Val"
+
+
+def test_unnamed_module_is_info_not_error():
+    # A blueprint table the parser couldn't name must not raise a hard error.
+    m = Module(name="", disco=Disco.CALC, line_items=[])
+    findings = lint_module(m)
+    assert "UNNAMED_MODULE" in _codes(findings)
+    assert "BAD_PREFIX" not in _codes(findings)
+    assert not has_errors(findings)
 
 
 def test_lint_feature_merges_modules():

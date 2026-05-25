@@ -36,3 +36,16 @@ packages = ["anaplan_kit", "anaplan_kit.modeling"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+extend-exclude = ["**/__pycache__"]
+
+[tool.ruff.lint]
+# pyflakes(F), pycodestyle(E/W), isort(I), pyupgrade(UP), flake8-bugbear(B)
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests may use long descriptive strings and assert-heavy style.
+"tests/*" = ["E501"]

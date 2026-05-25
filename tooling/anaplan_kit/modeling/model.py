@@ -32,7 +32,7 @@ class Disco(Enum):
         return self.value
 
     @classmethod
-    def from_prefix(cls, prefix: str) -> "Disco | None":
+    def from_prefix(cls, prefix: str) -> Disco | None:
         """Return the :class:`Disco` whose prefix matches ``prefix`` (case-insensitive).
 
         Returns ``None`` if no type matches — callers decide whether that is an

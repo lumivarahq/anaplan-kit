@@ -20,7 +20,6 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
-from typing import Optional
 
 import requests
 
@@ -78,7 +77,7 @@ class Authenticator:
         email: str,
         password: str,
         auth_url: str = DEFAULT_AUTH_URL,
-        session: Optional[requests.Session] = None,
+        session: requests.Session | None = None,
         timeout: float = 30.0,
     ) -> None:
         if not email or not password:
@@ -91,7 +90,7 @@ class Authenticator:
         self.auth_url = auth_url
         self._session = session or requests.Session()
         self.timeout = timeout
-        self._token: Optional[AuthToken] = None
+        self._token: AuthToken | None = None
 
     def get_token(self, force_refresh: bool = False) -> AuthToken:
         """Return a valid token, acquiring or refreshing it as needed.
@@ -121,8 +120,7 @@ class Authenticator:
 
         if response.status_code != 200:
             raise AnaplanAuthError(
-                f"Authentication failed with HTTP {response.status_code}: "
-                f"{response.text[:500]}"
+                f"Authentication failed with HTTP {response.status_code}: {response.text[:500]}"
             )
 
         try:
@@ -146,9 +144,7 @@ class Authenticator:
         value = token_info.get("tokenValue")
         expires_at_ms = token_info.get("expiresAt")
         if not value:
-            raise AnaplanAuthError(
-                f"Auth response missing token value: {body!r}"
-            )
+            raise AnaplanAuthError(f"Auth response missing token value: {body!r}")
 
         if isinstance(expires_at_ms, (int, float)):
             expires_at = float(expires_at_ms) / 1000.0

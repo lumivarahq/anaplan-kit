@@ -28,9 +28,7 @@ def test_upload_file_chunks(client: AnaplanClient, tmp_path) -> None:
         responses.add(responses.PUT, f"{base}/chunks/{chunk_id}", status=204)
     responses.add(responses.POST, f"{base}/complete", json={}, status=200)
 
-    count = client.upload_file(
-        WORKSPACE_ID, MODEL_ID, file_id, str(file_path), chunk_size=10
-    )
+    count = client.upload_file(WORKSPACE_ID, MODEL_ID, file_id, str(file_path), chunk_size=10)
     assert count == 3
     # declare(1) + 3 chunk PUTs + complete(1) == 5 calls.
     assert len(responses.calls) == 5
@@ -53,9 +51,7 @@ def test_run_action_and_wait_polls_to_complete(client: AnaplanClient) -> None:
         json={"task": {"taskState": "COMPLETE", "result": {"successful": True}}},
     )
 
-    status = client.run_import(
-        WORKSPACE_ID, MODEL_ID, import_id, poll_interval=0
-    )
+    status = client.run_import(WORKSPACE_ID, MODEL_ID, import_id, poll_interval=0)
     assert status["taskState"] == "COMPLETE"
     assert status["result"]["successful"] is True
     # POST start + 2 GET polls.
@@ -75,9 +71,7 @@ def test_run_generic_action_uses_actions_resource(client: AnaplanClient) -> None
         json={"task": {"taskState": "COMPLETE", "result": {"successful": True}}},
     )
 
-    status = client.run_generic_action(
-        WORKSPACE_ID, MODEL_ID, action_id, poll_interval=0
-    )
+    status = client.run_generic_action(WORKSPACE_ID, MODEL_ID, action_id, poll_interval=0)
     assert status["taskState"] == "COMPLETE"
     assert status["result"]["successful"] is True
     # The task was started against the /actions resource, not /imports.
@@ -110,31 +104,30 @@ def test_run_action_failure_raises(client: AnaplanClient) -> None:
 def test_poll_timeout_raises(client: AnaplanClient) -> None:
     import_id = "imp3"
     status_url = f"{IMPORT_BASE}/{import_id}/tasks/t3"
-    responses.add(
-        responses.GET, status_url, json={"task": {"taskState": "IN_PROGRESS"}}
-    )
+    responses.add(responses.GET, status_url, json={"task": {"taskState": "IN_PROGRESS"}})
     with pytest.raises(AnaplanTaskError):
         # Zero timeout -> deadline already passed after the first poll.
         client.poll_task(
-            WORKSPACE_ID, MODEL_ID, "imports", import_id, "t3",
-            poll_interval=0, timeout=0,
+            WORKSPACE_ID,
+            MODEL_ID,
+            "imports",
+            import_id,
+            "t3",
+            poll_interval=0,
+            timeout=0,
         )
 
 
 @responses.activate
 def test_start_task_missing_id_raises(client: AnaplanClient) -> None:
     import_id = "imp4"
-    responses.add(
-        responses.POST, f"{IMPORT_BASE}/{import_id}/tasks", json={"task": {}}
-    )
+    responses.add(responses.POST, f"{IMPORT_BASE}/{import_id}/tasks", json={"task": {}})
     with pytest.raises(AnaplanTaskError):
         client.start_task(WORKSPACE_ID, MODEL_ID, "imports", import_id)
 
 
 @responses.activate
-def test_download_export_reassembles_chunks(
-    client: AnaplanClient, tmp_path
-) -> None:
+def test_download_export_reassembles_chunks(client: AnaplanClient, tmp_path) -> None:
     file_id = "exp1"
     base = f"{FILE_BASE}/{file_id}"
     responses.add(
