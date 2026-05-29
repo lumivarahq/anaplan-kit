@@ -10,8 +10,8 @@ jobs:
     name: Python (ruff + pytest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
       - name: Install package + dev deps + ruff
@@ -31,13 +31,13 @@ jobs:
     name: Docs (links + conventions + markdownlint)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Relative Markdown link check
         run: python tools/check_links.py .
       - name: Anaplan conventions lint (blueprints)
