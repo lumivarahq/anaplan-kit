@@ -67,4 +67,17 @@ the Anapedia page for that function, and the per-function source URL is listed t
 - Anaplan Connect — https://help.anaplan.com/ (Anaplan Connect section)
 - CloudWorks — https://help.anaplan.com/ (CloudWorks section)
 
+### Tooling ecosystem (docs/04-integration/ecosystem-and-tooling.md)
+
+- Anapedia API index — https://help.anaplan.com/anaplan-api-844c6d40-a21c-423d-8435-ebaaa0372b76
+- Apiary interactive API reference — https://anaplan.docs.apiary.io
+- Anaplan Java client (basis of Anaplan Connect) — https://github.com/anaplaninc/anaplan-java-client
+- anaplan-mulesoft connector (deprecated) — https://github.com/anaplaninc/anaplan-mulesoft
+- anaplan-sdk, Python client by VinzenzKlass — https://github.com/VinzenzKlass/anaplan-sdk
+- apapi, Python client by DLZaan — https://github.com/DLZaan/apapi
+- anaplan-api, Python client by jeswils-ap — https://github.com/jeswils-ap/anaplan-api
+- anaplan-mcp, MCP server by larasrinath — https://github.com/larasrinath/anaplan-mcp
+- The Planual (official) — https://support.anaplan.com/planual-5731dc37-317a-49fa-a5ff-7fc3926972de
+- Anaplan Community — https://community.anaplan.com
+
 > If you spot anything out of date, check the live Anapedia page (linked above) — that is the source of truth.
