@@ -48,6 +48,13 @@ terms. The cookbook has a full build recipe under `cookbook/data-and-imports/`.
 | [cloudworks.md](cloudworks.md) | Cloud-based scheduling and connections to AWS/Azure/BigQuery. |
 | [rest-api.md](rest-api.md) | The REST API v2 — auth, resource hierarchy, chunked upload, running actions. |
 
+> **AI agents:** the kit also ships an **MCP server** (`anaplan-kit-mcp`, see
+> [`tooling/`](../../tooling/README.md#mcp-server-anaplan-kit-mcp)) exposing the formula
+> reference, cookbook, blueprint linter *and* this REST API client as tools for any
+> MCP-capable agent — a fourth "runner". Without credentials it answers honestly in offline
+> mode; with the `ANAPLAN_*` env vars it drives the same API described in
+> [rest-api.md](rest-api.md).
+
 ## Where to start
 
 If you are new, read [imports-exports.md](imports-exports.md) and

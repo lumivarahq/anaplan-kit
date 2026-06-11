@@ -1,0 +1,6 @@
+{
+  // Rule configuration stays in .markdownlint.json; this file only adds path
+  // ignores so local virtualenvs (tooling/.venv — created per AGENTS.md, holds
+  // third-party LICENSE.md files) never leak into the docs gate.
+  "ignores": ["**/.venv/**", "**/venv/**", "**/node_modules/**"]
+}

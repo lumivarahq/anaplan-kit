@@ -14,10 +14,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
-      - name: Install package + dev deps + ruff
+      - name: Install package + dev/mcp deps + ruff
         run: |
           python -m pip install --upgrade pip
-          pip install ./tooling[dev] ruff
+          pip install "./tooling[dev,mcp]" ruff
       - name: Ruff lint
         run: ruff check tooling
       - name: Ruff format check

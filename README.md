@@ -25,6 +25,7 @@ It is four things at once:
 | Follow a build-along tutorial | [`tutorials/`](tutorials/) |
 | Practice | [`exercises/`](exercises/) |
 | Integrate via API | [`tooling/`](tooling/) |
+| Wire the kit into an AI agent | [MCP server](#mcp-server) |
 
 ### Reading conventions used everywhere
 
@@ -100,6 +101,52 @@ The repo lints itself with the same standards it teaches:
 Run them locally with **pre-commit**: `pip install pre-commit && pre-commit install`
 ([`.pre-commit-config.yaml`](.pre-commit-config.yaml)). The same checks run in **GitHub Actions** on
 every push and PR ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+
+---
+
+## MCP server
+
+The kit doubles as a **tool server for AI agents** via the
+[Model Context Protocol](https://modelcontextprotocol.io): every part of the kit — formula
+reference, cookbook, blueprints, the conventions linter, and the REST API client — is exposed as
+structured tools an agent can call over stdio.
+
+```bash
+cd tooling
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[mcp]"
+anaplan-kit-mcp        # stdio MCP server
+```
+
+Point any MCP client at the `anaplan-kit-mcp` command (use the absolute path
+`tooling/.venv/bin/anaplan-kit-mcp` when configuring a client outside the venv).
+
+| Tool | What it does |
+| --- | --- |
+| `search_kit` | Ranked keyword search over the kit's Markdown (docs/cookbook/blueprints/tutorials/exercises) |
+| `read_kit_doc` | Read one kit document by repo-relative path (Markdown only, sandboxed to the repo) |
+| `formula_reference` | Look up an Anaplan function's syntax/usage in the Anapedia-validated reference |
+| `list_recipes` | Index of every cookbook recipe: title, one-line description, path, level |
+| `lint_blueprint` | Run the kit's blueprint conventions linter on provided Markdown text |
+| `anaplan_connection_status` | Report whether live credentials are configured (never reveals values) |
+| `anaplan_list_workspaces` | List workspaces (live API) |
+| `anaplan_list_models` | List models in a workspace (live API) |
+| `anaplan_model_metadata` | List a model's files/imports/exports/actions/processes (live API) |
+| `anaplan_run_action` | Run a generic action and wait (live API) |
+| `anaplan_run_import` / `anaplan_run_export` | Run an import/export action and wait (live API) |
+| `anaplan_run_process` | Run a process and wait (live API) |
+
+The knowledge tools are **fully offline** (pure-Python search, no embeddings, no network). The
+live tools read credentials from the same environment variables as the rest of `tooling/`
+(`ANAPLAN_EMAIL` / `ANAPLAN_PASSWORD`, plus optional `ANAPLAN_WORKSPACE_ID` / `ANAPLAN_MODEL_ID`).
+
+> **Offline honesty invariant:** when no credentials are configured, every live tool returns
+> `{"mode": "offline", "error": "no Anaplan credentials configured"}` — it never raises, never
+> attempts the network, and never pretends it reached a tenant. A public bot can therefore run
+> this server credential-less and stay honest by construction.
+
+See [`tooling/README.md`](tooling/README.md#mcp-server-anaplan-kit-mcp) for server internals and
+[`docs/04-integration/`](docs/04-integration/README.md) for how it fits the integration landscape.
 
 ---
 
