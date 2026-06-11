@@ -25,6 +25,8 @@ the same API, read [`../docs/04-integration/rest-api.md`](../docs/04-integration
 | `anaplan_kit/metadata.py` | `list_workspaces`, `list_models`, `list_files/imports/exports/actions/processes` |
 | `anaplan_kit/imports_exports.py` | chunked `upload_file` / `download_export`, `run_import`, `run_export`, and the single `run_action_and_wait` / `poll_task` lifecycle |
 | `anaplan_kit/actions.py` | `run_process` (+ generic action), reusing the shared polling logic |
+| `anaplan_kit/kitindex.py` | offline search/indexing over the repo's Markdown (kit-root discovery, ranked search, formula reference, recipe index) |
+| `anaplan_kit/mcp_server.py` | MCP server (`anaplan-kit-mcp`): the kit + API client as AI-agent tools over stdio |
 
 ## Setup
 
@@ -188,3 +190,40 @@ print(cell_count({"L3 Cost Centre": 500, "Time": 36}, 1))
 ```
 
 The modeling tools are covered by the same offline `pytest` suite.
+
+## MCP server (`anaplan-kit-mcp`)
+
+`anaplan_kit.mcp_server` exposes the whole kit as [MCP](https://modelcontextprotocol.io) tools
+over **stdio**, for use by AI agents (Claude Code, OpenClaw bots, any MCP client). Install the
+extra and run the console script:
+
+```bash
+pip install -e ".[mcp]"
+anaplan-kit-mcp
+```
+
+Two tool families (full tool table in the [root README](../README.md#mcp-server)):
+
+- **Offline knowledge tools** — `search_kit`, `read_kit_doc`, `formula_reference`,
+  `list_recipes`, `lint_blueprint`. Backed by `anaplan_kit/kitindex.py`: pure-stdlib ranked
+  keyword search (term frequency + heading/title/filename boosts — no embeddings, no network)
+  over the repo's Markdown, plus the *real* blueprint linter from `anaplan_kit.modeling`.
+  The repo checkout is located via `ANAPLAN_KIT_ROOT`, falling back to walking up from the
+  package (editable installs) or the working directory. `read_kit_doc` is sandboxed: relative
+  paths only, resolved inside the repo, `.md` files only.
+- **Live API tools** — `anaplan_connection_status`, `anaplan_list_workspaces`,
+  `anaplan_list_models`, `anaplan_model_metadata`, `anaplan_run_action` /
+  `anaplan_run_import` / `anaplan_run_export` / `anaplan_run_process` — thin wrappers over
+  `AnaplanClient`, reading the same `ANAPLAN_*` environment variables as the examples
+  (`ANAPLAN_AUTH_URL` / `ANAPLAN_API_BASE` override the endpoints, which is how the offline
+  tests point them at mocked hosts).
+
+> **Offline honesty invariant (load-bearing):** without `ANAPLAN_EMAIL` + `ANAPLAN_PASSWORD`,
+> every live tool returns `{"mode": "offline", "error": "no Anaplan credentials configured"}`
+> without raising and **without attempting any network I/O**. Nothing in the server touches the
+> network at import/startup time either. Keep it that way — the public bot persona built on this
+> server must never appear to have touched a tenant it couldn't reach.
+
+The server is covered by the same offline test suite (`tests/test_mcp_server.py`,
+`tests/test_kitindex.py`): knowledge tools read the repo's own Markdown, live happy paths mock
+HTTP with `responses`, and the honesty invariant is asserted with zero registered mocks.

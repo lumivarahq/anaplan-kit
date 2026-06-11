@@ -27,9 +27,14 @@ dev = [
     "pytest>=9.0",
     "responses>=0.26",
 ]
+# MCP server (anaplan-kit-mcp): exposes the kit's docs + API client as agent tools.
+mcp = [
+    "mcp>=1.2,<2",
+]
 
 [project.scripts]
 anaplan-model = "anaplan_kit.modeling.cli:main"
+anaplan-kit-mcp = "anaplan_kit.mcp_server:main"
 
 [tool.setuptools]
 packages = ["anaplan_kit", "anaplan_kit.modeling"]

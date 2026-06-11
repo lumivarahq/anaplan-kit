@@ -26,8 +26,11 @@ def check(root: str = ".") -> int:
     broken: list[tuple[str, str]] = []
     total = 0
     for dirpath, dirnames, filenames in os.walk(root):
-        if ".git" in dirnames:
-            dirnames.remove(".git")
+        # Skip VCS dirs, hidden dirs (e.g. tooling/.venv) and vendored deps —
+        # third-party Markdown is not ours to gate.
+        dirnames[:] = [
+            d for d in dirnames if not d.startswith(".") and d not in ("node_modules", "venv")
+        ]
         for name in filenames:
             if not name.endswith(".md"):
                 continue
