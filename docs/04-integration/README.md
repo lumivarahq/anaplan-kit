@@ -47,6 +47,7 @@ terms. The cookbook has a full build recipe under `cookbook/data-and-imports/`.
 | [anaplan-connect.md](anaplan-connect.md) | The command-line integration client for scripted, scheduled loads. |
 | [cloudworks.md](cloudworks.md) | Cloud-based scheduling and connections to AWS/Azure/BigQuery. |
 | [rest-api.md](rest-api.md) | The REST API v2 — auth, resource hierarchy, chunked upload, running actions. |
+| [ecosystem-and-tooling.md](ecosystem-and-tooling.md) | The wider ecosystem: all official APIs, open-source clients, MCP/AI tooling, Classic vs Polaris. |
 
 ## Where to start
 
